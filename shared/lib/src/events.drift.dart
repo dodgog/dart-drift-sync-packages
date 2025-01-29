@@ -2,8 +2,8 @@
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
 import 'package:shared/src/events.drift.dart' as i1;
-import 'package:shared/src/aaausers.drift.dart' as i2;
-import 'package:drift/internal/modular.dart' as i3;
+import 'package:drift/internal/modular.dart' as i2;
+import 'package:shared/src/aaausers.drift.dart' as i3;
 
 typedef $EventsCreateCompanionBuilder = i1.EventsCompanion Function({
   required String id,
@@ -28,20 +28,20 @@ final class $EventsReferences
     extends i0.BaseReferences<i0.GeneratedDatabase, i1.Events, i1.Event> {
   $EventsReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static i2.Clients _clientIdTable(i0.GeneratedDatabase db) =>
-      i3.ReadDatabaseContainer(db).resultSet<i2.Clients>('clients').createAlias(
+  static i3.Clients _clientIdTable(i0.GeneratedDatabase db) =>
+      i2.ReadDatabaseContainer(db).resultSet<i3.Clients>('clients').createAlias(
           i0.$_aliasNameGenerator(
-              i3.ReadDatabaseContainer(db)
+              i2.ReadDatabaseContainer(db)
                   .resultSet<i1.Events>('events')
                   .clientId,
-              i3.ReadDatabaseContainer(db)
-                  .resultSet<i2.Clients>('clients')
+              i2.ReadDatabaseContainer(db)
+                  .resultSet<i3.Clients>('clients')
                   .id));
 
-  i2.$ClientsProcessedTableManager get clientId {
-    final manager = i2
+  i3.$ClientsProcessedTableManager get clientId {
+    final manager = i3
         .$ClientsTableManager($_db,
-            i3.ReadDatabaseContainer($_db).resultSet<i2.Clients>('clients'))
+            i2.ReadDatabaseContainer($_db).resultSet<i3.Clients>('clients'))
         .filter((f) => f.id($_item.clientId));
     final item = $_typedResult.readTableOrNull(_clientIdTable($_db));
     if (item == null) return manager;
@@ -76,20 +76,20 @@ class $EventsFilterComposer
   i0.ColumnFilters<String> get content => $composableBuilder(
       column: $table.content, builder: (column) => i0.ColumnFilters(column));
 
-  i2.$ClientsFilterComposer get clientId {
-    final i2.$ClientsFilterComposer composer = $composerBuilder(
+  i3.$ClientsFilterComposer get clientId {
+    final i3.$ClientsFilterComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.clientId,
         referencedTable:
-            i3.ReadDatabaseContainer($db).resultSet<i2.Clients>('clients'),
+            i2.ReadDatabaseContainer($db).resultSet<i3.Clients>('clients'),
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            i2.$ClientsFilterComposer(
+            i3.$ClientsFilterComposer(
               $db: $db,
-              $table: i3.ReadDatabaseContainer($db)
-                  .resultSet<i2.Clients>('clients'),
+              $table: i2.ReadDatabaseContainer($db)
+                  .resultSet<i3.Clients>('clients'),
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -125,20 +125,20 @@ class $EventsOrderingComposer
   i0.ColumnOrderings<String> get content => $composableBuilder(
       column: $table.content, builder: (column) => i0.ColumnOrderings(column));
 
-  i2.$ClientsOrderingComposer get clientId {
-    final i2.$ClientsOrderingComposer composer = $composerBuilder(
+  i3.$ClientsOrderingComposer get clientId {
+    final i3.$ClientsOrderingComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.clientId,
         referencedTable:
-            i3.ReadDatabaseContainer($db).resultSet<i2.Clients>('clients'),
+            i2.ReadDatabaseContainer($db).resultSet<i3.Clients>('clients'),
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            i2.$ClientsOrderingComposer(
+            i3.$ClientsOrderingComposer(
               $db: $db,
-              $table: i3.ReadDatabaseContainer($db)
-                  .resultSet<i2.Clients>('clients'),
+              $table: i2.ReadDatabaseContainer($db)
+                  .resultSet<i3.Clients>('clients'),
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -172,20 +172,20 @@ class $EventsAnnotationComposer
   i0.GeneratedColumn<String> get content =>
       $composableBuilder(column: $table.content, builder: (column) => column);
 
-  i2.$ClientsAnnotationComposer get clientId {
-    final i2.$ClientsAnnotationComposer composer = $composerBuilder(
+  i3.$ClientsAnnotationComposer get clientId {
+    final i3.$ClientsAnnotationComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.clientId,
         referencedTable:
-            i3.ReadDatabaseContainer($db).resultSet<i2.Clients>('clients'),
+            i2.ReadDatabaseContainer($db).resultSet<i3.Clients>('clients'),
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            i2.$ClientsAnnotationComposer(
+            i3.$ClientsAnnotationComposer(
               $db: $db,
-              $table: i3.ReadDatabaseContainer($db)
-                  .resultSet<i2.Clients>('clients'),
+              $table: i2.ReadDatabaseContainer($db)
+                  .resultSet<i3.Clients>('clients'),
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -317,7 +317,7 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
       'id', aliasedName, false,
       type: i0.DriftSqlType.string,
       requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
+      $customConstraints: 'NOT NULL PRIMARY KEY');
   static const i0.VerificationMeta _typeMeta =
       const i0.VerificationMeta('type');
   late final i0.GeneratedColumn<String> type = i0.GeneratedColumn<String>(
@@ -405,7 +405,7 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
   }
 
   @override
-  Set<i0.GeneratedColumn> get $primaryKey => const {};
+  Set<i0.GeneratedColumn> get $primaryKey => {id};
   @override
   i1.Event map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -439,7 +439,11 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
   final String type;
   final String clientId;
   final String? serverTimeStamp;
+
+  /// TODO: dialect aware date https://drift.simonbinder.eu/sql_api/types/#dialect-awareness
   final String clientTimeStamp;
+
+  /// time should be in iso8601
   final String? content;
   const Event(
       {required this.id,
@@ -672,4 +676,113 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
           ..write(')'))
         .toString();
   }
+}
+
+i0.Index get eventClientIdIndex => i0.Index.byDialect('event_client_id_index', {
+      i0.SqlDialect.sqlite:
+          'CREATE INDEX event_client_id_index ON events (client_id)',
+      i0.SqlDialect.postgres:
+          'CREATE INDEX event_client_id_index ON events (client_id)',
+    });
+
+class EventsDrift extends i2.ModularAccessor {
+  EventsDrift(i0.GeneratedDatabase db) : super(db);
+  i0.Selectable<i1.Event> seGetEventsSinceTimestamp({String? timestamp}) {
+    return customSelect(
+        switch (executor.dialect) {
+          i0.SqlDialect.sqlite =>
+            'SELECT e.* FROM events AS e WHERE e.server_time_stamp > ?1 ORDER BY e.server_time_stamp ASC',
+          i0.SqlDialect.postgres ||
+          _ =>
+            'SELECT e.* FROM events AS e WHERE e.server_time_stamp > \$1 ORDER BY e.server_time_stamp ASC',
+        },
+        variables: [
+          i0.Variable<String>(timestamp)
+        ],
+        readsFrom: {
+          events,
+        }).asyncMap(events.mapFromRow);
+  }
+
+  Future<int> seInsertEvent(
+      {required String id,
+      required String type,
+      required String clientId,
+      String? serverTimeStamp,
+      required String clientTimeStamp,
+      String? content}) {
+    return customInsert(
+      switch (executor.dialect) {
+        i0.SqlDialect.sqlite =>
+          'INSERT INTO events (id, type, client_id, server_time_stamp, client_time_stamp, content) VALUES (?1, ?2, ?3, ?4, ?5, ?6)',
+        i0.SqlDialect.postgres ||
+        _ =>
+          'INSERT INTO events (id, type, client_id, server_time_stamp, client_time_stamp, content) VALUES (\$1, \$2, \$3, \$4, \$5, \$6)',
+      },
+      variables: [
+        i0.Variable<String>(id),
+        i0.Variable<String>(type),
+        i0.Variable<String>(clientId),
+        i0.Variable<String>(serverTimeStamp),
+        i0.Variable<String>(clientTimeStamp),
+        i0.Variable<String>(content)
+      ],
+      updates: {events},
+    );
+  }
+
+  Future<int> clInsertLocalEvent(
+      {required String id,
+      required String type,
+      required String clientId,
+      required String clientTimeStamp,
+      String? content}) {
+    return customInsert(
+      switch (executor.dialect) {
+        i0.SqlDialect.sqlite =>
+          'INSERT INTO events (id, type, client_id, client_time_stamp, content) VALUES (?1, ?2, ?3, ?4, ?5)',
+        i0.SqlDialect.postgres ||
+        _ =>
+          'INSERT INTO events (id, type, client_id, client_time_stamp, content) VALUES (\$1, \$2, \$3, \$4, \$5)',
+      },
+      variables: [
+        i0.Variable<String>(id),
+        i0.Variable<String>(type),
+        i0.Variable<String>(clientId),
+        i0.Variable<String>(clientTimeStamp),
+        i0.Variable<String>(content)
+      ],
+      updates: {events},
+    );
+  }
+
+  Future<int> clInsertServerEvent(
+      {required String id,
+      required String type,
+      required String clientId,
+      String? serverTimeStamp,
+      required String clientTimeStamp,
+      String? content}) {
+    return customInsert(
+      switch (executor.dialect) {
+        i0.SqlDialect.sqlite =>
+          'INSERT INTO events (id, type, client_id, server_time_stamp, client_time_stamp, content) VALUES (?1, ?2, ?3, ?4, ?5, ?6) ON CONFLICT (id) DO UPDATE SET server_time_stamp = EXCLUDED.server_time_stamp WHERE events.server_time_stamp IS NULL AND events.type = EXCLUDED.type AND events.client_id = EXCLUDED.client_id AND events.client_time_stamp = EXCLUDED.client_time_stamp AND events.content = EXCLUDED.content',
+        i0.SqlDialect.postgres ||
+        _ =>
+          'INSERT INTO events (id, type, client_id, server_time_stamp, client_time_stamp, content) VALUES (\$1, \$2, \$3, \$4, \$5, \$6) ON CONFLICT (id) DO UPDATE SET server_time_stamp = EXCLUDED.server_time_stamp WHERE events.server_time_stamp IS NULL AND events.type = EXCLUDED.type AND events.client_id = EXCLUDED.client_id AND events.client_time_stamp = EXCLUDED.client_time_stamp AND events.content = EXCLUDED.content',
+      },
+      variables: [
+        i0.Variable<String>(id),
+        i0.Variable<String>(type),
+        i0.Variable<String>(clientId),
+        i0.Variable<String>(serverTimeStamp),
+        i0.Variable<String>(clientTimeStamp),
+        i0.Variable<String>(content)
+      ],
+      updates: {events},
+    );
+  }
+
+  i1.Events get events =>
+      i2.ReadDatabaseContainer(attachedDatabase).resultSet<i1.Events>('events');
 }

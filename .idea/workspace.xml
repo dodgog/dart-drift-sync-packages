@@ -5,10 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="73f18ddc-bee0-445b-b6b5-96132ae4f457" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/shared/lib/src/aaausers.drift" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/shared/lib/src/events.drift" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/lib/src/posts.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/shared/lib/src/posts.drift.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/lib/shared.drift" beforeDir="false" afterPath="$PROJECT_DIR$/shared/lib/shared.drift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/lib/src/events.drift" beforeDir="false" afterPath="$PROJECT_DIR$/shared/lib/src/events.drift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/lib/src/events.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/shared/lib/src/events.drift.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

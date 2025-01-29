@@ -5,6 +5,8 @@
 
 import 'src/posts.drift';
 import 'src/users.dart';
+import 'src/aaausers.drift';
+import 'src/events.drift';
 
 allPosts: SELECT posts.**, author.** FROM posts
   INNER JOIN users AS author ON author.id = posts.author
