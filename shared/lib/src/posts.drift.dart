@@ -191,7 +191,39 @@ class $PostsTableManager extends i0.RootTableManager<
               .map((e) =>
                   (e.readTable(table), i1.$PostsReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({author = false}) {
+            return i0.PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends i0.TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (author) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.author,
+                    referencedTable: i1.$PostsReferences._authorTable(db),
+                    referencedColumn: i1.$PostsReferences._authorTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ));
 }
 
