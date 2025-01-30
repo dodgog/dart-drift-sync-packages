@@ -12,7 +12,7 @@ dependencies:
   shelf_router: ^1.1.0
 
   shared:
-    path: ../shared/
+    path: ../backend/
   postgres: ^3.0.8
 
 dev_dependencies:

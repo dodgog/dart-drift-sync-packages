@@ -1,0 +1,13 @@
+import '../shared/users.drift';
+
+CREATE TABLE auth (
+    user_id TEXT REFERENCES users (id),
+    token TEXT
+);
+
+authUser:
+INSERT INTO auth (user_id, token) VALUES
+(:user_id, :token);
+
+cleanAuthedUsers:
+DELETE FROM auth;

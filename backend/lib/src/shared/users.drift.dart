@@ -1,32 +1,30 @@
 // dart format width=80
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
-import 'package:shared/src/aaausers.drift.dart' as i1;
+import 'package:backend/src/shared/users.drift.dart' as i1;
 import 'package:drift/internal/modular.dart' as i2;
 
-typedef $AaausersCreateCompanionBuilder = i1.AaausersCompanion Function({
+typedef $UsersCreateCompanionBuilder = i1.UsersCompanion Function({
   required String id,
   i0.Value<String?> name,
   i0.Value<int> rowid,
 });
-typedef $AaausersUpdateCompanionBuilder = i1.AaausersCompanion Function({
+typedef $UsersUpdateCompanionBuilder = i1.UsersCompanion Function({
   i0.Value<String> id,
   i0.Value<String?> name,
   i0.Value<int> rowid,
 });
 
-final class $AaausersReferences
-    extends i0.BaseReferences<i0.GeneratedDatabase, i1.Aaausers, i1.Aaauser> {
-  $AaausersReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $UsersReferences
+    extends i0.BaseReferences<i0.GeneratedDatabase, i1.Users, i1.User> {
+  $UsersReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static i0.MultiTypedResultKey<i1.Clients, List<i1.Client>> _clientsRefsTable(
           i0.GeneratedDatabase db) =>
       i0.MultiTypedResultKey.fromTable(
           i2.ReadDatabaseContainer(db).resultSet<i1.Clients>('clients'),
           aliasName: i0.$_aliasNameGenerator(
-              i2.ReadDatabaseContainer(db)
-                  .resultSet<i1.Aaausers>('aaausers')
-                  .id,
+              i2.ReadDatabaseContainer(db).resultSet<i1.Users>('users').id,
               i2.ReadDatabaseContainer(db)
                   .resultSet<i1.Clients>('clients')
                   .userId));
@@ -35,7 +33,7 @@ final class $AaausersReferences
     final manager = i1
         .$ClientsTableManager($_db,
             i2.ReadDatabaseContainer($_db).resultSet<i1.Clients>('clients'))
-        .filter((f) => f.userId.id($_item.id));
+        .filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_clientsRefsTable($_db));
     return i0.ProcessedTableManager(
@@ -43,9 +41,8 @@ final class $AaausersReferences
   }
 }
 
-class $AaausersFilterComposer
-    extends i0.Composer<i0.GeneratedDatabase, i1.Aaausers> {
-  $AaausersFilterComposer({
+class $UsersFilterComposer extends i0.Composer<i0.GeneratedDatabase, i1.Users> {
+  $UsersFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -82,9 +79,9 @@ class $AaausersFilterComposer
   }
 }
 
-class $AaausersOrderingComposer
-    extends i0.Composer<i0.GeneratedDatabase, i1.Aaausers> {
-  $AaausersOrderingComposer({
+class $UsersOrderingComposer
+    extends i0.Composer<i0.GeneratedDatabase, i1.Users> {
+  $UsersOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -98,9 +95,9 @@ class $AaausersOrderingComposer
       column: $table.name, builder: (column) => i0.ColumnOrderings(column));
 }
 
-class $AaausersAnnotationComposer
-    extends i0.Composer<i0.GeneratedDatabase, i1.Aaausers> {
-  $AaausersAnnotationComposer({
+class $UsersAnnotationComposer
+    extends i0.Composer<i0.GeneratedDatabase, i1.Users> {
+  $UsersAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -137,34 +134,34 @@ class $AaausersAnnotationComposer
   }
 }
 
-class $AaausersTableManager extends i0.RootTableManager<
+class $UsersTableManager extends i0.RootTableManager<
     i0.GeneratedDatabase,
-    i1.Aaausers,
-    i1.Aaauser,
-    i1.$AaausersFilterComposer,
-    i1.$AaausersOrderingComposer,
-    i1.$AaausersAnnotationComposer,
-    $AaausersCreateCompanionBuilder,
-    $AaausersUpdateCompanionBuilder,
-    (i1.Aaauser, i1.$AaausersReferences),
-    i1.Aaauser,
+    i1.Users,
+    i1.User,
+    i1.$UsersFilterComposer,
+    i1.$UsersOrderingComposer,
+    i1.$UsersAnnotationComposer,
+    $UsersCreateCompanionBuilder,
+    $UsersUpdateCompanionBuilder,
+    (i1.User, i1.$UsersReferences),
+    i1.User,
     i0.PrefetchHooks Function({bool clientsRefs})> {
-  $AaausersTableManager(i0.GeneratedDatabase db, i1.Aaausers table)
+  $UsersTableManager(i0.GeneratedDatabase db, i1.Users table)
       : super(i0.TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              i1.$AaausersFilterComposer($db: db, $table: table),
+              i1.$UsersFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              i1.$AaausersOrderingComposer($db: db, $table: table),
+              i1.$UsersOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              i1.$AaausersAnnotationComposer($db: db, $table: table),
+              i1.$UsersAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             i0.Value<String> id = const i0.Value.absent(),
             i0.Value<String?> name = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
-              i1.AaausersCompanion(
+              i1.UsersCompanion(
             id: id,
             name: name,
             rowid: rowid,
@@ -174,14 +171,14 @@ class $AaausersTableManager extends i0.RootTableManager<
             i0.Value<String?> name = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
-              i1.AaausersCompanion.insert(
+              i1.UsersCompanion.insert(
             id: id,
             name: name,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) =>
-                  (e.readTable(table), i1.$AaausersReferences(db, table, e)))
+                  (e.readTable(table), i1.$UsersReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: ({clientsRefs = false}) {
             return i0.PrefetchHooks(
@@ -197,9 +194,9 @@ class $AaausersTableManager extends i0.RootTableManager<
                     await i0.$_getPrefetchedData(
                         currentTable: table,
                         referencedTable:
-                            i1.$AaausersReferences._clientsRefsTable(db),
+                            i1.$UsersReferences._clientsRefsTable(db),
                         managerFromTypedResult: (p0) =>
-                            i1.$AaausersReferences(db, table, p0).clientsRefs,
+                            i1.$UsersReferences(db, table, p0).clientsRefs,
                         referencedItemsForCurrentItem: (item,
                                 referencedItems) =>
                             referencedItems.where((e) => e.userId == item.id),
@@ -211,17 +208,17 @@ class $AaausersTableManager extends i0.RootTableManager<
         ));
 }
 
-typedef $AaausersProcessedTableManager = i0.ProcessedTableManager<
+typedef $UsersProcessedTableManager = i0.ProcessedTableManager<
     i0.GeneratedDatabase,
-    i1.Aaausers,
-    i1.Aaauser,
-    i1.$AaausersFilterComposer,
-    i1.$AaausersOrderingComposer,
-    i1.$AaausersAnnotationComposer,
-    $AaausersCreateCompanionBuilder,
-    $AaausersUpdateCompanionBuilder,
-    (i1.Aaauser, i1.$AaausersReferences),
-    i1.Aaauser,
+    i1.Users,
+    i1.User,
+    i1.$UsersFilterComposer,
+    i1.$UsersOrderingComposer,
+    i1.$UsersAnnotationComposer,
+    $UsersCreateCompanionBuilder,
+    $UsersUpdateCompanionBuilder,
+    (i1.User, i1.$UsersReferences),
+    i1.User,
     i0.PrefetchHooks Function({bool clientsRefs})>;
 typedef $ClientsCreateCompanionBuilder = i1.ClientsCompanion Function({
   required String id,
@@ -238,23 +235,21 @@ final class $ClientsReferences
     extends i0.BaseReferences<i0.GeneratedDatabase, i1.Clients, i1.Client> {
   $ClientsReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static i1.Aaausers _userIdTable(i0.GeneratedDatabase db) =>
-      i2.ReadDatabaseContainer(db)
-          .resultSet<i1.Aaausers>('aaausers')
-          .createAlias(i0.$_aliasNameGenerator(
+  static i1.Users _userIdTable(i0.GeneratedDatabase db) =>
+      i2.ReadDatabaseContainer(db).resultSet<i1.Users>('users').createAlias(
+          i0.$_aliasNameGenerator(
               i2.ReadDatabaseContainer(db)
                   .resultSet<i1.Clients>('clients')
                   .userId,
-              i2.ReadDatabaseContainer(db)
-                  .resultSet<i1.Aaausers>('aaausers')
-                  .id));
+              i2.ReadDatabaseContainer(db).resultSet<i1.Users>('users').id));
 
-  i1.$AaausersProcessedTableManager? get userId {
-    if ($_item.userId == null) return null;
+  i1.$UsersProcessedTableManager? get userId {
+    final $_column = $_itemColumn<String>('user_id');
+    if ($_column == null) return null;
     final manager = i1
-        .$AaausersTableManager($_db,
-            i2.ReadDatabaseContainer($_db).resultSet<i1.Aaausers>('aaausers'))
-        .filter((f) => f.id($_item.userId!));
+        .$UsersTableManager(
+            $_db, i2.ReadDatabaseContainer($_db).resultSet<i1.Users>('users'))
+        .filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_userIdTable($_db));
     if (item == null) return manager;
     return i0.ProcessedTableManager(
@@ -274,20 +269,20 @@ class $ClientsFilterComposer
   i0.ColumnFilters<String> get id => $composableBuilder(
       column: $table.id, builder: (column) => i0.ColumnFilters(column));
 
-  i1.$AaausersFilterComposer get userId {
-    final i1.$AaausersFilterComposer composer = $composerBuilder(
+  i1.$UsersFilterComposer get userId {
+    final i1.$UsersFilterComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.userId,
         referencedTable:
-            i2.ReadDatabaseContainer($db).resultSet<i1.Aaausers>('aaausers'),
+            i2.ReadDatabaseContainer($db).resultSet<i1.Users>('users'),
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            i1.$AaausersFilterComposer(
+            i1.$UsersFilterComposer(
               $db: $db,
-              $table: i2.ReadDatabaseContainer($db)
-                  .resultSet<i1.Aaausers>('aaausers'),
+              $table:
+                  i2.ReadDatabaseContainer($db).resultSet<i1.Users>('users'),
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -309,20 +304,20 @@ class $ClientsOrderingComposer
   i0.ColumnOrderings<String> get id => $composableBuilder(
       column: $table.id, builder: (column) => i0.ColumnOrderings(column));
 
-  i1.$AaausersOrderingComposer get userId {
-    final i1.$AaausersOrderingComposer composer = $composerBuilder(
+  i1.$UsersOrderingComposer get userId {
+    final i1.$UsersOrderingComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.userId,
         referencedTable:
-            i2.ReadDatabaseContainer($db).resultSet<i1.Aaausers>('aaausers'),
+            i2.ReadDatabaseContainer($db).resultSet<i1.Users>('users'),
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            i1.$AaausersOrderingComposer(
+            i1.$UsersOrderingComposer(
               $db: $db,
-              $table: i2.ReadDatabaseContainer($db)
-                  .resultSet<i1.Aaausers>('aaausers'),
+              $table:
+                  i2.ReadDatabaseContainer($db).resultSet<i1.Users>('users'),
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -344,20 +339,20 @@ class $ClientsAnnotationComposer
   i0.GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  i1.$AaausersAnnotationComposer get userId {
-    final i1.$AaausersAnnotationComposer composer = $composerBuilder(
+  i1.$UsersAnnotationComposer get userId {
+    final i1.$UsersAnnotationComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.userId,
         referencedTable:
-            i2.ReadDatabaseContainer($db).resultSet<i1.Aaausers>('aaausers'),
+            i2.ReadDatabaseContainer($db).resultSet<i1.Users>('users'),
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            i1.$AaausersAnnotationComposer(
+            i1.$UsersAnnotationComposer(
               $db: $db,
-              $table: i2.ReadDatabaseContainer($db)
-                  .resultSet<i1.Aaausers>('aaausers'),
+              $table:
+                  i2.ReadDatabaseContainer($db).resultSet<i1.Users>('users'),
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -462,11 +457,11 @@ typedef $ClientsProcessedTableManager = i0.ProcessedTableManager<
     i1.Client,
     i0.PrefetchHooks Function({bool userId})>;
 
-class Aaausers extends i0.Table with i0.TableInfo<Aaausers, i1.Aaauser> {
+class Users extends i0.Table with i0.TableInfo<Users, i1.User> {
   @override
   final i0.GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Aaausers(this.attachedDatabase, [this._alias]);
+  Users(this.attachedDatabase, [this._alias]);
   static const i0.VerificationMeta _idMeta = const i0.VerificationMeta('id');
   late final i0.GeneratedColumn<String> id = i0.GeneratedColumn<String>(
       'id', aliasedName, false,
@@ -486,9 +481,9 @@ class Aaausers extends i0.Table with i0.TableInfo<Aaausers, i1.Aaauser> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'aaausers';
+  static const String $name = 'users';
   @override
-  i0.VerificationContext validateIntegrity(i0.Insertable<i1.Aaauser> instance,
+  i0.VerificationContext validateIntegrity(i0.Insertable<i1.User> instance,
       {bool isInserting = false}) {
     final context = i0.VerificationContext();
     final data = instance.toColumns(true);
@@ -507,9 +502,9 @@ class Aaausers extends i0.Table with i0.TableInfo<Aaausers, i1.Aaauser> {
   @override
   Set<i0.GeneratedColumn> get $primaryKey => const {};
   @override
-  i1.Aaauser map(Map<String, dynamic> data, {String? tablePrefix}) {
+  i1.User map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return i1.Aaauser(
+    return i1.User(
       id: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
@@ -518,18 +513,18 @@ class Aaausers extends i0.Table with i0.TableInfo<Aaausers, i1.Aaauser> {
   }
 
   @override
-  Aaausers createAlias(String alias) {
-    return Aaausers(attachedDatabase, alias);
+  Users createAlias(String alias) {
+    return Users(attachedDatabase, alias);
   }
 
   @override
   bool get dontWriteConstraints => true;
 }
 
-class Aaauser extends i0.DataClass implements i0.Insertable<i1.Aaauser> {
+class User extends i0.DataClass implements i0.Insertable<i1.User> {
   final String id;
   final String? name;
-  const Aaauser({required this.id, this.name});
+  const User({required this.id, this.name});
   @override
   Map<String, i0.Expression> toColumns(bool nullToAbsent) {
     final map = <String, i0.Expression>{};
@@ -540,8 +535,8 @@ class Aaauser extends i0.DataClass implements i0.Insertable<i1.Aaauser> {
     return map;
   }
 
-  i1.AaausersCompanion toCompanion(bool nullToAbsent) {
-    return i1.AaausersCompanion(
+  i1.UsersCompanion toCompanion(bool nullToAbsent) {
+    return i1.UsersCompanion(
       id: i0.Value(id),
       name: name == null && nullToAbsent
           ? const i0.Value.absent()
@@ -549,10 +544,10 @@ class Aaauser extends i0.DataClass implements i0.Insertable<i1.Aaauser> {
     );
   }
 
-  factory Aaauser.fromJson(Map<String, dynamic> json,
+  factory User.fromJson(Map<String, dynamic> json,
       {i0.ValueSerializer? serializer}) {
     serializer ??= i0.driftRuntimeOptions.defaultSerializer;
-    return Aaauser(
+    return User(
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String?>(json['name']),
     );
@@ -566,14 +561,14 @@ class Aaauser extends i0.DataClass implements i0.Insertable<i1.Aaauser> {
     };
   }
 
-  i1.Aaauser copyWith(
+  i1.User copyWith(
           {String? id, i0.Value<String?> name = const i0.Value.absent()}) =>
-      i1.Aaauser(
+      i1.User(
         id: id ?? this.id,
         name: name.present ? name.value : this.name,
       );
-  Aaauser copyWithCompanion(i1.AaausersCompanion data) {
-    return Aaauser(
+  User copyWithCompanion(i1.UsersCompanion data) {
+    return User(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
     );
@@ -581,7 +576,7 @@ class Aaauser extends i0.DataClass implements i0.Insertable<i1.Aaauser> {
 
   @override
   String toString() {
-    return (StringBuffer('Aaauser(')
+    return (StringBuffer('User(')
           ..write('id: $id, ')
           ..write('name: $name')
           ..write(')'))
@@ -593,24 +588,24 @@ class Aaauser extends i0.DataClass implements i0.Insertable<i1.Aaauser> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is i1.Aaauser && other.id == this.id && other.name == this.name);
+      (other is i1.User && other.id == this.id && other.name == this.name);
 }
 
-class AaausersCompanion extends i0.UpdateCompanion<i1.Aaauser> {
+class UsersCompanion extends i0.UpdateCompanion<i1.User> {
   final i0.Value<String> id;
   final i0.Value<String?> name;
   final i0.Value<int> rowid;
-  const AaausersCompanion({
+  const UsersCompanion({
     this.id = const i0.Value.absent(),
     this.name = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   });
-  AaausersCompanion.insert({
+  UsersCompanion.insert({
     required String id,
     this.name = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   }) : id = i0.Value(id);
-  static i0.Insertable<i1.Aaauser> custom({
+  static i0.Insertable<i1.User> custom({
     i0.Expression<String>? id,
     i0.Expression<String>? name,
     i0.Expression<int>? rowid,
@@ -622,9 +617,9 @@ class AaausersCompanion extends i0.UpdateCompanion<i1.Aaauser> {
     });
   }
 
-  i1.AaausersCompanion copyWith(
+  i1.UsersCompanion copyWith(
       {i0.Value<String>? id, i0.Value<String?>? name, i0.Value<int>? rowid}) {
-    return i1.AaausersCompanion(
+    return i1.UsersCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       rowid: rowid ?? this.rowid,
@@ -648,7 +643,7 @@ class AaausersCompanion extends i0.UpdateCompanion<i1.Aaauser> {
 
   @override
   String toString() {
-    return (StringBuffer('AaausersCompanion(')
+    return (StringBuffer('UsersCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('rowid: $rowid')
@@ -674,7 +669,7 @@ class Clients extends i0.Table with i0.TableInfo<Clients, i1.Client> {
       'user_id', aliasedName, true,
       type: i0.DriftSqlType.string,
       requiredDuringInsert: false,
-      $customConstraints: 'REFERENCES aaausers(id)');
+      $customConstraints: 'REFERENCES users(id)');
   @override
   List<i0.GeneratedColumn> get $columns => [id, userId];
   @override

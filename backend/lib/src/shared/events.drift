@@ -1,0 +1,13 @@
+import 'users.drift';
+
+CREATE TABLE events (
+    id TEXT NOT NULL PRIMARY KEY,
+    type TEXT NOT NULL,
+    client_id TEXT NOT NULL REFERENCES clients(id),
+    server_time_stamp TEXT, -- TODO: dialect aware date https://drift.simonbinder.eu/sql_api/types/#dialect-awareness
+    client_time_stamp TEXT NOT NULL, -- time should be in iso8601
+    content TEXT -- TODO: add type converter and json stuff perhaps
+    -- https://drift.simonbinder.eu/type_converters/#type-converters-and-json-serialization
+);
+
+CREATE INDEX event_client_id_index ON events(client_id);

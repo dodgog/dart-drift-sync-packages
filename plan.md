@@ -1,16 +1,33 @@
-simplifications:
+## simplifications:
 
 to begin with state-based event can just transfer not just the field but the
 whole object
 
-packages:
-    server-pkg
-    client-pkg
-    shared
+# surfaces
+
+packages
+    server-pkg imports backend/shared and backend/server
+        initializes the server db
+    client-pkg imports backend/shared and backend/client
+        initializes the client db
+    backend
+        has all drift definitions
+        for client and for server
+        also has daos
+        
+        has a test psql and test sqlite db setup
+        talks between databases in tests
+        inits the db the same way server-pkg and client-pkg
+        
 run
-    test
-    server
-    client
+    server imports server-pkg
+        tests could be mock api queries
+    client imports client-pkg
+        tests could be mock api queries
+
+## v1 goal
+
+event log can be synced across psql and sqlite
 
 # client
 

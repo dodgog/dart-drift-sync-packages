@@ -1,0 +1,39 @@
+import '../shared/events.drift';
+import 'users.drift';
+
+getLocalEventsToPush:
+SELECT e.*
+FROM events e
+WHERE e.server_time_stamp IS NULL;
+
+insertLocalEvent:
+INSERT INTO events (id, type, client_id, client_time_stamp, content)
+VALUES
+(:id, :type, :client_id, :client_time_stamp, :content);
+
+insertServerEvent:
+INSERT INTO events (
+    id,
+    type,
+    client_id,
+    server_time_stamp,
+    client_time_stamp,
+    content
+)
+VALUES (
+    :id,
+    :type,
+    :client_id,
+    :server_time_stamp,
+    :client_time_stamp,
+    :content
+)
+ON CONFLICT (id) DO UPDATE
+SET server_time_stamp = EXCLUDED.server_time_stamp
+WHERE
+    events.server_time_stamp IS NULL
+    AND events.type = EXCLUDED.type
+    AND events.client_id = EXCLUDED.client_id
+    AND events.client_time_stamp = EXCLUDED.client_time_stamp
+    AND events.content = EXCLUDED.content;
+

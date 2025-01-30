@@ -1,0 +1,28 @@
+import '../shared/users.drift';
+
+CREATE TABLE config (
+   client_id TEXT, -- unique per device
+   last_sync_time TEXT,
+   user_id TEXT REFERENCES users (id),
+   user_token TEXT
+);
+
+initializeConfig:
+INSERT INTO config (client_id, last_sync_time, user_id, user_token)
+VALUES (NULL, NULL, NULL, NULL);
+
+setClientId:
+UPDATE config
+SET client_id = :new_client_id;
+
+setLastSyncTime:
+UPDATE config
+SET last_sync_time = :new_last_sync_time;
+
+setUserId:
+UPDATE config
+SET user_id = :new_user_id;
+
+setUserToken:
+UPDATE config
+SET user_token = :new_user_token;

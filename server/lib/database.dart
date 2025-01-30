@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:shared/tables.dart';
+import 'package:backend/tables.dart';
 
 import 'database.drift.dart';
 
