@@ -1,4 +1,4 @@
-import '../shared/events.drift';
+import '../shared/shared_events.drift';
 import 'users.drift';
 
 getLocalEventsToPush:

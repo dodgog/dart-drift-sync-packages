@@ -1,13 +1,24 @@
-import '../shared/users.drift';
+import '../shared/shared_users.drift';
 
-CREATE TABLE auth (
+CREATE TABLE auths (
     user_id TEXT REFERENCES users (id),
     token TEXT
 );
 
+createUser:
+INSERT INTO users (id, name) VALUES
+(:user_id, :name);
+
 authUser:
-INSERT INTO auth (user_id, token) VALUES
+INSERT INTO auths (user_id, token) VALUES
 (:user_id, :token);
 
 cleanAuthedUsers:
-DELETE FROM auth;
+DELETE FROM auths;
+
+userExistsAndAuthed:
+SELECT COUNT(*) > 0 AS is_valid
+FROM users u
+INNER JOIN auths a ON u.id = a.user_id
+WHERE u.id = :user_id
+AND a.token = :token;

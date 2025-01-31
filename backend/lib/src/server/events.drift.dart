@@ -2,8 +2,9 @@
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/internal/modular.dart' as i1;
-import 'package:backend/src/shared/events.drift.dart' as i2;
-import 'package:backend/src/shared/users.drift.dart' as i3;
+import 'package:backend/src/shared/shared_events.drift.dart' as i2;
+import 'package:backend/src/shared/shared_users.drift.dart' as i3;
+import 'package:backend/src/server/users.drift.dart' as i4;
 
 class EventsDrift extends i1.ModularAccessor {
   EventsDrift(i0.GeneratedDatabase db) : super(db);
@@ -76,4 +77,5 @@ class EventsDrift extends i1.ModularAccessor {
       i1.ReadDatabaseContainer(attachedDatabase).resultSet<i2.Events>('events');
   i3.Clients get clients => i1.ReadDatabaseContainer(attachedDatabase)
       .resultSet<i3.Clients>('clients');
+  i4.UsersDrift get usersDrift => this.accessor(i4.UsersDrift.new);
 }

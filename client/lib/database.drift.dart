@@ -1,7 +1,7 @@
 // dart format width=80
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
-import 'package:shared/src/users.drift.dart' as i1;
+import 'package:shared/src/client_users.drift.dart' as i1;
 import 'package:shared/src/posts.drift.dart' as i2;
 import 'package:shared/shared.drift.dart' as i3;
 import 'package:drift/internal/modular.dart' as i4;

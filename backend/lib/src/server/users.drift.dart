@@ -3,27 +3,27 @@
 import 'package:drift/drift.dart' as i0;
 import 'package:backend/src/server/users.drift.dart' as i1;
 import 'package:drift/internal/modular.dart' as i2;
-import 'package:backend/src/shared/users.drift.dart' as i3;
+import 'package:backend/src/shared/shared_users.drift.dart' as i3;
 
-typedef $AuthCreateCompanionBuilder = i1.AuthCompanion Function({
+typedef $AuthsCreateCompanionBuilder = i1.AuthsCompanion Function({
   i0.Value<String?> userId,
   i0.Value<String?> token,
   i0.Value<int> rowid,
 });
-typedef $AuthUpdateCompanionBuilder = i1.AuthCompanion Function({
+typedef $AuthsUpdateCompanionBuilder = i1.AuthsCompanion Function({
   i0.Value<String?> userId,
   i0.Value<String?> token,
   i0.Value<int> rowid,
 });
 
-final class $AuthReferences
-    extends i0.BaseReferences<i0.GeneratedDatabase, i1.Auth, i1.AuthData> {
-  $AuthReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $AuthsReferences
+    extends i0.BaseReferences<i0.GeneratedDatabase, i1.Auths, i1.Auth> {
+  $AuthsReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static i3.Users _userIdTable(i0.GeneratedDatabase db) =>
       i2.ReadDatabaseContainer(db).resultSet<i3.Users>('users').createAlias(
           i0.$_aliasNameGenerator(
-              i2.ReadDatabaseContainer(db).resultSet<i1.Auth>('auth').userId,
+              i2.ReadDatabaseContainer(db).resultSet<i1.Auths>('auths').userId,
               i2.ReadDatabaseContainer(db).resultSet<i3.Users>('users').id));
 
   i3.$UsersProcessedTableManager? get userId {
@@ -40,8 +40,8 @@ final class $AuthReferences
   }
 }
 
-class $AuthFilterComposer extends i0.Composer<i0.GeneratedDatabase, i1.Auth> {
-  $AuthFilterComposer({
+class $AuthsFilterComposer extends i0.Composer<i0.GeneratedDatabase, i1.Auths> {
+  $AuthsFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -74,8 +74,9 @@ class $AuthFilterComposer extends i0.Composer<i0.GeneratedDatabase, i1.Auth> {
   }
 }
 
-class $AuthOrderingComposer extends i0.Composer<i0.GeneratedDatabase, i1.Auth> {
-  $AuthOrderingComposer({
+class $AuthsOrderingComposer
+    extends i0.Composer<i0.GeneratedDatabase, i1.Auths> {
+  $AuthsOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -108,9 +109,9 @@ class $AuthOrderingComposer extends i0.Composer<i0.GeneratedDatabase, i1.Auth> {
   }
 }
 
-class $AuthAnnotationComposer
-    extends i0.Composer<i0.GeneratedDatabase, i1.Auth> {
-  $AuthAnnotationComposer({
+class $AuthsAnnotationComposer
+    extends i0.Composer<i0.GeneratedDatabase, i1.Auths> {
+  $AuthsAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -143,34 +144,34 @@ class $AuthAnnotationComposer
   }
 }
 
-class $AuthTableManager extends i0.RootTableManager<
+class $AuthsTableManager extends i0.RootTableManager<
     i0.GeneratedDatabase,
+    i1.Auths,
     i1.Auth,
-    i1.AuthData,
-    i1.$AuthFilterComposer,
-    i1.$AuthOrderingComposer,
-    i1.$AuthAnnotationComposer,
-    $AuthCreateCompanionBuilder,
-    $AuthUpdateCompanionBuilder,
-    (i1.AuthData, i1.$AuthReferences),
-    i1.AuthData,
+    i1.$AuthsFilterComposer,
+    i1.$AuthsOrderingComposer,
+    i1.$AuthsAnnotationComposer,
+    $AuthsCreateCompanionBuilder,
+    $AuthsUpdateCompanionBuilder,
+    (i1.Auth, i1.$AuthsReferences),
+    i1.Auth,
     i0.PrefetchHooks Function({bool userId})> {
-  $AuthTableManager(i0.GeneratedDatabase db, i1.Auth table)
+  $AuthsTableManager(i0.GeneratedDatabase db, i1.Auths table)
       : super(i0.TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              i1.$AuthFilterComposer($db: db, $table: table),
+              i1.$AuthsFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              i1.$AuthOrderingComposer($db: db, $table: table),
+              i1.$AuthsOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              i1.$AuthAnnotationComposer($db: db, $table: table),
+              i1.$AuthsAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             i0.Value<String?> userId = const i0.Value.absent(),
             i0.Value<String?> token = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
-              i1.AuthCompanion(
+              i1.AuthsCompanion(
             userId: userId,
             token: token,
             rowid: rowid,
@@ -180,14 +181,14 @@ class $AuthTableManager extends i0.RootTableManager<
             i0.Value<String?> token = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
-              i1.AuthCompanion.insert(
+              i1.AuthsCompanion.insert(
             userId: userId,
             token: token,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map(
-                  (e) => (e.readTable(table), i1.$AuthReferences(db, table, e)))
+              .map((e) =>
+                  (e.readTable(table), i1.$AuthsReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: ({userId = false}) {
             return i0.PrefetchHooks(
@@ -210,8 +211,8 @@ class $AuthTableManager extends i0.RootTableManager<
                   state = state.withJoin(
                     currentTable: table,
                     currentColumn: table.userId,
-                    referencedTable: i1.$AuthReferences._userIdTable(db),
-                    referencedColumn: i1.$AuthReferences._userIdTable(db).id,
+                    referencedTable: i1.$AuthsReferences._userIdTable(db),
+                    referencedColumn: i1.$AuthsReferences._userIdTable(db).id,
                   ) as T;
                 }
 
@@ -225,24 +226,24 @@ class $AuthTableManager extends i0.RootTableManager<
         ));
 }
 
-typedef $AuthProcessedTableManager = i0.ProcessedTableManager<
+typedef $AuthsProcessedTableManager = i0.ProcessedTableManager<
     i0.GeneratedDatabase,
+    i1.Auths,
     i1.Auth,
-    i1.AuthData,
-    i1.$AuthFilterComposer,
-    i1.$AuthOrderingComposer,
-    i1.$AuthAnnotationComposer,
-    $AuthCreateCompanionBuilder,
-    $AuthUpdateCompanionBuilder,
-    (i1.AuthData, i1.$AuthReferences),
-    i1.AuthData,
+    i1.$AuthsFilterComposer,
+    i1.$AuthsOrderingComposer,
+    i1.$AuthsAnnotationComposer,
+    $AuthsCreateCompanionBuilder,
+    $AuthsUpdateCompanionBuilder,
+    (i1.Auth, i1.$AuthsReferences),
+    i1.Auth,
     i0.PrefetchHooks Function({bool userId})>;
 
-class Auth extends i0.Table with i0.TableInfo<Auth, i1.AuthData> {
+class Auths extends i0.Table with i0.TableInfo<Auths, i1.Auth> {
   @override
   final i0.GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Auth(this.attachedDatabase, [this._alias]);
+  Auths(this.attachedDatabase, [this._alias]);
   static const i0.VerificationMeta _userIdMeta =
       const i0.VerificationMeta('userId');
   late final i0.GeneratedColumn<String> userId = i0.GeneratedColumn<String>(
@@ -263,9 +264,9 @@ class Auth extends i0.Table with i0.TableInfo<Auth, i1.AuthData> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'auth';
+  static const String $name = 'auths';
   @override
-  i0.VerificationContext validateIntegrity(i0.Insertable<i1.AuthData> instance,
+  i0.VerificationContext validateIntegrity(i0.Insertable<i1.Auth> instance,
       {bool isInserting = false}) {
     final context = i0.VerificationContext();
     final data = instance.toColumns(true);
@@ -283,9 +284,9 @@ class Auth extends i0.Table with i0.TableInfo<Auth, i1.AuthData> {
   @override
   Set<i0.GeneratedColumn> get $primaryKey => const {};
   @override
-  i1.AuthData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  i1.Auth map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return i1.AuthData(
+    return i1.Auth(
       userId: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}user_id']),
       token: attachedDatabase.typeMapping
@@ -294,18 +295,18 @@ class Auth extends i0.Table with i0.TableInfo<Auth, i1.AuthData> {
   }
 
   @override
-  Auth createAlias(String alias) {
-    return Auth(attachedDatabase, alias);
+  Auths createAlias(String alias) {
+    return Auths(attachedDatabase, alias);
   }
 
   @override
   bool get dontWriteConstraints => true;
 }
 
-class AuthData extends i0.DataClass implements i0.Insertable<i1.AuthData> {
+class Auth extends i0.DataClass implements i0.Insertable<i1.Auth> {
   final String? userId;
   final String? token;
-  const AuthData({this.userId, this.token});
+  const Auth({this.userId, this.token});
   @override
   Map<String, i0.Expression> toColumns(bool nullToAbsent) {
     final map = <String, i0.Expression>{};
@@ -318,8 +319,8 @@ class AuthData extends i0.DataClass implements i0.Insertable<i1.AuthData> {
     return map;
   }
 
-  i1.AuthCompanion toCompanion(bool nullToAbsent) {
-    return i1.AuthCompanion(
+  i1.AuthsCompanion toCompanion(bool nullToAbsent) {
+    return i1.AuthsCompanion(
       userId: userId == null && nullToAbsent
           ? const i0.Value.absent()
           : i0.Value(userId),
@@ -329,10 +330,10 @@ class AuthData extends i0.DataClass implements i0.Insertable<i1.AuthData> {
     );
   }
 
-  factory AuthData.fromJson(Map<String, dynamic> json,
+  factory Auth.fromJson(Map<String, dynamic> json,
       {i0.ValueSerializer? serializer}) {
     serializer ??= i0.driftRuntimeOptions.defaultSerializer;
-    return AuthData(
+    return Auth(
       userId: serializer.fromJson<String?>(json['user_id']),
       token: serializer.fromJson<String?>(json['token']),
     );
@@ -346,15 +347,15 @@ class AuthData extends i0.DataClass implements i0.Insertable<i1.AuthData> {
     };
   }
 
-  i1.AuthData copyWith(
+  i1.Auth copyWith(
           {i0.Value<String?> userId = const i0.Value.absent(),
           i0.Value<String?> token = const i0.Value.absent()}) =>
-      i1.AuthData(
+      i1.Auth(
         userId: userId.present ? userId.value : this.userId,
         token: token.present ? token.value : this.token,
       );
-  AuthData copyWithCompanion(i1.AuthCompanion data) {
-    return AuthData(
+  Auth copyWithCompanion(i1.AuthsCompanion data) {
+    return Auth(
       userId: data.userId.present ? data.userId.value : this.userId,
       token: data.token.present ? data.token.value : this.token,
     );
@@ -362,7 +363,7 @@ class AuthData extends i0.DataClass implements i0.Insertable<i1.AuthData> {
 
   @override
   String toString() {
-    return (StringBuffer('AuthData(')
+    return (StringBuffer('Auth(')
           ..write('userId: $userId, ')
           ..write('token: $token')
           ..write(')'))
@@ -374,26 +375,26 @@ class AuthData extends i0.DataClass implements i0.Insertable<i1.AuthData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is i1.AuthData &&
+      (other is i1.Auth &&
           other.userId == this.userId &&
           other.token == this.token);
 }
 
-class AuthCompanion extends i0.UpdateCompanion<i1.AuthData> {
+class AuthsCompanion extends i0.UpdateCompanion<i1.Auth> {
   final i0.Value<String?> userId;
   final i0.Value<String?> token;
   final i0.Value<int> rowid;
-  const AuthCompanion({
+  const AuthsCompanion({
     this.userId = const i0.Value.absent(),
     this.token = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   });
-  AuthCompanion.insert({
+  AuthsCompanion.insert({
     this.userId = const i0.Value.absent(),
     this.token = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   });
-  static i0.Insertable<i1.AuthData> custom({
+  static i0.Insertable<i1.Auth> custom({
     i0.Expression<String>? userId,
     i0.Expression<String>? token,
     i0.Expression<int>? rowid,
@@ -405,11 +406,11 @@ class AuthCompanion extends i0.UpdateCompanion<i1.AuthData> {
     });
   }
 
-  i1.AuthCompanion copyWith(
+  i1.AuthsCompanion copyWith(
       {i0.Value<String?>? userId,
       i0.Value<String?>? token,
       i0.Value<int>? rowid}) {
-    return i1.AuthCompanion(
+    return i1.AuthsCompanion(
       userId: userId ?? this.userId,
       token: token ?? this.token,
       rowid: rowid ?? this.rowid,
@@ -433,7 +434,7 @@ class AuthCompanion extends i0.UpdateCompanion<i1.AuthData> {
 
   @override
   String toString() {
-    return (StringBuffer('AuthCompanion(')
+    return (StringBuffer('AuthsCompanion(')
           ..write('userId: $userId, ')
           ..write('token: $token, ')
           ..write('rowid: $rowid')
@@ -444,29 +445,66 @@ class AuthCompanion extends i0.UpdateCompanion<i1.AuthData> {
 
 class UsersDrift extends i2.ModularAccessor {
   UsersDrift(i0.GeneratedDatabase db) : super(db);
+  Future<int> createUser({required String userId, String? name}) {
+    return customInsert(
+      switch (executor.dialect) {
+        i0.SqlDialect.sqlite => 'INSERT INTO users (id, name) VALUES (?1, ?2)',
+        i0.SqlDialect.postgres ||
+        _ =>
+          'INSERT INTO users (id, name) VALUES (\$1, \$2)',
+      },
+      variables: [i0.Variable<String>(userId), i0.Variable<String>(name)],
+      updates: {users},
+    );
+  }
+
   Future<int> authUser({String? userId, String? token}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>
-          'INSERT INTO auth (user_id, token) VALUES (?1, ?2)',
+          'INSERT INTO auths (user_id, token) VALUES (?1, ?2)',
         i0.SqlDialect.postgres ||
         _ =>
-          'INSERT INTO auth (user_id, token) VALUES (\$1, \$2)',
+          'INSERT INTO auths (user_id, token) VALUES (\$1, \$2)',
       },
       variables: [i0.Variable<String>(userId), i0.Variable<String>(token)],
-      updates: {auth},
+      updates: {auths},
     );
   }
 
   Future<int> cleanAuthedUsers() {
     return customUpdate(
-      'DELETE FROM auth',
+      'DELETE FROM auths',
       variables: [],
-      updates: {auth},
+      updates: {auths},
       updateKind: i0.UpdateKind.delete,
     );
   }
 
-  i1.Auth get auth =>
-      i2.ReadDatabaseContainer(attachedDatabase).resultSet<i1.Auth>('auth');
+  i0.Selectable<bool> userExistsAndAuthed(
+      {required String userId, String? token}) {
+    return customSelect(
+        switch (executor.dialect) {
+          i0.SqlDialect.sqlite =>
+            'SELECT COUNT(*) > 0 AS is_valid FROM users AS u INNER JOIN auths AS a ON u.id = a.user_id WHERE u.id = ?1 AND a.token = ?2',
+          i0.SqlDialect.postgres ||
+          _ =>
+            'SELECT COUNT(*) > 0 AS is_valid FROM users AS u INNER JOIN auths AS a ON u.id = a.user_id WHERE u.id = \$1 AND a.token = \$2',
+        },
+        variables: [
+          i0.Variable<String>(userId),
+          i0.Variable<String>(token)
+        ],
+        readsFrom: {
+          users,
+          auths,
+        }).map((i0.QueryRow row) => row.read<bool>('is_valid'));
+  }
+
+  i3.Users get users =>
+      i2.ReadDatabaseContainer(attachedDatabase).resultSet<i3.Users>('users');
+  i1.Auths get auths =>
+      i2.ReadDatabaseContainer(attachedDatabase).resultSet<i1.Auths>('auths');
+  i3.SharedUsersDrift get sharedUsersDrift =>
+      this.accessor(i3.SharedUsersDrift.new);
 }

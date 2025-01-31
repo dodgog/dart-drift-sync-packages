@@ -3,7 +3,7 @@
 import 'package:drift/drift.dart' as i0;
 import 'package:backend/src/client/users.drift.dart' as i1;
 import 'package:drift/internal/modular.dart' as i2;
-import 'package:backend/src/shared/users.drift.dart' as i3;
+import 'package:backend/src/shared/shared_users.drift.dart' as i3;
 
 typedef $ConfigCreateCompanionBuilder = i1.ConfigCompanion Function({
   i0.Value<String?> clientId,
@@ -625,4 +625,6 @@ class UsersDrift extends i2.ModularAccessor {
 
   i1.Config get config =>
       i2.ReadDatabaseContainer(attachedDatabase).resultSet<i1.Config>('config');
+  i3.SharedUsersDrift get sharedUsersDrift =>
+      this.accessor(i3.SharedUsersDrift.new);
 }

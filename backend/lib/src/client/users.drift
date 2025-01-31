@@ -1,4 +1,4 @@
-import '../shared/users.drift';
+import '../shared/shared_users.drift';
 
 CREATE TABLE config (
    client_id TEXT, -- unique per device

@@ -1,7 +1,7 @@
 // dart format width=80
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
-import 'package:backend/src/shared/users.drift.dart' as i1;
+import 'package:backend/src/shared/shared_users.drift.dart' as i1;
 import 'package:drift/internal/modular.dart' as i2;
 
 typedef $UsersCreateCompanionBuilder = i1.UsersCompanion Function({
@@ -191,7 +191,7 @@ class $UsersTableManager extends i0.RootTableManager<
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (clientsRefs)
-                    await i0.$_getPrefetchedData(
+                    await i0.$_getPrefetchedData<i1.User, i1.Users, i1.Client>(
                         currentTable: table,
                         referencedTable:
                             i1.$UsersReferences._clientsRefsTable(db),
@@ -847,4 +847,24 @@ class ClientsCompanion extends i0.UpdateCompanion<i1.Client> {
           ..write(')'))
         .toString();
   }
+}
+
+class SharedUsersDrift extends i2.ModularAccessor {
+  SharedUsersDrift(i0.GeneratedDatabase db) : super(db);
+  Future<int> createClient({required String clientId, String? userId}) {
+    return customInsert(
+      switch (executor.dialect) {
+        i0.SqlDialect.sqlite =>
+          'INSERT INTO clients (id, user_id) VALUES (?1, ?2)',
+        i0.SqlDialect.postgres ||
+        _ =>
+          'INSERT INTO clients (id, user_id) VALUES (\$1, \$2)',
+      },
+      variables: [i0.Variable<String>(clientId), i0.Variable<String>(userId)],
+      updates: {clients},
+    );
+  }
+
+  i1.Clients get clients => i2.ReadDatabaseContainer(attachedDatabase)
+      .resultSet<i1.Clients>('clients');
 }
