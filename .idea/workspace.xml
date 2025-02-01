@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="73f18ddc-bee0-445b-b6b5-96132ae4f457" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/server_database/database.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server_database/database.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/test/postgres_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/test/postgres_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/test/server_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/test/server_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,14 +101,15 @@
       <option name="testName" value="query_withregular_postgres_test.dart" />
       <method v="2" />
     </configuration>
-    <configuration name="Tests in query_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
-      <option name="filePath" value="$PROJECT_DIR$/backend/test/query_test.dart" />
-      <option name="testName" value="query_test.dart" />
-      <method v="2" />
-    </configuration>
     <configuration name="Tests in server_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
       <option name="filePath" value="$PROJECT_DIR$/backend/test/server_test.dart" />
       <option name="testName" value="server_test.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="document in server_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
+      <option name="filePath" value="$PROJECT_DIR$/backend/test/server_test.dart" />
+      <option name="scope" value="GROUP_OR_TEST_BY_NAME" />
+      <option name="testName" value="document" />
       <method v="2" />
     </configuration>
     <configuration name="interpret event in postgres_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
@@ -117,10 +121,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Dart Test.interpret event in postgres_test.dart" />
+        <item itemvalue="Dart Test.document in server_test.dart" />
         <item itemvalue="Dart Test.Tests in server_test.dart" />
         <item itemvalue="Dart Test.Tests in postgres_test.dart" />
         <item itemvalue="Dart Test.Successful queries in postgres_test.dart" />
-        <item itemvalue="Dart Test.Tests in query_test.dart" />
       </list>
     </recent_temporary>
   </component>

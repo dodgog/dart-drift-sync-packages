@@ -42,8 +42,8 @@ class ServerDatabase extends $ServerDatabase {
     );
   }
 
-  Future<String> interpretIncomingJsonAndRespond(String incoming) async {
-    final postQuery = PostQuery.fromJson(jsonDecode(incoming));
+  Future<dynamic> interpretIncomingJsonAndRespond(dynamic incomingJson) async {
+    final postQuery = PostQuery.fromJson(incomingJson);
 
     final isAuthorized = await verifyUser(postQuery.userId, postQuery.token);
     if (!isAuthorized) {
@@ -58,7 +58,7 @@ class ServerDatabase extends $ServerDatabase {
 
     final currentServerTimestamp = await getLatestServerTimestamp(postQuery.userId);
 
-    return jsonEncode(PostResponse(currentServerTimestamp, newEvents));
+    return PostResponse(currentServerTimestamp, newEvents).toJson();
   }
 
   Future<String> getLatestServerTimestamp(String userId) async {

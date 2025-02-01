@@ -54,9 +54,9 @@ void main() {
               serverTimeStamp: null,
               content: "a")
         ]).toJson();
-    final incoming = jsonEncode(json);
+    final incoming = json;
 
     final a = await db.interpretIncomingJsonAndRespond(incoming);
-    print(a);
+    print(jsonEncode(a));
   });
 }

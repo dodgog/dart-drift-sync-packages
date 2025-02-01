@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:backend/src/server_database/database.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
@@ -44,7 +46,7 @@ void main() {
           }
         ]
       }""";
-    final a = await db.interpretIncomingJsonAndRespond(incoming);
+    final a = await db.interpretIncomingJsonAndRespond(jsonDecode(incoming));
     print(a);
   });
 }
