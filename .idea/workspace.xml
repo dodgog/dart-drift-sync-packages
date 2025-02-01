@@ -5,18 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="73f18ddc-bee0-445b-b6b5-96132ae4f457" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/run-postgres.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/server.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/server.drift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/server.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/server.drift.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/server/events.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server/events.drift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/server/events.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server/events.drift.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/server/users.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server/users.drift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/server/users.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server/users.drift.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/server_database/database.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server_database/database.drift.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/test/postgres_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/test/postgres_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/test/server_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/test/server_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plan.md" beforeDir="false" afterPath="$PROJECT_DIR$/plan.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
