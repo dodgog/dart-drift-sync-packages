@@ -9,7 +9,7 @@ import 'package:backend/src/server/users.drift.dart' as i4;
 class EventsDrift extends i1.ModularAccessor {
   EventsDrift(i0.GeneratedDatabase db) : super(db);
   i0.Selectable<i2.Event> getUserEventsSinceTimestamp(
-      {String? timestamp, String? userId}) {
+      {required String? timestamp, required String? userId}) {
     return customSelect(
         switch (executor.dialect) {
           i0.SqlDialect.sqlite =>
@@ -32,9 +32,9 @@ class EventsDrift extends i1.ModularAccessor {
       {required String id,
       required String type,
       required String clientId,
-      String? serverTimeStamp,
+      required String? serverTimeStamp,
       required String clientTimeStamp,
-      String? content}) {
+      required String? content}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>
@@ -55,7 +55,8 @@ class EventsDrift extends i1.ModularAccessor {
     );
   }
 
-  i0.Selectable<String?> getLatestTimestampAffectingUser({String? userId}) {
+  i0.Selectable<String?> getLatestTimestampAffectingUser(
+      {required String? userId}) {
     return customSelect(
         switch (executor.dialect) {
           i0.SqlDialect.sqlite =>
@@ -77,5 +78,7 @@ class EventsDrift extends i1.ModularAccessor {
       i1.ReadDatabaseContainer(attachedDatabase).resultSet<i2.Events>('events');
   i3.Clients get clients => i1.ReadDatabaseContainer(attachedDatabase)
       .resultSet<i3.Clients>('clients');
+  i2.SharedEventsDrift get sharedEventsDrift =>
+      this.accessor(i2.SharedEventsDrift.new);
   i4.UsersDrift get usersDrift => this.accessor(i4.UsersDrift.new);
 }

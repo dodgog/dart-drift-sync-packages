@@ -13,6 +13,7 @@ targets:
           # Drift build options, as per https://drift.simonbinder.eu/docs/advanced-features/builder_options/
           store_date_time_values_as_text: true
           named_parameters: true
+          named_parameters_always_required: true
           sql:
             # This package will be embedded into a server (using postgres) and a client (using sqlite).
             # So we need to generate code for both.

@@ -467,7 +467,7 @@ class Users extends i0.Table with i0.TableInfo<Users, i1.User> {
       'id', aliasedName, false,
       type: i0.DriftSqlType.string,
       requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
+      $customConstraints: 'NOT NULL PRIMARY KEY');
   static const i0.VerificationMeta _nameMeta =
       const i0.VerificationMeta('name');
   late final i0.GeneratedColumn<String> name = i0.GeneratedColumn<String>(
@@ -500,7 +500,7 @@ class Users extends i0.Table with i0.TableInfo<Users, i1.User> {
   }
 
   @override
-  Set<i0.GeneratedColumn> get $primaryKey => const {};
+  Set<i0.GeneratedColumn> get $primaryKey => {id};
   @override
   i1.User map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -662,7 +662,7 @@ class Clients extends i0.Table with i0.TableInfo<Clients, i1.Client> {
       'id', aliasedName, false,
       type: i0.DriftSqlType.string,
       requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
+      $customConstraints: 'NOT NULL PRIMARY KEY');
   static const i0.VerificationMeta _userIdMeta =
       const i0.VerificationMeta('userId');
   late final i0.GeneratedColumn<String> userId = i0.GeneratedColumn<String>(
@@ -695,7 +695,7 @@ class Clients extends i0.Table with i0.TableInfo<Clients, i1.Client> {
   }
 
   @override
-  Set<i0.GeneratedColumn> get $primaryKey => const {};
+  Set<i0.GeneratedColumn> get $primaryKey => {id};
   @override
   i1.Client map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -851,7 +851,8 @@ class ClientsCompanion extends i0.UpdateCompanion<i1.Client> {
 
 class SharedUsersDrift extends i2.ModularAccessor {
   SharedUsersDrift(i0.GeneratedDatabase db) : super(db);
-  Future<int> createClient({required String clientId, String? userId}) {
+  Future<int> createClient(
+      {required String clientId, required String? userId}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>

@@ -2,6 +2,8 @@
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
 import 'package:backend/src/shared/shared_events.drift.dart' as i1;
+import 'package:drift/internal/modular.dart' as i2;
+import 'package:backend/src/shared/shared_users.drift.dart' as i3;
 
 typedef $EventsCreateCompanionBuilder = i1.EventsCompanion Function({
   required String id,
@@ -22,6 +24,34 @@ typedef $EventsUpdateCompanionBuilder = i1.EventsCompanion Function({
   i0.Value<int> rowid,
 });
 
+final class $EventsReferences
+    extends i0.BaseReferences<i0.GeneratedDatabase, i1.Events, i1.Event> {
+  $EventsReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static i3.Clients _clientIdTable(i0.GeneratedDatabase db) =>
+      i2.ReadDatabaseContainer(db).resultSet<i3.Clients>('clients').createAlias(
+          i0.$_aliasNameGenerator(
+              i2.ReadDatabaseContainer(db)
+                  .resultSet<i1.Events>('events')
+                  .clientId,
+              i2.ReadDatabaseContainer(db)
+                  .resultSet<i3.Clients>('clients')
+                  .id));
+
+  i3.$ClientsProcessedTableManager get clientId {
+    final $_column = $_itemColumn<String>('client_id')!;
+
+    final manager = i3
+        .$ClientsTableManager($_db,
+            i2.ReadDatabaseContainer($_db).resultSet<i3.Clients>('clients'))
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_clientIdTable($_db));
+    if (item == null) return manager;
+    return i0.ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
 class $EventsFilterComposer
     extends i0.Composer<i0.GeneratedDatabase, i1.Events> {
   $EventsFilterComposer({
@@ -37,9 +67,6 @@ class $EventsFilterComposer
   i0.ColumnFilters<String> get type => $composableBuilder(
       column: $table.type, builder: (column) => i0.ColumnFilters(column));
 
-  i0.ColumnFilters<String> get clientId => $composableBuilder(
-      column: $table.clientId, builder: (column) => i0.ColumnFilters(column));
-
   i0.ColumnFilters<String> get serverTimeStamp => $composableBuilder(
       column: $table.serverTimeStamp,
       builder: (column) => i0.ColumnFilters(column));
@@ -50,6 +77,28 @@ class $EventsFilterComposer
 
   i0.ColumnFilters<String> get content => $composableBuilder(
       column: $table.content, builder: (column) => i0.ColumnFilters(column));
+
+  i3.$ClientsFilterComposer get clientId {
+    final i3.$ClientsFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.clientId,
+        referencedTable:
+            i2.ReadDatabaseContainer($db).resultSet<i3.Clients>('clients'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i3.$ClientsFilterComposer(
+              $db: $db,
+              $table: i2.ReadDatabaseContainer($db)
+                  .resultSet<i3.Clients>('clients'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $EventsOrderingComposer
@@ -67,9 +116,6 @@ class $EventsOrderingComposer
   i0.ColumnOrderings<String> get type => $composableBuilder(
       column: $table.type, builder: (column) => i0.ColumnOrderings(column));
 
-  i0.ColumnOrderings<String> get clientId => $composableBuilder(
-      column: $table.clientId, builder: (column) => i0.ColumnOrderings(column));
-
   i0.ColumnOrderings<String> get serverTimeStamp => $composableBuilder(
       column: $table.serverTimeStamp,
       builder: (column) => i0.ColumnOrderings(column));
@@ -80,6 +126,28 @@ class $EventsOrderingComposer
 
   i0.ColumnOrderings<String> get content => $composableBuilder(
       column: $table.content, builder: (column) => i0.ColumnOrderings(column));
+
+  i3.$ClientsOrderingComposer get clientId {
+    final i3.$ClientsOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.clientId,
+        referencedTable:
+            i2.ReadDatabaseContainer($db).resultSet<i3.Clients>('clients'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i3.$ClientsOrderingComposer(
+              $db: $db,
+              $table: i2.ReadDatabaseContainer($db)
+                  .resultSet<i3.Clients>('clients'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $EventsAnnotationComposer
@@ -97,9 +165,6 @@ class $EventsAnnotationComposer
   i0.GeneratedColumn<String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
 
-  i0.GeneratedColumn<String> get clientId =>
-      $composableBuilder(column: $table.clientId, builder: (column) => column);
-
   i0.GeneratedColumn<String> get serverTimeStamp => $composableBuilder(
       column: $table.serverTimeStamp, builder: (column) => column);
 
@@ -108,6 +173,28 @@ class $EventsAnnotationComposer
 
   i0.GeneratedColumn<String> get content =>
       $composableBuilder(column: $table.content, builder: (column) => column);
+
+  i3.$ClientsAnnotationComposer get clientId {
+    final i3.$ClientsAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.clientId,
+        referencedTable:
+            i2.ReadDatabaseContainer($db).resultSet<i3.Clients>('clients'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i3.$ClientsAnnotationComposer(
+              $db: $db,
+              $table: i2.ReadDatabaseContainer($db)
+                  .resultSet<i3.Clients>('clients'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 }
 
 class $EventsTableManager extends i0.RootTableManager<
@@ -119,9 +206,9 @@ class $EventsTableManager extends i0.RootTableManager<
     i1.$EventsAnnotationComposer,
     $EventsCreateCompanionBuilder,
     $EventsUpdateCompanionBuilder,
-    (i1.Event, i0.BaseReferences<i0.GeneratedDatabase, i1.Events, i1.Event>),
+    (i1.Event, i1.$EventsReferences),
     i1.Event,
-    i0.PrefetchHooks Function()> {
+    i0.PrefetchHooks Function({bool clientId})> {
   $EventsTableManager(i0.GeneratedDatabase db, i1.Events table)
       : super(i0.TableManagerState(
           db: db,
@@ -169,9 +256,43 @@ class $EventsTableManager extends i0.RootTableManager<
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), i0.BaseReferences(db, table, e)))
+              .map((e) =>
+                  (e.readTable(table), i1.$EventsReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({clientId = false}) {
+            return i0.PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends i0.TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (clientId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.clientId,
+                    referencedTable: i1.$EventsReferences._clientIdTable(db),
+                    referencedColumn:
+                        i1.$EventsReferences._clientIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ));
 }
 
@@ -184,9 +305,9 @@ typedef $EventsProcessedTableManager = i0.ProcessedTableManager<
     i1.$EventsAnnotationComposer,
     $EventsCreateCompanionBuilder,
     $EventsUpdateCompanionBuilder,
-    (i1.Event, i0.BaseReferences<i0.GeneratedDatabase, i1.Events, i1.Event>),
+    (i1.Event, i1.$EventsReferences),
     i1.Event,
-    i0.PrefetchHooks Function()>;
+    i0.PrefetchHooks Function({bool clientId})>;
 
 class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
   @override
@@ -565,3 +686,9 @@ i0.Index get eventClientIdIndex => i0.Index.byDialect('event_client_id_index', {
       i0.SqlDialect.postgres:
           'CREATE INDEX event_client_id_index ON events (client_id)',
     });
+
+class SharedEventsDrift extends i2.ModularAccessor {
+  SharedEventsDrift(i0.GeneratedDatabase db) : super(db);
+  i3.SharedUsersDrift get sharedUsersDrift =>
+      this.accessor(i3.SharedUsersDrift.new);
+}

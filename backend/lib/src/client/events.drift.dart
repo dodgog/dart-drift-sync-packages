@@ -21,7 +21,7 @@ class EventsDrift extends i1.ModularAccessor {
       required String type,
       required String clientId,
       required String clientTimeStamp,
-      String? content}) {
+      required String? content}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>
@@ -45,9 +45,9 @@ class EventsDrift extends i1.ModularAccessor {
       {required String id,
       required String type,
       required String clientId,
-      String? serverTimeStamp,
+      required String? serverTimeStamp,
       required String clientTimeStamp,
-      String? content}) {
+      required String? content}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>
@@ -70,5 +70,7 @@ class EventsDrift extends i1.ModularAccessor {
 
   i2.Events get events =>
       i1.ReadDatabaseContainer(attachedDatabase).resultSet<i2.Events>('events');
+  i2.SharedEventsDrift get sharedEventsDrift =>
+      this.accessor(i2.SharedEventsDrift.new);
   i3.UsersDrift get usersDrift => this.accessor(i3.UsersDrift.new);
 }

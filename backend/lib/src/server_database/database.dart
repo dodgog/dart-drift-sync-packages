@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:backend/messaging.dart';
 import 'package:drift/drift.dart';
 import 'database.drift.dart';
 import 'package:backend/server_definitions.dart';
@@ -42,23 +43,22 @@ class ServerDatabase extends $ServerDatabase {
   }
 
   Future<String> interpretIncomingJsonAndRespond(String incoming) async {
-    final (token, userId, lastIssuedServerTimestamp, events) =
-        decodeJsonPost(incoming);
+    final postQuery = PostQuery.fromJson(jsonDecode(incoming));
 
-    final isAuthorized = await verifyUser(userId, token);
+    final isAuthorized = await verifyUser(postQuery.userId, postQuery.token);
     if (!isAuthorized) {
       throw UnauthorizedException('Invalid user credentials');
     }
 
     final newEvents = await insertEventsForUserAndGetEventsSinceTimestamp(
-      events,
-      lastIssuedServerTimestamp,
-      userId,
+      postQuery.events,
+      postQuery.lastIssuedServerTimestamp,
+      postQuery.userId,
     );
 
-    final currentServerTimestamp = await getLatestServerTimestamp(userId);
+    final currentServerTimestamp = await getLatestServerTimestamp(postQuery.userId);
 
-    return encodeResponse(currentServerTimestamp, newEvents);
+    return jsonEncode(PostResponse(currentServerTimestamp, newEvents));
   }
 
   Future<String> getLatestServerTimestamp(String userId) async {
@@ -66,72 +66,6 @@ class ServerDatabase extends $ServerDatabase {
         .getLatestTimestampAffectingUser(userId: userId)
         .getSingle());
     return retrievedTimeStamp ?? DateTime.now().toIso8601String();
-  }
-
-  /// assume json
-  /// {
-  /// "token": "user1token",
-  /// "userId": "user1",
-  /// "lastIssuedServerTimestamp": "iso8601timestamp",
-  /// "events": [{encoded Event as json},...]
-  /// }
-  (
-    String token,
-    String user,
-    String lastIssuedServerTimestamp,
-    List<Event> events
-  ) decodeJsonPost(String json) {
-    // todo: make a class for post query and response
-    try {
-      // Decode JSON string to Map
-      final Map<String, dynamic> decoded = jsonDecode(json);
-
-      // Extract and validate required fields
-      final token = decoded['token'] as String? ??
-          (throw FormatException('Missing or invalid token'));
-
-      final userId = decoded['user_id'] as String? ??
-          (throw FormatException('Missing or invalid user'));
-
-      final lastIssuedServerTimestamp =
-          decoded['last_issued_server_timestamp'] as String? ??
-              (throw FormatException('Missing or invalid timestamp'));
-
-      final List<dynamic> eventsJson = decoded['events'] as List<dynamic>? ??
-          (throw FormatException('Missing events'));
-
-      final List<Event> events = eventsJson
-          .map((eventJson) => Event.fromJson(eventJson as Map<String, dynamic>))
-          .toList();
-
-      return (token, userId, lastIssuedServerTimestamp, events);
-    } on FormatException catch (e) {
-      throw FormatException('JSON format error: ${e.message}');
-    } on TypeError catch (e) {
-      throw FormatException('Type mismatch in JSON structure: $e');
-    } catch (e) {
-      throw FormatException('Error processing JSON: $e');
-    }
-  }
-
-  /// assume json
-  /// {
-  ///   "latestServerTimestamp": "iso8601timestamp",
-  ///   "events": [
-  ///   {encoded Event as json},...
-  ///   ]
-  /// }
-  String encodeResponse(String latestServerTimestamp, List<Event> events) {
-    try {
-      final Map<String, dynamic> response = {
-        'latestServerTimestamp': latestServerTimestamp,
-        'events': events.map((event) => event.toJson()).toList(),
-      };
-
-      return jsonEncode(response);
-    } catch (e) {
-      throw FormatException('Error encoding response: $e');
-    }
   }
 
   Future<bool> verifyUser(String userId, String token) async {

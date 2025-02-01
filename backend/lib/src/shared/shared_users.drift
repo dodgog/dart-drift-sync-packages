@@ -1,10 +1,10 @@
 CREATE TABLE users (
-  id TEXT NOT NULL,
+  id TEXT NOT NULL PRIMARY KEY,
   name TEXT
 );
 
 CREATE TABLE clients (
-  id TEXT NOT NULL,
+  id TEXT NOT NULL PRIMARY KEY,
   user_id TEXT REFERENCES users (id)
 );
 

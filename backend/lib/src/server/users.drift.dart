@@ -445,7 +445,7 @@ class AuthsCompanion extends i0.UpdateCompanion<i1.Auth> {
 
 class UsersDrift extends i2.ModularAccessor {
   UsersDrift(i0.GeneratedDatabase db) : super(db);
-  Future<int> createUser({required String userId, String? name}) {
+  Future<int> createUser({required String userId, required String? name}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite => 'INSERT INTO users (id, name) VALUES (?1, ?2)',
@@ -458,7 +458,7 @@ class UsersDrift extends i2.ModularAccessor {
     );
   }
 
-  Future<int> authUser({String? userId, String? token}) {
+  Future<int> authUser({required String? userId, required String? token}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>
@@ -482,7 +482,7 @@ class UsersDrift extends i2.ModularAccessor {
   }
 
   i0.Selectable<bool> userExistsAndAuthed(
-      {required String userId, String? token}) {
+      {required String userId, required String? token}) {
     return customSelect(
         switch (executor.dialect) {
           i0.SqlDialect.sqlite =>

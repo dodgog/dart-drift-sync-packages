@@ -575,7 +575,7 @@ class UsersDrift extends i2.ModularAccessor {
     );
   }
 
-  Future<int> setClientId({String? newClientId}) {
+  Future<int> setClientId({required String? newClientId}) {
     return customUpdate(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite => 'UPDATE config SET client_id = ?1',
@@ -587,7 +587,7 @@ class UsersDrift extends i2.ModularAccessor {
     );
   }
 
-  Future<int> setLastSyncTime({String? newLastSyncTime}) {
+  Future<int> setLastSyncTime({required String? newLastSyncTime}) {
     return customUpdate(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite => 'UPDATE config SET last_sync_time = ?1',
@@ -599,7 +599,7 @@ class UsersDrift extends i2.ModularAccessor {
     );
   }
 
-  Future<int> setUserId({String? newUserId}) {
+  Future<int> setUserId({required String? newUserId}) {
     return customUpdate(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite => 'UPDATE config SET user_id = ?1',
@@ -611,7 +611,7 @@ class UsersDrift extends i2.ModularAccessor {
     );
   }
 
-  Future<int> setUserToken({String? newUserToken}) {
+  Future<int> setUserToken({required String? newUserToken}) {
     return customUpdate(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite => 'UPDATE config SET user_token = ?1',

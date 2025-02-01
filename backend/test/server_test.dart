@@ -1,12 +1,14 @@
-import 'package:backend/src/server/database.dart';
+import 'package:backend/src/server_database/database.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:test/test.dart';
 
 void main() {
   late ServerDatabase db;
+
   setUp(() {
-    db = ServerDatabase(executor: DatabaseConnection(
+    db = ServerDatabase(
+        executor: DatabaseConnection(
       NativeDatabase.memory(),
       closeStreamsSynchronously: true,
     ));
@@ -16,10 +18,16 @@ void main() {
   });
 
   test("document", () async {
-    db.serverDrift.usersDrift.sharedUsersDrift.createClient(userId: "user1",
+    await db.serverDrift.usersDrift.sharedUsersDrift.createClient(
+        userId: "user1",
         clientId: "client1");
-    db.serverDrift.usersDrift.createUser(userId:  "user1", name: "user1name");
-    db.serverDrift.usersDrift.authUser(userId:  "user1", token: "user1token");
+    await db.serverDrift.usersDrift.createUser(
+        userId: "user1",
+        name: "user1"
+            "name");
+    await db.serverDrift.usersDrift.authUser(
+        userId: "user1",
+        token: "user1token");
     final incoming = """
       {
         "token": "user1token",
