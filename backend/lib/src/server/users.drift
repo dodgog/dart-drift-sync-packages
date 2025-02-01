@@ -1,4 +1,4 @@
-import '../shared/shared_users.drift';
+import 'package:backend/server.drift';
 
 CREATE TABLE auths (
     user_id TEXT REFERENCES users (id),

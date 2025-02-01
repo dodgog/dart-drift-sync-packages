@@ -4,7 +4,8 @@ import 'package:drift/drift.dart' as i0;
 import 'package:drift/internal/modular.dart' as i1;
 import 'package:backend/src/shared/shared_events.drift.dart' as i2;
 import 'package:backend/src/shared/shared_users.drift.dart' as i3;
-import 'package:backend/src/server/users.drift.dart' as i4;
+import 'package:backend/server.drift.dart' as i4;
+import 'package:backend/src/server/users.drift.dart' as i5;
 
 class EventsDrift extends i1.ModularAccessor {
   EventsDrift(i0.GeneratedDatabase db) : super(db);
@@ -78,7 +79,6 @@ class EventsDrift extends i1.ModularAccessor {
       i1.ReadDatabaseContainer(attachedDatabase).resultSet<i2.Events>('events');
   i3.Clients get clients => i1.ReadDatabaseContainer(attachedDatabase)
       .resultSet<i3.Clients>('clients');
-  i2.SharedEventsDrift get sharedEventsDrift =>
-      this.accessor(i2.SharedEventsDrift.new);
-  i4.UsersDrift get usersDrift => this.accessor(i4.UsersDrift.new);
+  i4.ServerDrift get serverDrift => this.accessor(i4.ServerDrift.new);
+  i5.UsersDrift get usersDrift => this.accessor(i5.UsersDrift.new);
 }

@@ -1,4 +1,4 @@
-import '../shared/shared_events.drift';
+import 'package:backend/server.drift';
 import 'users.drift';
 
 getUserEventsSinceTimestamp:

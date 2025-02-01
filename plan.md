@@ -3,6 +3,14 @@
 to begin with state-based event can just transfer not just the field but the
 whole object
 
+## architecture
+
+drift files in shared are the core definition foundation.
+the query accessors are reachable both from server and client through
+serverDrift.sharedDrift
+
+no imports between folders, everything is maintained as independent packages
+
 # surfaces
 
 packages

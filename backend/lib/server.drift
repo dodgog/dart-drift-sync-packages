@@ -1,2 +1,4 @@
 import 'src/server/events.drift';
 import 'src/server/users.drift';
+import 'src/shared/shared_events.drift';
+import 'src/shared/shared_users.drift';

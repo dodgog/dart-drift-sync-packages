@@ -36,7 +36,7 @@ void main() {
   test('interpret event', () async {
     await db.serverDrift.usersDrift
         .createUser(userId: "user1", name: "user1name");
-    await db.serverDrift.usersDrift.sharedUsersDrift
+    await db.serverDrift.sharedUsersDrift
         .createClient(userId: "user1", clientId: "client1");
     await db.serverDrift.usersDrift
         .authUser(userId: "user1", token: "user1token");

@@ -4,6 +4,7 @@ import 'package:drift/drift.dart' as i0;
 import 'package:backend/src/server/users.drift.dart' as i1;
 import 'package:drift/internal/modular.dart' as i2;
 import 'package:backend/src/shared/shared_users.drift.dart' as i3;
+import 'package:backend/server.drift.dart' as i4;
 
 typedef $AuthsCreateCompanionBuilder = i1.AuthsCompanion Function({
   i0.Value<String?> userId,
@@ -505,6 +506,5 @@ class UsersDrift extends i2.ModularAccessor {
       i2.ReadDatabaseContainer(attachedDatabase).resultSet<i3.Users>('users');
   i1.Auths get auths =>
       i2.ReadDatabaseContainer(attachedDatabase).resultSet<i1.Auths>('auths');
-  i3.SharedUsersDrift get sharedUsersDrift =>
-      this.accessor(i3.SharedUsersDrift.new);
+  i4.ServerDrift get serverDrift => this.accessor(i4.ServerDrift.new);
 }

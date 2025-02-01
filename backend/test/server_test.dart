@@ -18,7 +18,7 @@ void main() {
   });
 
   test("document", () async {
-    await db.serverDrift.usersDrift.sharedUsersDrift.createClient(
+    await db.serverDrift.sharedUsersDrift.createClient(
         userId: "user1",
         clientId: "client1");
     await db.serverDrift.usersDrift.createUser(
