@@ -1,0 +1,178 @@
+@startuml
+skinparam sequenceMessageAlign left
+skinparam maxMessageSize 200
+skinparam noteFontSize 11
+skinparam sequenceGroupBodyBackgroundColor transparent
+
+box "Client" #LightYellow
+participant UI as "UI"
+database "Object\nTable" as OT
+database "Event\nTable" as ET
+end box
+
+participant "Messaging\nProtocol" as MP
+database "PostgreSQL\nServer" as PS
+
+title Event-Based Synchronization System Flow
+
+note over UI
+{
+  "objects": [
+    {"id": "obj1", "type": "doc", "title": "title1", "updatedAt": "time1"},
+    {"id": "obj2", "type": "doc", "title": "title2", "updatedAt": "time2"}
+  ]
+}
+end note
+
+== Local Change ==
+
+note over UI: User updates title of obj2
+
+UI -> OT: {\n\
+    type: "update",\n\
+    objectId: "obj2",\n\
+    title: "title2new"\n\
+}
+activate OT
+
+note over OT: Client generates event2id\nfor local title change
+
+OT -> ET: {\n\
+    eventId: "event2id",\n\
+    type: "edit",\n\
+    objectId: "obj2",\n\
+    field: "title",\n\
+    value: "title2new",\n\
+    clientTimestamp: "time3"\n\
+}
+deactivate OT
+
+UI <- OT: Updated UI state
+
+note over UI
+{
+    objects: [
+        {id: "obj1", type: "doc", title: "title1", updatedAt: "time1"},
+        {id: "obj2", type: "doc", title: "title2new", updatedAt: "time3"}
+    ]
+}
+end note
+
+activate ET
+ET --> ET: Store event
+deactivate ET
+
+== Concurrent Server Updates ==
+
+activate MP
+note over MP: Another client generates event1id\nfor new document creation
+
+MP -> PS: {\n\
+    eventId: "event1id",\n\
+    type: "create",\n\
+    objectId: "obj3",\n\
+    data: {\n\
+        type: "doc",\n\
+        title: "title3",\n\
+        updatedAt: "time4"\n\
+    },\n\
+    clientTimestamp: "time4"\n\
+}
+
+note over PS: Server assigns serverTime1\nto event1id
+
+PS --> PS: Append to event log with serverTimestamp
+PS --> MP: {\n\
+    serverIssuedTimestamp: "serverTime1",\n\
+    events: [...]\n\
+}
+deactivate MP
+
+== Synchronization Process ==
+
+group Push Local Events
+    activate ET
+    ET --> ET: Get unstamped events
+
+    note over ET: Client sends locally generated event2id\nto server for timestamp assignment
+
+    ET --> MP: {\n\
+    events: [{\n\
+        eventId: "event2id",\n\
+        type: "edit",\n\
+        objectId: "obj2",\n\
+        field: "title",\n\
+        value: "title2new",\n\
+        clientTimestamp: "time3"\n\
+    }],\n\
+    lastServerIssuedTimestamp: "lastSync"\n\
+}
+    deactivate ET
+
+    activate MP
+    MP -> PS: Push event batch
+    activate PS
+
+    note over PS: Server assigns serverTime2\nto event2id
+
+    PS --> PS: Append to log with serverTimestamp
+end
+
+group Pull Remote Events
+    note over PS: Server returns both events with\ntheir assigned server timestamps
+
+    PS --> MP: {\n\
+    serverIssuedTimestamp: "serverTime2",\n\
+    events: [\n\
+        {\n\
+            eventId: "event1id",\n\
+            type: "create",\n\
+            objectId: "obj3",\n\
+            data: {...},\n\
+            clientTimestamp: "time4",\n\
+            serverTimestamp: "serverTime1"\n\
+        },\n\
+        {\n\
+            eventId: "event2id",\n\
+            type: "edit",\n\
+            objectId: "obj2",\n\
+            field: "title",\n\
+            value: "title2new",\n\
+            clientTimestamp: "time3",\n\
+            serverTimestamp: "serverTime2"\n\
+        }\n\
+    ]\n\
+}
+    deactivate PS
+
+    activate ET
+
+    note over ET: Client processes event1id (new)\nand skips event2id (already applied)
+
+    MP -> ET: Apply new events
+    ET -> ET: Update lastServerIssuedTimestamp
+    deactivate ET
+end
+
+note over OT: Client creates obj3 from event1id\nand updates sync timestamp
+
+ET -> OT: Apply object updates
+activate OT
+
+note over UI: UI displays new obj3\nfrom event1id
+
+OT --> UI: Update UI state
+
+note over UI
+{
+    objects: [
+        {id: "obj1", type: "doc", title: "title1", updatedAt: "time1"},
+        {id: "obj2", type: "doc", title: "title2new", updatedAt: "time3"},
+        {id: "obj3", type: "doc", title: "title3", updatedAt: "time4"}
+    ]
+}
+end note
+
+deactivate OT
+
+@enduml
