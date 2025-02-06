@@ -1,5 +1,4 @@
-export 'server.drift.dart';
-export 'src/server/events.drift.dart';
-export 'src/server/users.drift.dart';
-export 'src/shared/shared_users.drift.dart';
-export 'src/shared/shared_events.drift.dart';
+export 'client.drift.dart';
+export 'src/client/events.drift.dart';
+export 'src/client/users.drift.dart';
+export 'shared_definitions.dart';

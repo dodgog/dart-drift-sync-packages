@@ -3,20 +3,20 @@ import 'dart:convert';
 import 'package:backend/messaging.dart';
 import 'package:drift/drift.dart';
 import 'database.drift.dart';
-import 'package:backend/server_definitions.dart';
+import 'package:backend/client_definitions.dart';
 import 'package:drift/native.dart';
 import 'dart:io';
 
-class UnauthorizedException implements Exception {
+class InvalidConfigException implements Exception {
   final String message;
-  UnauthorizedException(this.message);
+  InvalidConfigException(this.message);
 }
 
 @DriftDatabase(
-  include: {'package:backend/server.drift'},
+  include: {'package:backend/client.drift'},
 )
-class ServerDatabase extends $ServerDatabase {
-  ServerDatabase({QueryExecutor? executor, File? file})
+class ClientDatabase extends $ClientDatabase {
+  ClientDatabase({QueryExecutor? executor, File? file})
       : super(executor ?? _openConnection(file: file));
 
   static QueryExecutor _openConnection({File? file}) {
@@ -34,72 +34,47 @@ class ServerDatabase extends $ServerDatabase {
   MigrationStrategy get migration {
     return MigrationStrategy(
       beforeOpen: (details) async {
-        // if (details.wasCreated) {
-        //   await serverDrift.usersDrift
-        //       .authUser(userId: "user1", token: "user1token");
-        // }
+        if (details.wasCreated) {
+          await clientDrift.usersDrift.initializeConfig();
+          // await clientDrift.usersDrift.setUserToken(newUserToken: newUserToken);
+        }
       },
     );
   }
 
-  Future<dynamic> interpretIncomingJsonAndRespond(dynamic incomingJson) async {
-    final postQuery = PostQuery.fromJson(incomingJson);
+  Future<PostQuery> pushEvents() async {
+    final events = await clientDrift.eventsDrift.getLocalEventsToPush().get();
+    final config = await clientDrift.usersDrift.getConfig().getSingleOrNull() ??
+        (throw InvalidConfigException(
+            "Not exactly one row in the user config table"));
 
-    final isAuthorized = await verifyUser(postQuery.userId, postQuery.token);
-    if (!isAuthorized) {
-      throw UnauthorizedException('Invalid user credentials');
+    if (config.userToken == null ||
+        config.userId == null ||
+        config.clientId == null) {
+      throw InvalidConfigException("Config contains uninitialized values");
     }
-
-    final newEvents = await insertEventsForUserAndGetEventsSinceTimestamp(
-      postQuery.events,
-      postQuery.lastIssuedServerTimestamp,
-      postQuery.userId,
-    );
-
-    final currentServerTimestamp = await getLatestServerTimestamp(postQuery.userId);
-
-    return PostResponse(currentServerTimestamp, newEvents).toJson();
+    final query = PostQuery(
+        config.userToken!,
+        config.userId!,
+        config.lastIssuedTimestamp ??
+            DateTime.fromMillisecondsSinceEpoch(0).toIso8601String(),
+        events);
+    return query;
   }
 
-  Future<String> getLatestServerTimestamp(String userId) async {
-    final retrievedTimeStamp = await (serverDrift.eventsDrift
-        .getLatestTimestampAffectingUser(userId: userId)
-        .getSingle());
-    return retrievedTimeStamp ?? DateTime.now().toIso8601String();
-  }
-
-  Future<bool> verifyUser(String userId, String token) async {
-    return await serverDrift.usersDrift
-        .userExistsAndAuthed(
-          userId: userId,
-          token: token,
-        )
-        .getSingle();
-  }
-
-  Future<List<Event>> insertEventsForUserAndGetEventsSinceTimestamp(
-      List<Event> events, String timestamp, String userId) async {
-    late final List<Event> eventsSinceTimestamp;
+  Future<void> pullEvents(PostResponse response) async {
     await transaction(() async {
-      for (final event in events) {
-        if (event.serverTimeStamp != null) {
-          // todo
-          print("inserting an event already with server timestamp");
-        }
-        await serverDrift.eventsDrift.insertEvent(
-          id: event.id,
-          type: event.type,
-          clientId: event.clientId,
-          serverTimeStamp: DateTime.now().toIso8601String(),
-          clientTimeStamp: event.clientTimeStamp,
-          content: event.content,
-        );
+      for (final event in response.events) {
+        await clientDrift.eventsDrift.insertServerEvent(
+            id: event.id,
+            type: event.type,
+            clientId: event.clientId,
+            serverTimeStamp: event.serverTimeStamp,
+            clientTimeStamp: event.clientTimeStamp,
+            content: event.content);
       }
-
-      eventsSinceTimestamp =
-          await serverDrift.eventsDrift.getUserEventsSinceTimestamp
-            (timestamp: timestamp, userId: userId).get();
+      await clientDrift.usersDrift
+          .setLastSyncTime(newLastSyncTime: response.lastIssuedServerTimestamp);
     });
-    return eventsSinceTimestamp;
   }
 }

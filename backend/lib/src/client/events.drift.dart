@@ -3,7 +3,11 @@
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/internal/modular.dart' as i1;
 import 'package:backend/src/shared/shared_events.drift.dart' as i2;
-import 'package:backend/src/client/users.drift.dart' as i3;
+import 'package:backend/src/shared/event_types.dart' as i3;
+import 'package:backend/src/shared/event_content.dart' as i4;
+import 'dart:typed_data' as i5;
+import 'package:backend/client.drift.dart' as i6;
+import 'package:backend/src/client/users.drift.dart' as i7;
 
 class EventsDrift extends i1.ModularAccessor {
   EventsDrift(i0.GeneratedDatabase db) : super(db);
@@ -18,10 +22,10 @@ class EventsDrift extends i1.ModularAccessor {
 
   Future<int> insertLocalEvent(
       {required String id,
-      required String type,
+      required i3.EventTypes? type,
       required String clientId,
       required String clientTimeStamp,
-      required String? content}) {
+      required i4.EventContent content}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>
@@ -32,10 +36,10 @@ class EventsDrift extends i1.ModularAccessor {
       },
       variables: [
         i0.Variable<String>(id),
-        i0.Variable<String>(type),
+        i0.Variable<String>(i2.Events.$convertertypen.toSql(type)),
         i0.Variable<String>(clientId),
         i0.Variable<String>(clientTimeStamp),
-        i0.Variable<String>(content)
+        i0.Variable<i5.Uint8List>(i2.Events.$convertercontent.toSql(content))
       ],
       updates: {events},
     );
@@ -43,11 +47,11 @@ class EventsDrift extends i1.ModularAccessor {
 
   Future<int> insertServerEvent(
       {required String id,
-      required String type,
+      required i3.EventTypes? type,
       required String clientId,
       required String? serverTimeStamp,
       required String clientTimeStamp,
-      required String? content}) {
+      required i4.EventContent content}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>
@@ -58,11 +62,11 @@ class EventsDrift extends i1.ModularAccessor {
       },
       variables: [
         i0.Variable<String>(id),
-        i0.Variable<String>(type),
+        i0.Variable<String>(i2.Events.$convertertypen.toSql(type)),
         i0.Variable<String>(clientId),
         i0.Variable<String>(serverTimeStamp),
         i0.Variable<String>(clientTimeStamp),
-        i0.Variable<String>(content)
+        i0.Variable<i5.Uint8List>(i2.Events.$convertercontent.toSql(content))
       ],
       updates: {events},
     );
@@ -70,7 +74,6 @@ class EventsDrift extends i1.ModularAccessor {
 
   i2.Events get events =>
       i1.ReadDatabaseContainer(attachedDatabase).resultSet<i2.Events>('events');
-  i2.SharedEventsDrift get sharedEventsDrift =>
-      this.accessor(i2.SharedEventsDrift.new);
-  i3.UsersDrift get usersDrift => this.accessor(i3.UsersDrift.new);
+  i6.ClientDrift get clientDrift => this.accessor(i6.ClientDrift.new);
+  i7.UsersDrift get usersDrift => this.accessor(i7.UsersDrift.new);
 }

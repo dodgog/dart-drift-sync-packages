@@ -3,9 +3,12 @@
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/internal/modular.dart' as i1;
 import 'package:backend/src/shared/shared_events.drift.dart' as i2;
-import 'package:backend/src/shared/shared_users.drift.dart' as i3;
-import 'package:backend/server.drift.dart' as i4;
-import 'package:backend/src/server/users.drift.dart' as i5;
+import 'package:backend/src/shared/event_types.dart' as i3;
+import 'package:backend/src/shared/event_content.dart' as i4;
+import 'dart:typed_data' as i5;
+import 'package:backend/src/shared/shared_users.drift.dart' as i6;
+import 'package:backend/server.drift.dart' as i7;
+import 'package:backend/src/server/users.drift.dart' as i8;
 
 class EventsDrift extends i1.ModularAccessor {
   EventsDrift(i0.GeneratedDatabase db) : super(db);
@@ -31,11 +34,11 @@ class EventsDrift extends i1.ModularAccessor {
 
   Future<int> insertEvent(
       {required String id,
-      required String type,
+      required i3.EventTypes? type,
       required String clientId,
       required String? serverTimeStamp,
       required String clientTimeStamp,
-      required String? content}) {
+      required i4.EventContent content}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>
@@ -46,11 +49,11 @@ class EventsDrift extends i1.ModularAccessor {
       },
       variables: [
         i0.Variable<String>(id),
-        i0.Variable<String>(type),
+        i0.Variable<String>(i2.Events.$convertertypen.toSql(type)),
         i0.Variable<String>(clientId),
         i0.Variable<String>(serverTimeStamp),
         i0.Variable<String>(clientTimeStamp),
-        i0.Variable<String>(content)
+        i0.Variable<i5.Uint8List>(i2.Events.$convertercontent.toSql(content))
       ],
       updates: {events},
     );
@@ -77,8 +80,8 @@ class EventsDrift extends i1.ModularAccessor {
 
   i2.Events get events =>
       i1.ReadDatabaseContainer(attachedDatabase).resultSet<i2.Events>('events');
-  i3.Clients get clients => i1.ReadDatabaseContainer(attachedDatabase)
-      .resultSet<i3.Clients>('clients');
-  i4.ServerDrift get serverDrift => this.accessor(i4.ServerDrift.new);
-  i5.UsersDrift get usersDrift => this.accessor(i5.UsersDrift.new);
+  i6.Clients get clients => i1.ReadDatabaseContainer(attachedDatabase)
+      .resultSet<i6.Clients>('clients');
+  i7.ServerDrift get serverDrift => this.accessor(i7.ServerDrift.new);
+  i8.UsersDrift get usersDrift => this.accessor(i8.UsersDrift.new);
 }

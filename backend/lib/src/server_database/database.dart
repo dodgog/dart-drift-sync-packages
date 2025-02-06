@@ -42,9 +42,8 @@ class ServerDatabase extends $ServerDatabase {
     );
   }
 
-  Future<dynamic> interpretIncomingJsonAndRespond(dynamic incomingJson) async {
-    final postQuery = PostQuery.fromJson(incomingJson);
-
+  Future<PostResponse> interpretIncomingPostQueryAndRespond(
+      PostQuery postQuery) async {
     final isAuthorized = await verifyUser(postQuery.userId, postQuery.token);
     if (!isAuthorized) {
       throw UnauthorizedException('Invalid user credentials');
@@ -56,9 +55,10 @@ class ServerDatabase extends $ServerDatabase {
       postQuery.userId,
     );
 
-    final currentServerTimestamp = await getLatestServerTimestamp(postQuery.userId);
+    final currentServerTimestamp =
+        await getLatestServerTimestamp(postQuery.userId);
 
-    return PostResponse(currentServerTimestamp, newEvents).toJson();
+    return PostResponse(currentServerTimestamp, newEvents);
   }
 
   Future<String> getLatestServerTimestamp(String userId) async {
@@ -84,6 +84,8 @@ class ServerDatabase extends $ServerDatabase {
       for (final event in events) {
         if (event.serverTimeStamp != null) {
           // todo
+          // FIXME
+          // FEEDBACK
           print("inserting an event already with server timestamp");
         }
         await serverDrift.eventsDrift.insertEvent(
@@ -96,9 +98,9 @@ class ServerDatabase extends $ServerDatabase {
         );
       }
 
-      eventsSinceTimestamp =
-          await serverDrift.eventsDrift.getUserEventsSinceTimestamp
-            (timestamp: timestamp, userId: userId).get();
+      eventsSinceTimestamp = await serverDrift.eventsDrift
+          .getUserEventsSinceTimestamp(timestamp: timestamp, userId: userId)
+          .get();
     });
     return eventsSinceTimestamp;
   }

@@ -13,8 +13,8 @@ class PostQuery {
   @EventConverter()
   List<Event> events;
 
-  PostQuery(this.token, this.userId, this.lastIssuedServerTimestamp, this
-      .events);
+  PostQuery(
+      this.token, this.userId, this.lastIssuedServerTimestamp, this.events);
 
   factory PostQuery.fromJson(Map<String, dynamic> json) =>
       _$PostQueryFromJson(json);
