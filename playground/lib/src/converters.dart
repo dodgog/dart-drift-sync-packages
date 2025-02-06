@@ -16,4 +16,10 @@ class Preferences {
       _$PreferencesFromJson(json);
 
   Map<String, dynamic> toJson() => _$PreferencesToJson(this);
+
+  static JsonTypeConverter2<Preferences, String?, Object?> converter =
+  TypeConverter.json2(
+    fromJson: (json) => Preferences.fromJson(json as Map<String, Object?>),
+    toJson: (pref) => pref.toJson(),
+  );
 }

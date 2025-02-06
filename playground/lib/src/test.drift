@@ -1,0 +1,7 @@
+import 'converters.dart';
+
+CREATE TABLE users (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  name TEXT,
+  preferences TEXT MAPPED BY `Preferences.converter`
+);
