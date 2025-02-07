@@ -1,4 +1,4 @@
-import 'src/server/events.drift';
-import 'src/server/users.drift';
-import 'src/shared/shared_events.drift';
-import 'src/shared/shared_users.drift';
+import 'src/server_definitions/events.drift';
+import 'src/server_definitions/users.drift';
+import 'src/shared_definitions/shared_events.drift';
+import 'src/shared_definitions/shared_users.drift';

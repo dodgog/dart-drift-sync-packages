@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:backend/server_definitions.dart';
 import 'package:json_annotation/json_annotation.dart' as j;
 

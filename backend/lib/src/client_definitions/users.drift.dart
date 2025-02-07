@@ -1,10 +1,10 @@
 // dart format width=80
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
-import 'package:backend/src/client/users.drift.dart' as i1;
+import 'package:backend/src/client_definitions/users.drift.dart' as i1;
 import 'package:drift/internal/modular.dart' as i2;
 import 'package:backend/client.drift.dart' as i3;
-import 'package:backend/src/shared/shared_users.drift.dart' as i4;
+import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i4;
 
 typedef $ConfigCreateCompanionBuilder = i1.ConfigCompanion Function({
   i0.Value<String?> clientId,

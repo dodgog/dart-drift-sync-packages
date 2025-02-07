@@ -1,12 +1,12 @@
 // dart format width=80
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
-import 'package:backend/src/shared/shared_events.drift.dart' as i1;
-import 'package:backend/src/shared/event_types.dart' as i2;
-import 'package:backend/src/shared/event_content.dart' as i3;
+import 'package:backend/src/shared_definitions/shared_events.drift.dart' as i1;
+import 'package:backend/src/shared_definitions/event_types.dart' as i2;
+import 'package:backend/src/shared_definitions/event_content.dart' as i3;
 import 'dart:typed_data' as i4;
 import 'package:drift/internal/modular.dart' as i5;
-import 'package:backend/src/shared/shared_users.drift.dart' as i6;
+import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i6;
 
 typedef $EventsCreateCompanionBuilder = i1.EventsCompanion Function({
   required String id,

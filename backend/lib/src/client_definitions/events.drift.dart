@@ -2,12 +2,12 @@
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/internal/modular.dart' as i1;
-import 'package:backend/src/shared/shared_events.drift.dart' as i2;
-import 'package:backend/src/shared/event_types.dart' as i3;
-import 'package:backend/src/shared/event_content.dart' as i4;
+import 'package:backend/src/shared_definitions/shared_events.drift.dart' as i2;
+import 'package:backend/src/shared_definitions/event_types.dart' as i3;
+import 'package:backend/src/shared_definitions/event_content.dart' as i4;
 import 'dart:typed_data' as i5;
 import 'package:backend/client.drift.dart' as i6;
-import 'package:backend/src/client/users.drift.dart' as i7;
+import 'package:backend/src/client_definitions/users.drift.dart' as i7;
 
 class EventsDrift extends i1.ModularAccessor {
   EventsDrift(i0.GeneratedDatabase db) : super(db);
