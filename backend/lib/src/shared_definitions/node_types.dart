@@ -1,0 +1,3 @@
+enum NodeTypes {
+  document,
+}

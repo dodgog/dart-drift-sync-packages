@@ -8,10 +8,7 @@ CREATE TABLE events (
     client_id TEXT NOT NULL REFERENCES clients(id),
     server_time_stamp TEXT, -- TODO: dialect aware date https://drift.simonbinder.eu/sql_api/types/#dialect-awareness
     client_time_stamp TEXT NOT NULL, -- time should be in iso8601
-    --content TEXT MAPPED BY `const EventContentConverter()` -- TODO: add type converter and json stuff perhaps
-    --content TEXT MAPPED BY `EventContent.converter`
     content BLOB MAPPED BY `EventContent.binaryConverter`
-    -- https://drift.simonbinder.eu/type_converters/#type-converters-and-json-serialization
 );
 
 CREATE INDEX event_client_id_index ON events(client_id);

@@ -1,63 +1,60 @@
 // dart format width=80
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
-import 'package:backend/src/shared_definitions/shared_events.drift.dart' as i1;
-import 'package:backend/src/shared_definitions/event_types.dart' as i2;
-import 'package:backend/src/shared_definitions/event_content.dart' as i3;
+import 'package:backend/src/shared_definitions/shared_nodes.drift.dart' as i1;
+import 'package:backend/src/shared_definitions/node_types.dart' as i2;
+import 'package:backend/src/shared_definitions/node_content.dart' as i3;
 import 'dart:typed_data' as i4;
 import 'package:drift/internal/modular.dart' as i5;
 import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i6;
 
-typedef $EventsCreateCompanionBuilder = i1.EventsCompanion Function({
+typedef $NodesCreateCompanionBuilder = i1.NodesCompanion Function({
   required String id,
-  i0.Value<i2.EventTypes?> type,
-  required String clientId,
+  i0.Value<i2.NodeTypes?> type,
   i0.Value<String?> serverTimeStamp,
   required String clientTimeStamp,
-  i0.Value<i3.EventContent> content,
+  required String userId,
+  i0.Value<bool> isDeleted,
+  i0.Value<i3.NodeContent> content,
   i0.Value<int> rowid,
 });
-typedef $EventsUpdateCompanionBuilder = i1.EventsCompanion Function({
+typedef $NodesUpdateCompanionBuilder = i1.NodesCompanion Function({
   i0.Value<String> id,
-  i0.Value<i2.EventTypes?> type,
-  i0.Value<String> clientId,
+  i0.Value<i2.NodeTypes?> type,
   i0.Value<String?> serverTimeStamp,
   i0.Value<String> clientTimeStamp,
-  i0.Value<i3.EventContent> content,
+  i0.Value<String> userId,
+  i0.Value<bool> isDeleted,
+  i0.Value<i3.NodeContent> content,
   i0.Value<int> rowid,
 });
 
-final class $EventsReferences
-    extends i0.BaseReferences<i0.GeneratedDatabase, i1.Events, i1.Event> {
-  $EventsReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $NodesReferences
+    extends i0.BaseReferences<i0.GeneratedDatabase, i1.Nodes, i1.Node> {
+  $NodesReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static i6.Clients _clientIdTable(i0.GeneratedDatabase db) =>
-      i5.ReadDatabaseContainer(db).resultSet<i6.Clients>('clients').createAlias(
+  static i6.Users _userIdTable(i0.GeneratedDatabase db) =>
+      i5.ReadDatabaseContainer(db).resultSet<i6.Users>('users').createAlias(
           i0.$_aliasNameGenerator(
-              i5.ReadDatabaseContainer(db)
-                  .resultSet<i1.Events>('events')
-                  .clientId,
-              i5.ReadDatabaseContainer(db)
-                  .resultSet<i6.Clients>('clients')
-                  .id));
+              i5.ReadDatabaseContainer(db).resultSet<i1.Nodes>('nodes').userId,
+              i5.ReadDatabaseContainer(db).resultSet<i6.Users>('users').id));
 
-  i6.$ClientsProcessedTableManager get clientId {
-    final $_column = $_itemColumn<String>('client_id')!;
+  i6.$UsersProcessedTableManager get userId {
+    final $_column = $_itemColumn<String>('user_id')!;
 
     final manager = i6
-        .$ClientsTableManager($_db,
-            i5.ReadDatabaseContainer($_db).resultSet<i6.Clients>('clients'))
+        .$UsersTableManager(
+            $_db, i5.ReadDatabaseContainer($_db).resultSet<i6.Users>('users'))
         .filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_clientIdTable($_db));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
     if (item == null) return manager;
     return i0.ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: [item]));
   }
 }
 
-class $EventsFilterComposer
-    extends i0.Composer<i0.GeneratedDatabase, i1.Events> {
-  $EventsFilterComposer({
+class $NodesFilterComposer extends i0.Composer<i0.GeneratedDatabase, i1.Nodes> {
+  $NodesFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -67,7 +64,7 @@ class $EventsFilterComposer
   i0.ColumnFilters<String> get id => $composableBuilder(
       column: $table.id, builder: (column) => i0.ColumnFilters(column));
 
-  i0.ColumnWithTypeConverterFilters<i2.EventTypes?, i2.EventTypes, String>
+  i0.ColumnWithTypeConverterFilters<i2.NodeTypes?, i2.NodeTypes, String>
       get type => $composableBuilder(
           column: $table.type,
           builder: (column) => i0.ColumnWithTypeConverterFilters(column));
@@ -80,26 +77,29 @@ class $EventsFilterComposer
       column: $table.clientTimeStamp,
       builder: (column) => i0.ColumnFilters(column));
 
-  i0.ColumnWithTypeConverterFilters<i3.EventContent, i3.EventContent,
+  i0.ColumnFilters<bool> get isDeleted => $composableBuilder(
+      column: $table.isDeleted, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnWithTypeConverterFilters<i3.NodeContent, i3.NodeContent,
           i4.Uint8List>
       get content => $composableBuilder(
           column: $table.content,
           builder: (column) => i0.ColumnWithTypeConverterFilters(column));
 
-  i6.$ClientsFilterComposer get clientId {
-    final i6.$ClientsFilterComposer composer = $composerBuilder(
+  i6.$UsersFilterComposer get userId {
+    final i6.$UsersFilterComposer composer = $composerBuilder(
         composer: this,
-        getCurrentColumn: (t) => t.clientId,
+        getCurrentColumn: (t) => t.userId,
         referencedTable:
-            i5.ReadDatabaseContainer($db).resultSet<i6.Clients>('clients'),
+            i5.ReadDatabaseContainer($db).resultSet<i6.Users>('users'),
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            i6.$ClientsFilterComposer(
+            i6.$UsersFilterComposer(
               $db: $db,
-              $table: i5.ReadDatabaseContainer($db)
-                  .resultSet<i6.Clients>('clients'),
+              $table:
+                  i5.ReadDatabaseContainer($db).resultSet<i6.Users>('users'),
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -109,9 +109,9 @@ class $EventsFilterComposer
   }
 }
 
-class $EventsOrderingComposer
-    extends i0.Composer<i0.GeneratedDatabase, i1.Events> {
-  $EventsOrderingComposer({
+class $NodesOrderingComposer
+    extends i0.Composer<i0.GeneratedDatabase, i1.Nodes> {
+  $NodesOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -132,23 +132,27 @@ class $EventsOrderingComposer
       column: $table.clientTimeStamp,
       builder: (column) => i0.ColumnOrderings(column));
 
+  i0.ColumnOrderings<bool> get isDeleted => $composableBuilder(
+      column: $table.isDeleted,
+      builder: (column) => i0.ColumnOrderings(column));
+
   i0.ColumnOrderings<i4.Uint8List> get content => $composableBuilder(
       column: $table.content, builder: (column) => i0.ColumnOrderings(column));
 
-  i6.$ClientsOrderingComposer get clientId {
-    final i6.$ClientsOrderingComposer composer = $composerBuilder(
+  i6.$UsersOrderingComposer get userId {
+    final i6.$UsersOrderingComposer composer = $composerBuilder(
         composer: this,
-        getCurrentColumn: (t) => t.clientId,
+        getCurrentColumn: (t) => t.userId,
         referencedTable:
-            i5.ReadDatabaseContainer($db).resultSet<i6.Clients>('clients'),
+            i5.ReadDatabaseContainer($db).resultSet<i6.Users>('users'),
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            i6.$ClientsOrderingComposer(
+            i6.$UsersOrderingComposer(
               $db: $db,
-              $table: i5.ReadDatabaseContainer($db)
-                  .resultSet<i6.Clients>('clients'),
+              $table:
+                  i5.ReadDatabaseContainer($db).resultSet<i6.Users>('users'),
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -158,9 +162,9 @@ class $EventsOrderingComposer
   }
 }
 
-class $EventsAnnotationComposer
-    extends i0.Composer<i0.GeneratedDatabase, i1.Events> {
-  $EventsAnnotationComposer({
+class $NodesAnnotationComposer
+    extends i0.Composer<i0.GeneratedDatabase, i1.Nodes> {
+  $NodesAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -170,7 +174,7 @@ class $EventsAnnotationComposer
   i0.GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  i0.GeneratedColumnWithTypeConverter<i2.EventTypes?, String> get type =>
+  i0.GeneratedColumnWithTypeConverter<i2.NodeTypes?, String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
 
   i0.GeneratedColumn<String> get serverTimeStamp => $composableBuilder(
@@ -179,24 +183,27 @@ class $EventsAnnotationComposer
   i0.GeneratedColumn<String> get clientTimeStamp => $composableBuilder(
       column: $table.clientTimeStamp, builder: (column) => column);
 
-  i0.GeneratedColumnWithTypeConverter<i3.EventContent, i4.Uint8List>
+  i0.GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  i0.GeneratedColumnWithTypeConverter<i3.NodeContent, i4.Uint8List>
       get content => $composableBuilder(
           column: $table.content, builder: (column) => column);
 
-  i6.$ClientsAnnotationComposer get clientId {
-    final i6.$ClientsAnnotationComposer composer = $composerBuilder(
+  i6.$UsersAnnotationComposer get userId {
+    final i6.$UsersAnnotationComposer composer = $composerBuilder(
         composer: this,
-        getCurrentColumn: (t) => t.clientId,
+        getCurrentColumn: (t) => t.userId,
         referencedTable:
-            i5.ReadDatabaseContainer($db).resultSet<i6.Clients>('clients'),
+            i5.ReadDatabaseContainer($db).resultSet<i6.Users>('users'),
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            i6.$ClientsAnnotationComposer(
+            i6.$UsersAnnotationComposer(
               $db: $db,
-              $table: i5.ReadDatabaseContainer($db)
-                  .resultSet<i6.Clients>('clients'),
+              $table:
+                  i5.ReadDatabaseContainer($db).resultSet<i6.Users>('users'),
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -206,69 +213,73 @@ class $EventsAnnotationComposer
   }
 }
 
-class $EventsTableManager extends i0.RootTableManager<
+class $NodesTableManager extends i0.RootTableManager<
     i0.GeneratedDatabase,
-    i1.Events,
-    i1.Event,
-    i1.$EventsFilterComposer,
-    i1.$EventsOrderingComposer,
-    i1.$EventsAnnotationComposer,
-    $EventsCreateCompanionBuilder,
-    $EventsUpdateCompanionBuilder,
-    (i1.Event, i1.$EventsReferences),
-    i1.Event,
-    i0.PrefetchHooks Function({bool clientId})> {
-  $EventsTableManager(i0.GeneratedDatabase db, i1.Events table)
+    i1.Nodes,
+    i1.Node,
+    i1.$NodesFilterComposer,
+    i1.$NodesOrderingComposer,
+    i1.$NodesAnnotationComposer,
+    $NodesCreateCompanionBuilder,
+    $NodesUpdateCompanionBuilder,
+    (i1.Node, i1.$NodesReferences),
+    i1.Node,
+    i0.PrefetchHooks Function({bool userId})> {
+  $NodesTableManager(i0.GeneratedDatabase db, i1.Nodes table)
       : super(i0.TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              i1.$EventsFilterComposer($db: db, $table: table),
+              i1.$NodesFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              i1.$EventsOrderingComposer($db: db, $table: table),
+              i1.$NodesOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              i1.$EventsAnnotationComposer($db: db, $table: table),
+              i1.$NodesAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             i0.Value<String> id = const i0.Value.absent(),
-            i0.Value<i2.EventTypes?> type = const i0.Value.absent(),
-            i0.Value<String> clientId = const i0.Value.absent(),
+            i0.Value<i2.NodeTypes?> type = const i0.Value.absent(),
             i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
             i0.Value<String> clientTimeStamp = const i0.Value.absent(),
-            i0.Value<i3.EventContent> content = const i0.Value.absent(),
+            i0.Value<String> userId = const i0.Value.absent(),
+            i0.Value<bool> isDeleted = const i0.Value.absent(),
+            i0.Value<i3.NodeContent> content = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
-              i1.EventsCompanion(
+              i1.NodesCompanion(
             id: id,
             type: type,
-            clientId: clientId,
             serverTimeStamp: serverTimeStamp,
             clientTimeStamp: clientTimeStamp,
+            userId: userId,
+            isDeleted: isDeleted,
             content: content,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String id,
-            i0.Value<i2.EventTypes?> type = const i0.Value.absent(),
-            required String clientId,
+            i0.Value<i2.NodeTypes?> type = const i0.Value.absent(),
             i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
             required String clientTimeStamp,
-            i0.Value<i3.EventContent> content = const i0.Value.absent(),
+            required String userId,
+            i0.Value<bool> isDeleted = const i0.Value.absent(),
+            i0.Value<i3.NodeContent> content = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
-              i1.EventsCompanion.insert(
+              i1.NodesCompanion.insert(
             id: id,
             type: type,
-            clientId: clientId,
             serverTimeStamp: serverTimeStamp,
             clientTimeStamp: clientTimeStamp,
+            userId: userId,
+            isDeleted: isDeleted,
             content: content,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) =>
-                  (e.readTable(table), i1.$EventsReferences(db, table, e)))
+                  (e.readTable(table), i1.$NodesReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({clientId = false}) {
+          prefetchHooksCallback: ({userId = false}) {
             return i0.PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -285,13 +296,12 @@ class $EventsTableManager extends i0.RootTableManager<
                       dynamic,
                       dynamic,
                       dynamic>>(state) {
-                if (clientId) {
+                if (userId) {
                   state = state.withJoin(
                     currentTable: table,
-                    currentColumn: table.clientId,
-                    referencedTable: i1.$EventsReferences._clientIdTable(db),
-                    referencedColumn:
-                        i1.$EventsReferences._clientIdTable(db).id,
+                    currentColumn: table.userId,
+                    referencedTable: i1.$NodesReferences._userIdTable(db),
+                    referencedColumn: i1.$NodesReferences._userIdTable(db).id,
                   ) as T;
                 }
 
@@ -305,24 +315,24 @@ class $EventsTableManager extends i0.RootTableManager<
         ));
 }
 
-typedef $EventsProcessedTableManager = i0.ProcessedTableManager<
+typedef $NodesProcessedTableManager = i0.ProcessedTableManager<
     i0.GeneratedDatabase,
-    i1.Events,
-    i1.Event,
-    i1.$EventsFilterComposer,
-    i1.$EventsOrderingComposer,
-    i1.$EventsAnnotationComposer,
-    $EventsCreateCompanionBuilder,
-    $EventsUpdateCompanionBuilder,
-    (i1.Event, i1.$EventsReferences),
-    i1.Event,
-    i0.PrefetchHooks Function({bool clientId})>;
+    i1.Nodes,
+    i1.Node,
+    i1.$NodesFilterComposer,
+    i1.$NodesOrderingComposer,
+    i1.$NodesAnnotationComposer,
+    $NodesCreateCompanionBuilder,
+    $NodesUpdateCompanionBuilder,
+    (i1.Node, i1.$NodesReferences),
+    i1.Node,
+    i0.PrefetchHooks Function({bool userId})>;
 
-class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
+class Nodes extends i0.Table with i0.TableInfo<Nodes, i1.Node> {
   @override
   final i0.GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Events(this.attachedDatabase, [this._alias]);
+  Nodes(this.attachedDatabase, [this._alias]);
   static const i0.VerificationMeta _idMeta = const i0.VerificationMeta('id');
   late final i0.GeneratedColumn<String> id = i0.GeneratedColumn<String>(
       'id', aliasedName, false,
@@ -331,19 +341,12 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
       $customConstraints: 'NOT NULL PRIMARY KEY');
   static const i0.VerificationMeta _typeMeta =
       const i0.VerificationMeta('type');
-  late final i0.GeneratedColumnWithTypeConverter<i2.EventTypes?, String> type =
+  late final i0.GeneratedColumnWithTypeConverter<i2.NodeTypes?, String> type =
       i0.GeneratedColumn<String>('type', aliasedName, true,
               type: i0.DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: '')
-          .withConverter<i2.EventTypes?>(i1.Events.$convertertypen);
-  static const i0.VerificationMeta _clientIdMeta =
-      const i0.VerificationMeta('clientId');
-  late final i0.GeneratedColumn<String> clientId = i0.GeneratedColumn<String>(
-      'client_id', aliasedName, false,
-      type: i0.DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL REFERENCES clients(id)');
+          .withConverter<i2.NodeTypes?>(i1.Nodes.$convertertypen);
   static const i0.VerificationMeta _serverTimeStampMeta =
       const i0.VerificationMeta('serverTimeStamp');
   late final i0.GeneratedColumn<String> serverTimeStamp =
@@ -358,24 +361,39 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
           type: i0.DriftSqlType.string,
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
+  static const i0.VerificationMeta _userIdMeta =
+      const i0.VerificationMeta('userId');
+  late final i0.GeneratedColumn<String> userId = i0.GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: i0.DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL REFERENCES users(id)');
+  static const i0.VerificationMeta _isDeletedMeta =
+      const i0.VerificationMeta('isDeleted');
+  late final i0.GeneratedColumn<bool> isDeleted = i0.GeneratedColumn<bool>(
+      'is_deleted', aliasedName, false,
+      type: i0.DriftSqlType.bool,
+      requiredDuringInsert: false,
+      $customConstraints: 'DEFAULT 0 NOT NULL',
+      defaultValue: const i0.CustomExpression('0'));
   static const i0.VerificationMeta _contentMeta =
       const i0.VerificationMeta('content');
-  late final i0.GeneratedColumnWithTypeConverter<i3.EventContent, i4.Uint8List>
+  late final i0.GeneratedColumnWithTypeConverter<i3.NodeContent, i4.Uint8List>
       content = i0.GeneratedColumn<i4.Uint8List>('content', aliasedName, true,
               type: i0.DriftSqlType.blob,
               requiredDuringInsert: false,
               $customConstraints: '')
-          .withConverter<i3.EventContent>(i1.Events.$convertercontent);
+          .withConverter<i3.NodeContent>(i1.Nodes.$convertercontent);
   @override
   List<i0.GeneratedColumn> get $columns =>
-      [id, type, clientId, serverTimeStamp, clientTimeStamp, content];
+      [id, type, serverTimeStamp, clientTimeStamp, userId, isDeleted, content];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'events';
+  static const String $name = 'nodes';
   @override
-  i0.VerificationContext validateIntegrity(i0.Insertable<i1.Event> instance,
+  i0.VerificationContext validateIntegrity(i0.Insertable<i1.Node> instance,
       {bool isInserting = false}) {
     final context = i0.VerificationContext();
     final data = instance.toColumns(true);
@@ -385,12 +403,6 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
       context.missing(_idMeta);
     }
     context.handle(_typeMeta, const i0.VerificationResult.success());
-    if (data.containsKey('client_id')) {
-      context.handle(_clientIdMeta,
-          clientId.isAcceptableOrUnknown(data['client_id']!, _clientIdMeta));
-    } else if (isInserting) {
-      context.missing(_clientIdMeta);
-    }
     if (data.containsKey('server_time_stamp')) {
       context.handle(
           _serverTimeStampMeta,
@@ -405,6 +417,16 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
     } else if (isInserting) {
       context.missing(_clientTimeStampMeta);
     }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('is_deleted')) {
+      context.handle(_isDeletedMeta,
+          isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta));
+    }
     context.handle(_contentMeta, const i0.VerificationResult.success());
     return context;
   }
@@ -412,102 +434,105 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
   @override
   Set<i0.GeneratedColumn> get $primaryKey => {id};
   @override
-  i1.Event map(Map<String, dynamic> data, {String? tablePrefix}) {
+  i1.Node map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return i1.Event(
+    return i1.Node(
       id: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}id'])!,
-      type: i1.Events.$convertertypen.fromSql(attachedDatabase.typeMapping
+      type: i1.Nodes.$convertertypen.fromSql(attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}type'])),
-      clientId: attachedDatabase.typeMapping
-          .read(i0.DriftSqlType.string, data['${effectivePrefix}client_id'])!,
       serverTimeStamp: attachedDatabase.typeMapping.read(
           i0.DriftSqlType.string, data['${effectivePrefix}server_time_stamp']),
       clientTimeStamp: attachedDatabase.typeMapping.read(
           i0.DriftSqlType.string, data['${effectivePrefix}client_time_stamp'])!,
-      content: i1.Events.$convertercontent.fromSql(attachedDatabase.typeMapping
+      userId: attachedDatabase.typeMapping
+          .read(i0.DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+      isDeleted: attachedDatabase.typeMapping
+          .read(i0.DriftSqlType.bool, data['${effectivePrefix}is_deleted'])!,
+      content: i1.Nodes.$convertercontent.fromSql(attachedDatabase.typeMapping
           .read(i0.DriftSqlType.blob, data['${effectivePrefix}content'])),
     );
   }
 
   @override
-  Events createAlias(String alias) {
-    return Events(attachedDatabase, alias);
+  Nodes createAlias(String alias) {
+    return Nodes(attachedDatabase, alias);
   }
 
-  static i0.JsonTypeConverter2<i2.EventTypes, String, String> $convertertype =
-      const i0.EnumNameConverter<i2.EventTypes>(i2.EventTypes.values);
-  static i0.JsonTypeConverter2<i2.EventTypes?, String?, String?>
+  static i0.JsonTypeConverter2<i2.NodeTypes, String, String> $convertertype =
+      const i0.EnumNameConverter<i2.NodeTypes>(i2.NodeTypes.values);
+  static i0.JsonTypeConverter2<i2.NodeTypes?, String?, String?>
       $convertertypen = i0.JsonTypeConverter2.asNullable($convertertype);
-  static i0.JsonTypeConverter2<i3.EventContent, i4.Uint8List?, Object?>
-      $convertercontent = i3.EventContent.binaryConverter;
+  static i0.JsonTypeConverter2<i3.NodeContent, i4.Uint8List?, Object?>
+      $convertercontent = i3.NodeContent.binaryConverter;
   @override
   bool get dontWriteConstraints => true;
 }
 
-class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
+class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
   final String id;
-  final i2.EventTypes? type;
-  final String clientId;
+  final i2.NodeTypes? type;
   final String? serverTimeStamp;
-
-  /// TODO: dialect aware date https://drift.simonbinder.eu/sql_api/types/#dialect-awareness
   final String clientTimeStamp;
-
-  /// time should be in iso8601
-  final i3.EventContent content;
-  const Event(
+  final String userId;
+  final bool isDeleted;
+  final i3.NodeContent content;
+  const Node(
       {required this.id,
       this.type,
-      required this.clientId,
       this.serverTimeStamp,
       required this.clientTimeStamp,
+      required this.userId,
+      required this.isDeleted,
       required this.content});
   @override
   Map<String, i0.Expression> toColumns(bool nullToAbsent) {
     final map = <String, i0.Expression>{};
     map['id'] = i0.Variable<String>(id);
     if (!nullToAbsent || type != null) {
-      map['type'] = i0.Variable<String>(i1.Events.$convertertypen.toSql(type));
+      map['type'] = i0.Variable<String>(i1.Nodes.$convertertypen.toSql(type));
     }
-    map['client_id'] = i0.Variable<String>(clientId);
     if (!nullToAbsent || serverTimeStamp != null) {
       map['server_time_stamp'] = i0.Variable<String>(serverTimeStamp);
     }
     map['client_time_stamp'] = i0.Variable<String>(clientTimeStamp);
+    map['user_id'] = i0.Variable<String>(userId);
+    map['is_deleted'] = i0.Variable<bool>(isDeleted);
     {
       map['content'] =
-          i0.Variable<i4.Uint8List>(i1.Events.$convertercontent.toSql(content));
+          i0.Variable<i4.Uint8List>(i1.Nodes.$convertercontent.toSql(content));
     }
     return map;
   }
 
-  i1.EventsCompanion toCompanion(bool nullToAbsent) {
-    return i1.EventsCompanion(
+  i1.NodesCompanion toCompanion(bool nullToAbsent) {
+    return i1.NodesCompanion(
       id: i0.Value(id),
       type: type == null && nullToAbsent
           ? const i0.Value.absent()
           : i0.Value(type),
-      clientId: i0.Value(clientId),
       serverTimeStamp: serverTimeStamp == null && nullToAbsent
           ? const i0.Value.absent()
           : i0.Value(serverTimeStamp),
       clientTimeStamp: i0.Value(clientTimeStamp),
+      userId: i0.Value(userId),
+      isDeleted: i0.Value(isDeleted),
       content: i0.Value(content),
     );
   }
 
-  factory Event.fromJson(Map<String, dynamic> json,
+  factory Node.fromJson(Map<String, dynamic> json,
       {i0.ValueSerializer? serializer}) {
     serializer ??= i0.driftRuntimeOptions.defaultSerializer;
-    return Event(
+    return Node(
       id: serializer.fromJson<String>(json['id']),
-      type: i1.Events.$convertertypen
+      type: i1.Nodes.$convertertypen
           .fromJson(serializer.fromJson<String?>(json['type'])),
-      clientId: serializer.fromJson<String>(json['client_id']),
       serverTimeStamp: serializer.fromJson<String?>(json['server_time_stamp']),
       clientTimeStamp: serializer.fromJson<String>(json['client_time_stamp']),
-      content: i1.Events.$convertercontent
+      userId: serializer.fromJson<String>(json['user_id']),
+      isDeleted: serializer.fromJson<bool>(json['is_deleted']),
+      content: i1.Nodes.$convertercontent
           .fromJson(serializer.fromJson<Object?>(json['content'])),
     );
   }
@@ -516,56 +541,60 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
     serializer ??= i0.driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'type':
-          serializer.toJson<String?>(i1.Events.$convertertypen.toJson(type)),
-      'client_id': serializer.toJson<String>(clientId),
+      'type': serializer.toJson<String?>(i1.Nodes.$convertertypen.toJson(type)),
       'server_time_stamp': serializer.toJson<String?>(serverTimeStamp),
       'client_time_stamp': serializer.toJson<String>(clientTimeStamp),
+      'user_id': serializer.toJson<String>(userId),
+      'is_deleted': serializer.toJson<bool>(isDeleted),
       'content': serializer
-          .toJson<Object?>(i1.Events.$convertercontent.toJson(content)),
+          .toJson<Object?>(i1.Nodes.$convertercontent.toJson(content)),
     };
   }
 
-  i1.Event copyWith(
+  i1.Node copyWith(
           {String? id,
-          i0.Value<i2.EventTypes?> type = const i0.Value.absent(),
-          String? clientId,
+          i0.Value<i2.NodeTypes?> type = const i0.Value.absent(),
           i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
           String? clientTimeStamp,
-          i3.EventContent? content}) =>
-      i1.Event(
+          String? userId,
+          bool? isDeleted,
+          i3.NodeContent? content}) =>
+      i1.Node(
         id: id ?? this.id,
         type: type.present ? type.value : this.type,
-        clientId: clientId ?? this.clientId,
         serverTimeStamp: serverTimeStamp.present
             ? serverTimeStamp.value
             : this.serverTimeStamp,
         clientTimeStamp: clientTimeStamp ?? this.clientTimeStamp,
+        userId: userId ?? this.userId,
+        isDeleted: isDeleted ?? this.isDeleted,
         content: content ?? this.content,
       );
-  Event copyWithCompanion(i1.EventsCompanion data) {
-    return Event(
+  Node copyWithCompanion(i1.NodesCompanion data) {
+    return Node(
       id: data.id.present ? data.id.value : this.id,
       type: data.type.present ? data.type.value : this.type,
-      clientId: data.clientId.present ? data.clientId.value : this.clientId,
       serverTimeStamp: data.serverTimeStamp.present
           ? data.serverTimeStamp.value
           : this.serverTimeStamp,
       clientTimeStamp: data.clientTimeStamp.present
           ? data.clientTimeStamp.value
           : this.clientTimeStamp,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
       content: data.content.present ? data.content.value : this.content,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('Event(')
+    return (StringBuffer('Node(')
           ..write('id: $id, ')
           ..write('type: $type, ')
-          ..write('clientId: $clientId, ')
           ..write('serverTimeStamp: $serverTimeStamp, ')
           ..write('clientTimeStamp: $clientTimeStamp, ')
+          ..write('userId: $userId, ')
+          ..write('isDeleted: $isDeleted, ')
           ..write('content: $content')
           ..write(')'))
         .toString();
@@ -573,81 +602,89 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
 
   @override
   int get hashCode => Object.hash(
-      id, type, clientId, serverTimeStamp, clientTimeStamp, content);
+      id, type, serverTimeStamp, clientTimeStamp, userId, isDeleted, content);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is i1.Event &&
+      (other is i1.Node &&
           other.id == this.id &&
           other.type == this.type &&
-          other.clientId == this.clientId &&
           other.serverTimeStamp == this.serverTimeStamp &&
           other.clientTimeStamp == this.clientTimeStamp &&
+          other.userId == this.userId &&
+          other.isDeleted == this.isDeleted &&
           other.content == this.content);
 }
 
-class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
+class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
   final i0.Value<String> id;
-  final i0.Value<i2.EventTypes?> type;
-  final i0.Value<String> clientId;
+  final i0.Value<i2.NodeTypes?> type;
   final i0.Value<String?> serverTimeStamp;
   final i0.Value<String> clientTimeStamp;
-  final i0.Value<i3.EventContent> content;
+  final i0.Value<String> userId;
+  final i0.Value<bool> isDeleted;
+  final i0.Value<i3.NodeContent> content;
   final i0.Value<int> rowid;
-  const EventsCompanion({
+  const NodesCompanion({
     this.id = const i0.Value.absent(),
     this.type = const i0.Value.absent(),
-    this.clientId = const i0.Value.absent(),
     this.serverTimeStamp = const i0.Value.absent(),
     this.clientTimeStamp = const i0.Value.absent(),
+    this.userId = const i0.Value.absent(),
+    this.isDeleted = const i0.Value.absent(),
     this.content = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   });
-  EventsCompanion.insert({
+  NodesCompanion.insert({
     required String id,
     this.type = const i0.Value.absent(),
-    required String clientId,
     this.serverTimeStamp = const i0.Value.absent(),
     required String clientTimeStamp,
+    required String userId,
+    this.isDeleted = const i0.Value.absent(),
     this.content = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   })  : id = i0.Value(id),
-        clientId = i0.Value(clientId),
-        clientTimeStamp = i0.Value(clientTimeStamp);
-  static i0.Insertable<i1.Event> custom({
+        clientTimeStamp = i0.Value(clientTimeStamp),
+        userId = i0.Value(userId);
+  static i0.Insertable<i1.Node> custom({
     i0.Expression<String>? id,
     i0.Expression<String>? type,
-    i0.Expression<String>? clientId,
     i0.Expression<String>? serverTimeStamp,
     i0.Expression<String>? clientTimeStamp,
+    i0.Expression<String>? userId,
+    i0.Expression<bool>? isDeleted,
     i0.Expression<i4.Uint8List>? content,
     i0.Expression<int>? rowid,
   }) {
     return i0.RawValuesInsertable({
       if (id != null) 'id': id,
       if (type != null) 'type': type,
-      if (clientId != null) 'client_id': clientId,
       if (serverTimeStamp != null) 'server_time_stamp': serverTimeStamp,
       if (clientTimeStamp != null) 'client_time_stamp': clientTimeStamp,
+      if (userId != null) 'user_id': userId,
+      if (isDeleted != null) 'is_deleted': isDeleted,
       if (content != null) 'content': content,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  i1.EventsCompanion copyWith(
+  i1.NodesCompanion copyWith(
       {i0.Value<String>? id,
-      i0.Value<i2.EventTypes?>? type,
-      i0.Value<String>? clientId,
+      i0.Value<i2.NodeTypes?>? type,
       i0.Value<String?>? serverTimeStamp,
       i0.Value<String>? clientTimeStamp,
-      i0.Value<i3.EventContent>? content,
+      i0.Value<String>? userId,
+      i0.Value<bool>? isDeleted,
+      i0.Value<i3.NodeContent>? content,
       i0.Value<int>? rowid}) {
-    return i1.EventsCompanion(
+    return i1.NodesCompanion(
       id: id ?? this.id,
       type: type ?? this.type,
-      clientId: clientId ?? this.clientId,
       serverTimeStamp: serverTimeStamp ?? this.serverTimeStamp,
       clientTimeStamp: clientTimeStamp ?? this.clientTimeStamp,
+      userId: userId ?? this.userId,
+      isDeleted: isDeleted ?? this.isDeleted,
       content: content ?? this.content,
       rowid: rowid ?? this.rowid,
     );
@@ -661,10 +698,7 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
     }
     if (type.present) {
       map['type'] =
-          i0.Variable<String>(i1.Events.$convertertypen.toSql(type.value));
-    }
-    if (clientId.present) {
-      map['client_id'] = i0.Variable<String>(clientId.value);
+          i0.Variable<String>(i1.Nodes.$convertertypen.toSql(type.value));
     }
     if (serverTimeStamp.present) {
       map['server_time_stamp'] = i0.Variable<String>(serverTimeStamp.value);
@@ -672,9 +706,15 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
     if (clientTimeStamp.present) {
       map['client_time_stamp'] = i0.Variable<String>(clientTimeStamp.value);
     }
+    if (userId.present) {
+      map['user_id'] = i0.Variable<String>(userId.value);
+    }
+    if (isDeleted.present) {
+      map['is_deleted'] = i0.Variable<bool>(isDeleted.value);
+    }
     if (content.present) {
       map['content'] = i0.Variable<i4.Uint8List>(
-          i1.Events.$convertercontent.toSql(content.value));
+          i1.Nodes.$convertercontent.toSql(content.value));
     }
     if (rowid.present) {
       map['rowid'] = i0.Variable<int>(rowid.value);
@@ -684,12 +724,13 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
 
   @override
   String toString() {
-    return (StringBuffer('EventsCompanion(')
+    return (StringBuffer('NodesCompanion(')
           ..write('id: $id, ')
           ..write('type: $type, ')
-          ..write('clientId: $clientId, ')
           ..write('serverTimeStamp: $serverTimeStamp, ')
           ..write('clientTimeStamp: $clientTimeStamp, ')
+          ..write('userId: $userId, ')
+          ..write('isDeleted: $isDeleted, ')
           ..write('content: $content, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -697,15 +738,8 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
   }
 }
 
-i0.Index get eventClientIdIndex => i0.Index.byDialect('event_client_id_index', {
-      i0.SqlDialect.sqlite:
-          'CREATE INDEX event_client_id_index ON events (client_id)',
-      i0.SqlDialect.postgres:
-          'CREATE INDEX event_client_id_index ON events (client_id)',
-    });
-
-class SharedEventsDrift extends i5.ModularAccessor {
-  SharedEventsDrift(i0.GeneratedDatabase db) : super(db);
+class SharedNodesDrift extends i5.ModularAccessor {
+  SharedNodesDrift(i0.GeneratedDatabase db) : super(db);
   i6.SharedUsersDrift get sharedUsersDrift =>
       this.accessor(i6.SharedUsersDrift.new);
 }
