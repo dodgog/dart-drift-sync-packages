@@ -42,6 +42,10 @@ class ClientDatabase extends $ClientDatabase {
     );
   }
 
+  void aa()async{
+    events.select().get();
+  }
+
   Future<PostQuery> pushEvents() async {
     final events = await clientDrift.eventsDrift.getLocalEventsToPush().get();
     final config = await clientDrift.usersDrift.getConfig().getSingleOrNull() ??

@@ -4,7 +4,7 @@ import 'node_content.dart';
 
 CREATE TABLE nodes (
     id TEXT NOT NULL PRIMARY KEY,
-    type ENUMNAME(NodeTypes),
+    type ENUMNAME(NodeTypes) NOT NULL,
     server_time_stamp TEXT,
     client_time_stamp TEXT NOT NULL,
     user_id TEXT NOT NULL REFERENCES users(id),

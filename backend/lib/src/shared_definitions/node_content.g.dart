@@ -7,12 +7,16 @@ part of 'node_content.dart';
 // **************************************************************************
 
 NodeContent _$NodeContentFromJson(Map<String, dynamic> json) => NodeContent(
-      json['receiveEmails'] as bool,
-      json['selectedTheme'] as String,
+      json['author'] as String,
+      json['title'] as String,
+      (json['referenced_object_ids'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
     );
 
 Map<String, dynamic> _$NodeContentToJson(NodeContent instance) =>
     <String, dynamic>{
-      'receiveEmails': instance.receiveEmails,
-      'selectedTheme': instance.selectedTheme,
+      'author': instance.author,
+      'title': instance.title,
+      'referenced_object_ids': instance.referencedObjectIds,
     };

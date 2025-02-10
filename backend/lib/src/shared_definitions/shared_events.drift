@@ -5,6 +5,7 @@ import 'event_content.dart';
 CREATE TABLE events (
     id TEXT NOT NULL PRIMARY KEY,
     type ENUMNAME(EventTypes),
+    target_node_id TEXT, -- doesn't always reference an existing node, so references is omitted
     client_id TEXT NOT NULL REFERENCES clients(id),
     server_time_stamp TEXT, -- TODO: dialect aware date https://drift.simonbinder.eu/sql_api/types/#dialect-awareness
     client_time_stamp TEXT NOT NULL, -- time should be in iso8601

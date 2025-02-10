@@ -3,12 +3,13 @@ import 'package:json_annotation/json_annotation.dart' as j;
 
 part 'node_content.g.dart';
 
-@j.JsonSerializable()
+@j.JsonSerializable(fieldRename: j.FieldRename.snake)
 class NodeContent {
-  bool receiveEmails;
-  String selectedTheme;
+  String author;
+  String title;
+  List<String> referencedObjectIds;
 
-  NodeContent(this.receiveEmails, this.selectedTheme);
+  NodeContent(this.author, this.title, this.referencedObjectIds);
 
   factory NodeContent.fromJson(Map<String, dynamic> json) =>
       _$NodeContentFromJson(json);

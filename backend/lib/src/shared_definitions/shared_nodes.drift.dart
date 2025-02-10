@@ -10,7 +10,7 @@ import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i6;
 
 typedef $NodesCreateCompanionBuilder = i1.NodesCompanion Function({
   required String id,
-  i0.Value<i2.NodeTypes?> type,
+  required i2.NodeTypes type,
   i0.Value<String?> serverTimeStamp,
   required String clientTimeStamp,
   required String userId,
@@ -20,7 +20,7 @@ typedef $NodesCreateCompanionBuilder = i1.NodesCompanion Function({
 });
 typedef $NodesUpdateCompanionBuilder = i1.NodesCompanion Function({
   i0.Value<String> id,
-  i0.Value<i2.NodeTypes?> type,
+  i0.Value<i2.NodeTypes> type,
   i0.Value<String?> serverTimeStamp,
   i0.Value<String> clientTimeStamp,
   i0.Value<String> userId,
@@ -64,7 +64,7 @@ class $NodesFilterComposer extends i0.Composer<i0.GeneratedDatabase, i1.Nodes> {
   i0.ColumnFilters<String> get id => $composableBuilder(
       column: $table.id, builder: (column) => i0.ColumnFilters(column));
 
-  i0.ColumnWithTypeConverterFilters<i2.NodeTypes?, i2.NodeTypes, String>
+  i0.ColumnWithTypeConverterFilters<i2.NodeTypes, i2.NodeTypes, String>
       get type => $composableBuilder(
           column: $table.type,
           builder: (column) => i0.ColumnWithTypeConverterFilters(column));
@@ -174,7 +174,7 @@ class $NodesAnnotationComposer
   i0.GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  i0.GeneratedColumnWithTypeConverter<i2.NodeTypes?, String> get type =>
+  i0.GeneratedColumnWithTypeConverter<i2.NodeTypes, String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
 
   i0.GeneratedColumn<String> get serverTimeStamp => $composableBuilder(
@@ -237,7 +237,7 @@ class $NodesTableManager extends i0.RootTableManager<
               i1.$NodesAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             i0.Value<String> id = const i0.Value.absent(),
-            i0.Value<i2.NodeTypes?> type = const i0.Value.absent(),
+            i0.Value<i2.NodeTypes> type = const i0.Value.absent(),
             i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
             i0.Value<String> clientTimeStamp = const i0.Value.absent(),
             i0.Value<String> userId = const i0.Value.absent(),
@@ -257,7 +257,7 @@ class $NodesTableManager extends i0.RootTableManager<
           ),
           createCompanionCallback: ({
             required String id,
-            i0.Value<i2.NodeTypes?> type = const i0.Value.absent(),
+            required i2.NodeTypes type,
             i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
             required String clientTimeStamp,
             required String userId,
@@ -341,12 +341,12 @@ class Nodes extends i0.Table with i0.TableInfo<Nodes, i1.Node> {
       $customConstraints: 'NOT NULL PRIMARY KEY');
   static const i0.VerificationMeta _typeMeta =
       const i0.VerificationMeta('type');
-  late final i0.GeneratedColumnWithTypeConverter<i2.NodeTypes?, String> type =
-      i0.GeneratedColumn<String>('type', aliasedName, true,
+  late final i0.GeneratedColumnWithTypeConverter<i2.NodeTypes, String> type =
+      i0.GeneratedColumn<String>('type', aliasedName, false,
               type: i0.DriftSqlType.string,
-              requiredDuringInsert: false,
-              $customConstraints: '')
-          .withConverter<i2.NodeTypes?>(i1.Nodes.$convertertypen);
+              requiredDuringInsert: true,
+              $customConstraints: 'NOT NULL')
+          .withConverter<i2.NodeTypes>(i1.Nodes.$convertertype);
   static const i0.VerificationMeta _serverTimeStampMeta =
       const i0.VerificationMeta('serverTimeStamp');
   late final i0.GeneratedColumn<String> serverTimeStamp =
@@ -439,8 +439,8 @@ class Nodes extends i0.Table with i0.TableInfo<Nodes, i1.Node> {
     return i1.Node(
       id: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}id'])!,
-      type: i1.Nodes.$convertertypen.fromSql(attachedDatabase.typeMapping
-          .read(i0.DriftSqlType.string, data['${effectivePrefix}type'])),
+      type: i1.Nodes.$convertertype.fromSql(attachedDatabase.typeMapping
+          .read(i0.DriftSqlType.string, data['${effectivePrefix}type'])!),
       serverTimeStamp: attachedDatabase.typeMapping.read(
           i0.DriftSqlType.string, data['${effectivePrefix}server_time_stamp']),
       clientTimeStamp: attachedDatabase.typeMapping.read(
@@ -461,8 +461,6 @@ class Nodes extends i0.Table with i0.TableInfo<Nodes, i1.Node> {
 
   static i0.JsonTypeConverter2<i2.NodeTypes, String, String> $convertertype =
       const i0.EnumNameConverter<i2.NodeTypes>(i2.NodeTypes.values);
-  static i0.JsonTypeConverter2<i2.NodeTypes?, String?, String?>
-      $convertertypen = i0.JsonTypeConverter2.asNullable($convertertype);
   static i0.JsonTypeConverter2<i3.NodeContent, i4.Uint8List?, Object?>
       $convertercontent = i3.NodeContent.binaryConverter;
   @override
@@ -471,7 +469,7 @@ class Nodes extends i0.Table with i0.TableInfo<Nodes, i1.Node> {
 
 class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
   final String id;
-  final i2.NodeTypes? type;
+  final i2.NodeTypes type;
   final String? serverTimeStamp;
   final String clientTimeStamp;
   final String userId;
@@ -479,7 +477,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
   final i3.NodeContent content;
   const Node(
       {required this.id,
-      this.type,
+      required this.type,
       this.serverTimeStamp,
       required this.clientTimeStamp,
       required this.userId,
@@ -489,8 +487,8 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
   Map<String, i0.Expression> toColumns(bool nullToAbsent) {
     final map = <String, i0.Expression>{};
     map['id'] = i0.Variable<String>(id);
-    if (!nullToAbsent || type != null) {
-      map['type'] = i0.Variable<String>(i1.Nodes.$convertertypen.toSql(type));
+    {
+      map['type'] = i0.Variable<String>(i1.Nodes.$convertertype.toSql(type));
     }
     if (!nullToAbsent || serverTimeStamp != null) {
       map['server_time_stamp'] = i0.Variable<String>(serverTimeStamp);
@@ -508,9 +506,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
   i1.NodesCompanion toCompanion(bool nullToAbsent) {
     return i1.NodesCompanion(
       id: i0.Value(id),
-      type: type == null && nullToAbsent
-          ? const i0.Value.absent()
-          : i0.Value(type),
+      type: i0.Value(type),
       serverTimeStamp: serverTimeStamp == null && nullToAbsent
           ? const i0.Value.absent()
           : i0.Value(serverTimeStamp),
@@ -526,8 +522,8 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
     serializer ??= i0.driftRuntimeOptions.defaultSerializer;
     return Node(
       id: serializer.fromJson<String>(json['id']),
-      type: i1.Nodes.$convertertypen
-          .fromJson(serializer.fromJson<String?>(json['type'])),
+      type: i1.Nodes.$convertertype
+          .fromJson(serializer.fromJson<String>(json['type'])),
       serverTimeStamp: serializer.fromJson<String?>(json['server_time_stamp']),
       clientTimeStamp: serializer.fromJson<String>(json['client_time_stamp']),
       userId: serializer.fromJson<String>(json['user_id']),
@@ -541,7 +537,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
     serializer ??= i0.driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'type': serializer.toJson<String?>(i1.Nodes.$convertertypen.toJson(type)),
+      'type': serializer.toJson<String>(i1.Nodes.$convertertype.toJson(type)),
       'server_time_stamp': serializer.toJson<String?>(serverTimeStamp),
       'client_time_stamp': serializer.toJson<String>(clientTimeStamp),
       'user_id': serializer.toJson<String>(userId),
@@ -553,7 +549,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
 
   i1.Node copyWith(
           {String? id,
-          i0.Value<i2.NodeTypes?> type = const i0.Value.absent(),
+          i2.NodeTypes? type,
           i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
           String? clientTimeStamp,
           String? userId,
@@ -561,7 +557,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
           i3.NodeContent? content}) =>
       i1.Node(
         id: id ?? this.id,
-        type: type.present ? type.value : this.type,
+        type: type ?? this.type,
         serverTimeStamp: serverTimeStamp.present
             ? serverTimeStamp.value
             : this.serverTimeStamp,
@@ -618,7 +614,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
 
 class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
   final i0.Value<String> id;
-  final i0.Value<i2.NodeTypes?> type;
+  final i0.Value<i2.NodeTypes> type;
   final i0.Value<String?> serverTimeStamp;
   final i0.Value<String> clientTimeStamp;
   final i0.Value<String> userId;
@@ -637,7 +633,7 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
   });
   NodesCompanion.insert({
     required String id,
-    this.type = const i0.Value.absent(),
+    required i2.NodeTypes type,
     this.serverTimeStamp = const i0.Value.absent(),
     required String clientTimeStamp,
     required String userId,
@@ -645,6 +641,7 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
     this.content = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   })  : id = i0.Value(id),
+        type = i0.Value(type),
         clientTimeStamp = i0.Value(clientTimeStamp),
         userId = i0.Value(userId);
   static i0.Insertable<i1.Node> custom({
@@ -671,7 +668,7 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
 
   i1.NodesCompanion copyWith(
       {i0.Value<String>? id,
-      i0.Value<i2.NodeTypes?>? type,
+      i0.Value<i2.NodeTypes>? type,
       i0.Value<String?>? serverTimeStamp,
       i0.Value<String>? clientTimeStamp,
       i0.Value<String>? userId,
@@ -698,7 +695,7 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
     }
     if (type.present) {
       map['type'] =
-          i0.Variable<String>(i1.Nodes.$convertertypen.toSql(type.value));
+          i0.Variable<String>(i1.Nodes.$convertertype.toSql(type.value));
     }
     if (serverTimeStamp.present) {
       map['server_time_stamp'] = i0.Variable<String>(serverTimeStamp.value);
