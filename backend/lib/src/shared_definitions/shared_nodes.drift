@@ -11,3 +11,34 @@ CREATE TABLE nodes (
     is_deleted BOOL DEFAULT 0 NOT NULL,
     content BLOB MAPPED BY `NodeContent.binaryConverter`
 );
+
+getNodeById:
+SELECT * FROM nodes WHERE id = :id;
+
+mutateNodeById:
+UPDATE nodes
+SET server_time_stamp = :server_time_stamp,
+    client_time_stamp = :client_time_stamp,
+    user_id = :user_id,
+    is_deleted = :is_deleted,
+    content = :content
+WHERE id = :id;
+
+insertNode:
+INSERT INTO nodes (
+    id,
+    type,
+    server_time_stamp,
+    client_time_stamp,
+    user_id,
+    is_deleted,
+    content
+) VALUES (
+    :id,
+    :type,
+    :server_time_stamp,
+    :client_time_stamp,
+    :user_id,
+    :is_deleted,
+    :content
+);

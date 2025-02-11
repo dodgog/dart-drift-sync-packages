@@ -866,6 +866,26 @@ class SharedUsersDrift extends i2.ModularAccessor {
     );
   }
 
+  i0.Selectable<i1.User> getUserFromClientId({required String clientId}) {
+    return customSelect(
+        switch (executor.dialect) {
+          i0.SqlDialect.sqlite =>
+            'SELECT u.* FROM users AS u INNER JOIN clients AS c ON c.user_id = u.id WHERE c.id = ?1',
+          i0.SqlDialect.postgres ||
+          _ =>
+            'SELECT u.* FROM users AS u INNER JOIN clients AS c ON c.user_id = u.id WHERE c.id = \$1',
+        },
+        variables: [
+          i0.Variable<String>(clientId)
+        ],
+        readsFrom: {
+          users,
+          clients,
+        }).asyncMap(users.mapFromRow);
+  }
+
   i1.Clients get clients => i2.ReadDatabaseContainer(attachedDatabase)
       .resultSet<i1.Clients>('clients');
+  i1.Users get users =>
+      i2.ReadDatabaseContainer(attachedDatabase).resultSet<i1.Users>('users');
 }

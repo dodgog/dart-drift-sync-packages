@@ -39,7 +39,8 @@ void main() {
         clientId: "client1",
         clientTimeStamp: "2024-01-30T11:55:00.000Z",
         serverTimeStamp: null,
-        content: EventContent(true, "Theme 2"));
+        content:  EventContent("wow", "user1", NodeTypes.document, NodeContent
+          ("author", "title", ["list1"])));
 
     await db.clientDrift.eventsDrift.insertLocalEvent(
         id: event.id,
@@ -62,7 +63,8 @@ void main() {
         clientId: "client1",
         clientTimeStamp: "2024-01-30T11:55:00.000Z",
         serverTimeStamp: "2025-01-30T11:55:00.000Z",
-        content: EventContent(true, "Theme 2"));
+        content: EventContent("wow", "user1", NodeTypes.document, NodeContent
+          ("author", "title", ["list1"])));
 
     await db.clientDrift.eventsDrift.insertLocalEvent(
         id: event.id,
@@ -86,3 +88,5 @@ void main() {
             .toJson()));
   });
 }
+
+//

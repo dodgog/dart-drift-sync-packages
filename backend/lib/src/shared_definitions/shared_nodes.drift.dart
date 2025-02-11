@@ -737,6 +737,79 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
 
 class SharedNodesDrift extends i5.ModularAccessor {
   SharedNodesDrift(i0.GeneratedDatabase db) : super(db);
+  i0.Selectable<i1.Node> getNodeById({required String id}) {
+    return customSelect(
+        switch (executor.dialect) {
+          i0.SqlDialect.sqlite => 'SELECT * FROM nodes WHERE id = ?1',
+          i0.SqlDialect.postgres || _ => 'SELECT * FROM nodes WHERE id = \$1',
+        },
+        variables: [
+          i0.Variable<String>(id)
+        ],
+        readsFrom: {
+          nodes,
+        }).asyncMap(nodes.mapFromRow);
+  }
+
+  Future<int> mutateNodeById(
+      {required String? serverTimeStamp,
+      required String clientTimeStamp,
+      required String userId,
+      required bool isDeleted,
+      required i3.NodeContent content,
+      required String id}) {
+    return customUpdate(
+      switch (executor.dialect) {
+        i0.SqlDialect.sqlite =>
+          'UPDATE nodes SET server_time_stamp = ?1, client_time_stamp = ?2, user_id = ?3, is_deleted = ?4, content = ?5 WHERE id = ?6',
+        i0.SqlDialect.postgres ||
+        _ =>
+          'UPDATE nodes SET server_time_stamp = \$1, client_time_stamp = \$2, user_id = \$3, is_deleted = \$4, content = \$5 WHERE id = \$6',
+      },
+      variables: [
+        i0.Variable<String>(serverTimeStamp),
+        i0.Variable<String>(clientTimeStamp),
+        i0.Variable<String>(userId),
+        i0.Variable<bool>(isDeleted),
+        i0.Variable<i4.Uint8List>(i1.Nodes.$convertercontent.toSql(content)),
+        i0.Variable<String>(id)
+      ],
+      updates: {nodes},
+      updateKind: i0.UpdateKind.update,
+    );
+  }
+
+  Future<int> insertNode(
+      {required String id,
+      required i2.NodeTypes type,
+      required String? serverTimeStamp,
+      required String clientTimeStamp,
+      required String userId,
+      required bool isDeleted,
+      required i3.NodeContent content}) {
+    return customInsert(
+      switch (executor.dialect) {
+        i0.SqlDialect.sqlite =>
+          'INSERT INTO nodes (id, type, server_time_stamp, client_time_stamp, user_id, is_deleted, content) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)',
+        i0.SqlDialect.postgres ||
+        _ =>
+          'INSERT INTO nodes (id, type, server_time_stamp, client_time_stamp, user_id, is_deleted, content) VALUES (\$1, \$2, \$3, \$4, \$5, \$6, \$7)',
+      },
+      variables: [
+        i0.Variable<String>(id),
+        i0.Variable<String>(i1.Nodes.$convertertype.toSql(type)),
+        i0.Variable<String>(serverTimeStamp),
+        i0.Variable<String>(clientTimeStamp),
+        i0.Variable<String>(userId),
+        i0.Variable<bool>(isDeleted),
+        i0.Variable<i4.Uint8List>(i1.Nodes.$convertercontent.toSql(content))
+      ],
+      updates: {nodes},
+    );
+  }
+
+  i1.Nodes get nodes =>
+      i5.ReadDatabaseContainer(attachedDatabase).resultSet<i1.Nodes>('nodes');
   i6.SharedUsersDrift get sharedUsersDrift =>
       this.accessor(i6.SharedUsersDrift.new);
 }
