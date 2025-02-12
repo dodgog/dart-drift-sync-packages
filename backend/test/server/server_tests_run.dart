@@ -5,7 +5,7 @@ import 'package:backend/messaging.dart';
 import 'package:test/test.dart';
 import 'package:backend/server_database.dart';
 
-import 'server_test_executor.dart';
+import '../server_test_executor.dart';
 
 void runAllServerTests(ServerTestExecutor executor) {
   late ServerDatabase db;

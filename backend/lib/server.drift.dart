@@ -6,6 +6,7 @@ import 'package:backend/src/server_definitions/events.drift.dart' as i2;
 import 'package:backend/src/server_definitions/users.drift.dart' as i3;
 import 'package:backend/src/shared_definitions/shared_events.drift.dart' as i4;
 import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i5;
+import 'package:backend/src/shared_definitions/shared_nodes.drift.dart' as i6;
 
 class ServerDrift extends i1.ModularAccessor {
   ServerDrift(i0.GeneratedDatabase db) : super(db);
@@ -15,4 +16,6 @@ class ServerDrift extends i1.ModularAccessor {
       this.accessor(i4.SharedEventsDrift.new);
   i5.SharedUsersDrift get sharedUsersDrift =>
       this.accessor(i5.SharedUsersDrift.new);
+  i6.SharedNodesDrift get sharedNodesDrift =>
+      this.accessor(i6.SharedNodesDrift.new);
 }

@@ -1,7 +1,7 @@
 import 'package:backend/server_database.dart';
 import 'package:drift_postgres/drift_postgres.dart';
 import 'package:postgres/postgres.dart' as pg;
-import 'server_test_executor.dart';
+import '../server_test_executor.dart';
 import 'server_tests_run.dart';
 
 class PostgresExecutor extends ServerTestExecutor {

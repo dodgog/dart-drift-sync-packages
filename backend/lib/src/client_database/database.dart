@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:backend/messaging.dart';
+import 'package:backend/src/shared_definitions/apply_event_to_node.dart';
 import 'package:drift/drift.dart';
 import 'database.drift.dart';
 import 'package:backend/client_definitions.dart';
@@ -43,7 +44,8 @@ class ClientDatabase extends $ClientDatabase {
   }
 
   void aa()async{
-    events.select().get();
+    final eventsList = await events.select().get();
+    clientDrift.sharedNodesDrift.applyEvent(eventsList.first);
   }
 
   Future<PostQuery> pushEvents() async {
