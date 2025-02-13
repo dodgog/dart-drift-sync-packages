@@ -3,16 +3,18 @@
 import 'package:drift/drift.dart' as i0;
 import 'package:backend/src/test.drift.dart' as i1;
 import 'package:backend/src/converters.dart' as i2;
+import 'dart:typed_data' as i3;
+import 'package:drift/internal/modular.dart' as i4;
 
 typedef $UsersCreateCompanionBuilder = i1.UsersCompanion Function({
   i0.Value<int> id,
   i0.Value<String?> name,
-  i0.Value<i2.Preferences> preferences,
+  i0.Value<i2.Preferences?> preferences,
 });
 typedef $UsersUpdateCompanionBuilder = i1.UsersCompanion Function({
   i0.Value<int> id,
   i0.Value<String?> name,
-  i0.Value<i2.Preferences> preferences,
+  i0.Value<i2.Preferences?> preferences,
 });
 
 class $UsersFilterComposer extends i0.Composer<i0.GeneratedDatabase, i1.Users> {
@@ -29,7 +31,8 @@ class $UsersFilterComposer extends i0.Composer<i0.GeneratedDatabase, i1.Users> {
   i0.ColumnFilters<String> get name => $composableBuilder(
       column: $table.name, builder: (column) => i0.ColumnFilters(column));
 
-  i0.ColumnWithTypeConverterFilters<i2.Preferences, i2.Preferences, String>
+  i0.ColumnWithTypeConverterFilters<i2.Preferences?, i2.Preferences,
+          i3.Uint8List>
       get preferences => $composableBuilder(
           column: $table.preferences,
           builder: (column) => i0.ColumnWithTypeConverterFilters(column));
@@ -50,7 +53,7 @@ class $UsersOrderingComposer
   i0.ColumnOrderings<String> get name => $composableBuilder(
       column: $table.name, builder: (column) => i0.ColumnOrderings(column));
 
-  i0.ColumnOrderings<String> get preferences => $composableBuilder(
+  i0.ColumnOrderings<i3.Uint8List> get preferences => $composableBuilder(
       column: $table.preferences,
       builder: (column) => i0.ColumnOrderings(column));
 }
@@ -70,8 +73,8 @@ class $UsersAnnotationComposer
   i0.GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  i0.GeneratedColumnWithTypeConverter<i2.Preferences, String> get preferences =>
-      $composableBuilder(
+  i0.GeneratedColumnWithTypeConverter<i2.Preferences?, i3.Uint8List>
+      get preferences => $composableBuilder(
           column: $table.preferences, builder: (column) => column);
 }
 
@@ -100,7 +103,7 @@ class $UsersTableManager extends i0.RootTableManager<
           updateCompanionCallback: ({
             i0.Value<int> id = const i0.Value.absent(),
             i0.Value<String?> name = const i0.Value.absent(),
-            i0.Value<i2.Preferences> preferences = const i0.Value.absent(),
+            i0.Value<i2.Preferences?> preferences = const i0.Value.absent(),
           }) =>
               i1.UsersCompanion(
             id: id,
@@ -110,7 +113,7 @@ class $UsersTableManager extends i0.RootTableManager<
           createCompanionCallback: ({
             i0.Value<int> id = const i0.Value.absent(),
             i0.Value<String?> name = const i0.Value.absent(),
-            i0.Value<i2.Preferences> preferences = const i0.Value.absent(),
+            i0.Value<i2.Preferences?> preferences = const i0.Value.absent(),
           }) =>
               i1.UsersCompanion.insert(
             id: id,
@@ -158,12 +161,13 @@ class Users extends i0.Table with i0.TableInfo<Users, i1.User> {
       $customConstraints: '');
   static const i0.VerificationMeta _preferencesMeta =
       const i0.VerificationMeta('preferences');
-  late final i0.GeneratedColumnWithTypeConverter<i2.Preferences, String>
-      preferences = i0.GeneratedColumn<String>('preferences', aliasedName, true,
-              type: i0.DriftSqlType.string,
+  late final i0.GeneratedColumnWithTypeConverter<i2.Preferences?, i3.Uint8List>
+      preferences = i0.GeneratedColumn<i3.Uint8List>(
+              'preferences', aliasedName, true,
+              type: i0.DriftSqlType.blob,
               requiredDuringInsert: false,
               $customConstraints: '')
-          .withConverter<i2.Preferences>(i1.Users.$converterpreferences);
+          .withConverter<i2.Preferences?>(i1.Users.$converterpreferencesn);
   @override
   List<i0.GeneratedColumn> get $columns => [id, name, preferences];
   @override
@@ -197,9 +201,9 @@ class Users extends i0.Table with i0.TableInfo<Users, i1.User> {
           .read(i0.DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}name']),
-      preferences: i1.Users.$converterpreferences.fromSql(attachedDatabase
+      preferences: i1.Users.$converterpreferencesn.fromSql(attachedDatabase
           .typeMapping
-          .read(i0.DriftSqlType.string, data['${effectivePrefix}preferences'])),
+          .read(i0.DriftSqlType.blob, data['${effectivePrefix}preferences'])),
     );
   }
 
@@ -208,8 +212,11 @@ class Users extends i0.Table with i0.TableInfo<Users, i1.User> {
     return Users(attachedDatabase, alias);
   }
 
-  static i0.JsonTypeConverter2<i2.Preferences, String?, Object?>
+  static i0.JsonTypeConverter2<i2.Preferences, i3.Uint8List, Object?>
       $converterpreferences = i2.Preferences.converter;
+  static i0.JsonTypeConverter2<i2.Preferences?, i3.Uint8List?, Object?>
+      $converterpreferencesn =
+      i0.JsonTypeConverter2.asNullable($converterpreferences);
   @override
   bool get dontWriteConstraints => true;
 }
@@ -217,8 +224,8 @@ class Users extends i0.Table with i0.TableInfo<Users, i1.User> {
 class User extends i0.DataClass implements i0.Insertable<i1.User> {
   final int id;
   final String? name;
-  final i2.Preferences preferences;
-  const User({required this.id, this.name, required this.preferences});
+  final i2.Preferences? preferences;
+  const User({required this.id, this.name, this.preferences});
   @override
   Map<String, i0.Expression> toColumns(bool nullToAbsent) {
     final map = <String, i0.Expression>{};
@@ -226,9 +233,9 @@ class User extends i0.DataClass implements i0.Insertable<i1.User> {
     if (!nullToAbsent || name != null) {
       map['name'] = i0.Variable<String>(name);
     }
-    {
-      map['preferences'] = i0.Variable<String>(
-          i1.Users.$converterpreferences.toSql(preferences));
+    if (!nullToAbsent || preferences != null) {
+      map['preferences'] = i0.Variable<i3.Uint8List>(
+          i1.Users.$converterpreferencesn.toSql(preferences));
     }
     return map;
   }
@@ -239,7 +246,9 @@ class User extends i0.DataClass implements i0.Insertable<i1.User> {
       name: name == null && nullToAbsent
           ? const i0.Value.absent()
           : i0.Value(name),
-      preferences: i0.Value(preferences),
+      preferences: preferences == null && nullToAbsent
+          ? const i0.Value.absent()
+          : i0.Value(preferences),
     );
   }
 
@@ -249,7 +258,7 @@ class User extends i0.DataClass implements i0.Insertable<i1.User> {
     return User(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String?>(json['name']),
-      preferences: i1.Users.$converterpreferences
+      preferences: i1.Users.$converterpreferencesn
           .fromJson(serializer.fromJson<Object?>(json['preferences'])),
     );
   }
@@ -260,18 +269,18 @@ class User extends i0.DataClass implements i0.Insertable<i1.User> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String?>(name),
       'preferences': serializer
-          .toJson<Object?>(i1.Users.$converterpreferences.toJson(preferences)),
+          .toJson<Object?>(i1.Users.$converterpreferencesn.toJson(preferences)),
     };
   }
 
   i1.User copyWith(
           {int? id,
           i0.Value<String?> name = const i0.Value.absent(),
-          i2.Preferences? preferences}) =>
+          i0.Value<i2.Preferences?> preferences = const i0.Value.absent()}) =>
       i1.User(
         id: id ?? this.id,
         name: name.present ? name.value : this.name,
-        preferences: preferences ?? this.preferences,
+        preferences: preferences.present ? preferences.value : this.preferences,
       );
   User copyWithCompanion(i1.UsersCompanion data) {
     return User(
@@ -306,7 +315,7 @@ class User extends i0.DataClass implements i0.Insertable<i1.User> {
 class UsersCompanion extends i0.UpdateCompanion<i1.User> {
   final i0.Value<int> id;
   final i0.Value<String?> name;
-  final i0.Value<i2.Preferences> preferences;
+  final i0.Value<i2.Preferences?> preferences;
   const UsersCompanion({
     this.id = const i0.Value.absent(),
     this.name = const i0.Value.absent(),
@@ -320,7 +329,7 @@ class UsersCompanion extends i0.UpdateCompanion<i1.User> {
   static i0.Insertable<i1.User> custom({
     i0.Expression<int>? id,
     i0.Expression<String>? name,
-    i0.Expression<String>? preferences,
+    i0.Expression<i3.Uint8List>? preferences,
   }) {
     return i0.RawValuesInsertable({
       if (id != null) 'id': id,
@@ -332,7 +341,7 @@ class UsersCompanion extends i0.UpdateCompanion<i1.User> {
   i1.UsersCompanion copyWith(
       {i0.Value<int>? id,
       i0.Value<String?>? name,
-      i0.Value<i2.Preferences>? preferences}) {
+      i0.Value<i2.Preferences?>? preferences}) {
     return i1.UsersCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -350,8 +359,8 @@ class UsersCompanion extends i0.UpdateCompanion<i1.User> {
       map['name'] = i0.Variable<String>(name.value);
     }
     if (preferences.present) {
-      map['preferences'] = i0.Variable<String>(
-          i1.Users.$converterpreferences.toSql(preferences.value));
+      map['preferences'] = i0.Variable<i3.Uint8List>(
+          i1.Users.$converterpreferencesn.toSql(preferences.value));
     }
     return map;
   }
@@ -365,4 +374,35 @@ class UsersCompanion extends i0.UpdateCompanion<i1.User> {
           ..write(')'))
         .toString();
   }
+}
+
+class TestDrift extends i4.ModularAccessor {
+  TestDrift(i0.GeneratedDatabase db) : super(db);
+  Future<int> insertUser(
+      {required int id, required i2.Preferences? preferences}) {
+    return customInsert(
+      switch (executor.dialect) {
+        i0.SqlDialect.sqlite =>
+          'INSERT INTO users (id, preferences) VALUES (?1, ?2)',
+        i0.SqlDialect.postgres ||
+        _ =>
+          'INSERT INTO users (id, preferences) VALUES (\$1, \$2)',
+      },
+      variables: [
+        i0.Variable<int>(id),
+        i0.Variable<i3.Uint8List>(
+            i1.Users.$converterpreferencesn.toSql(preferences))
+      ],
+      updates: {users},
+    );
+  }
+
+  i0.Selectable<i1.User> selectUsers() {
+    return customSelect('SELECT * FROM users', variables: [], readsFrom: {
+      users,
+    }).asyncMap(users.mapFromRow);
+  }
+
+  i1.Users get users =>
+      i4.ReadDatabaseContainer(attachedDatabase).resultSet<i1.Users>('users');
 }

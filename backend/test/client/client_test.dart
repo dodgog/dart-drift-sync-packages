@@ -39,15 +39,17 @@ void main() {
         clientId: "client1",
         clientTimeStamp: "2024-01-30T11:55:00.000Z",
         serverTimeStamp: null,
-        content:  EventContent("wow", "user1", NodeTypes.document, NodeContent
-          ("author", "title", ["list1"])));
+        content: EventContent("wow", "user1", NodeTypes.document,
+            NodeContent("author", "title", ["list1"])));
 
     await db.clientDrift.eventsDrift.insertLocalEvent(
-        id: event.id,
-        type: event.type,
-        clientId: event.clientId,
-        clientTimeStamp: event.clientTimeStamp,
-        content: event.content);
+      id: event.id,
+      type: event.type,
+      clientId: event.clientId,
+      clientTimeStamp: event.clientTimeStamp,
+      content: event.content,
+      targetNodeId: 'targetNode',
+    );
 
     final postQuery = await db.pushEvents();
 
@@ -63,15 +65,17 @@ void main() {
         clientId: "client1",
         clientTimeStamp: "2024-01-30T11:55:00.000Z",
         serverTimeStamp: "2025-01-30T11:55:00.000Z",
-        content: EventContent("wow", "user1", NodeTypes.document, NodeContent
-          ("author", "title", ["list1"])));
+        content: EventContent("wow", "user1", NodeTypes.document,
+            NodeContent("author", "title", ["list1"])));
 
     await db.clientDrift.eventsDrift.insertLocalEvent(
-        id: event.id,
-        type: event.type,
-        clientId: event.clientId,
-        clientTimeStamp: event.clientTimeStamp,
-        content: event.content);
+      id: event.id,
+      type: event.type,
+      clientId: event.clientId,
+      clientTimeStamp: event.clientTimeStamp,
+      content: event.content,
+      targetNodeId: 'targetNode',
+    );
 
     final serverIssuedTime = DateTime.now().toIso8601String();
 

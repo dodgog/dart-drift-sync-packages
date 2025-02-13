@@ -17,9 +17,19 @@ class Preferences {
 
   Map<String, dynamic> toJson() => _$PreferencesToJson(this);
 
-  static JsonTypeConverter2<Preferences, String?, Object?> converter =
-  TypeConverter.json2(
-    fromJson: (json) => Preferences.fromJson(json as Map<String, Object?>),
+  static JsonTypeConverter2<Preferences, Uint8List, Object?>
+  converter = TypeConverter.jsonb(
+    fromJson: (Object? json) {
+      return Preferences.fromJson(json as Map<String, Object?>);
+    },
     toJson: (pref) => pref.toJson(),
   );
+  // // static JsonTypeConverter2<Preferences, String, Object?>
+  // // converter = TypeConverter.json2(
+  // //   fromJson: (Object? json) {
+  // //     // if (json == null) return null;
+  // //     return Preferences.fromJson(json as Map<String, Object?>);
+  // //   },
+  // //   toJson: (pref) => pref.toJson(),
+  // );
 }

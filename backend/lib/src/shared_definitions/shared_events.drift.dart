@@ -15,7 +15,7 @@ typedef $EventsCreateCompanionBuilder = i1.EventsCompanion Function({
   required String clientId,
   i0.Value<String?> serverTimeStamp,
   required String clientTimeStamp,
-  i0.Value<i3.EventContent> content,
+  i0.Value<i3.EventContent?> content,
   i0.Value<int> rowid,
 });
 typedef $EventsUpdateCompanionBuilder = i1.EventsCompanion Function({
@@ -25,7 +25,7 @@ typedef $EventsUpdateCompanionBuilder = i1.EventsCompanion Function({
   i0.Value<String> clientId,
   i0.Value<String?> serverTimeStamp,
   i0.Value<String> clientTimeStamp,
-  i0.Value<i3.EventContent> content,
+  i0.Value<i3.EventContent?> content,
   i0.Value<int> rowid,
 });
 
@@ -86,7 +86,7 @@ class $EventsFilterComposer
       column: $table.clientTimeStamp,
       builder: (column) => i0.ColumnFilters(column));
 
-  i0.ColumnWithTypeConverterFilters<i3.EventContent, i3.EventContent,
+  i0.ColumnWithTypeConverterFilters<i3.EventContent?, i3.EventContent,
           i4.Uint8List>
       get content => $composableBuilder(
           column: $table.content,
@@ -192,7 +192,7 @@ class $EventsAnnotationComposer
   i0.GeneratedColumn<String> get clientTimeStamp => $composableBuilder(
       column: $table.clientTimeStamp, builder: (column) => column);
 
-  i0.GeneratedColumnWithTypeConverter<i3.EventContent, i4.Uint8List>
+  i0.GeneratedColumnWithTypeConverter<i3.EventContent?, i4.Uint8List>
       get content => $composableBuilder(
           column: $table.content, builder: (column) => column);
 
@@ -248,7 +248,7 @@ class $EventsTableManager extends i0.RootTableManager<
             i0.Value<String> clientId = const i0.Value.absent(),
             i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
             i0.Value<String> clientTimeStamp = const i0.Value.absent(),
-            i0.Value<i3.EventContent> content = const i0.Value.absent(),
+            i0.Value<i3.EventContent?> content = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
               i1.EventsCompanion(
@@ -268,7 +268,7 @@ class $EventsTableManager extends i0.RootTableManager<
             required String clientId,
             i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
             required String clientTimeStamp,
-            i0.Value<i3.EventContent> content = const i0.Value.absent(),
+            i0.Value<i3.EventContent?> content = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
               i1.EventsCompanion.insert(
@@ -384,12 +384,12 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
           $customConstraints: 'NOT NULL');
   static const i0.VerificationMeta _contentMeta =
       const i0.VerificationMeta('content');
-  late final i0.GeneratedColumnWithTypeConverter<i3.EventContent, i4.Uint8List>
+  late final i0.GeneratedColumnWithTypeConverter<i3.EventContent?, i4.Uint8List>
       content = i0.GeneratedColumn<i4.Uint8List>('content', aliasedName, true,
               type: i0.DriftSqlType.blob,
               requiredDuringInsert: false,
               $customConstraints: '')
-          .withConverter<i3.EventContent>(i1.Events.$convertercontent);
+          .withConverter<i3.EventContent?>(i1.Events.$convertercontentn);
   @override
   List<i0.GeneratedColumn> get $columns => [
         id,
@@ -464,7 +464,7 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
           i0.DriftSqlType.string, data['${effectivePrefix}server_time_stamp']),
       clientTimeStamp: attachedDatabase.typeMapping.read(
           i0.DriftSqlType.string, data['${effectivePrefix}client_time_stamp'])!,
-      content: i1.Events.$convertercontent.fromSql(attachedDatabase.typeMapping
+      content: i1.Events.$convertercontentn.fromSql(attachedDatabase.typeMapping
           .read(i0.DriftSqlType.blob, data['${effectivePrefix}content'])),
     );
   }
@@ -478,8 +478,10 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
       const i0.EnumNameConverter<i2.EventTypes>(i2.EventTypes.values);
   static i0.JsonTypeConverter2<i2.EventTypes?, String?, String?>
       $convertertypen = i0.JsonTypeConverter2.asNullable($convertertype);
-  static i0.JsonTypeConverter2<i3.EventContent, i4.Uint8List?, Object?>
+  static i0.JsonTypeConverter2<i3.EventContent, i4.Uint8List, dynamic>
       $convertercontent = i3.EventContent.binaryConverter;
+  static i0.JsonTypeConverter2<i3.EventContent?, i4.Uint8List?, dynamic>
+      $convertercontentn = i0.JsonTypeConverter2.asNullable($convertercontent);
   @override
   bool get dontWriteConstraints => true;
 }
@@ -497,7 +499,7 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
   final String clientTimeStamp;
 
   /// time should be in iso8601
-  final i3.EventContent content;
+  final i3.EventContent? content;
   const Event(
       {required this.id,
       this.type,
@@ -505,7 +507,7 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
       required this.clientId,
       this.serverTimeStamp,
       required this.clientTimeStamp,
-      required this.content});
+      this.content});
   @override
   Map<String, i0.Expression> toColumns(bool nullToAbsent) {
     final map = <String, i0.Expression>{};
@@ -521,9 +523,9 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
       map['server_time_stamp'] = i0.Variable<String>(serverTimeStamp);
     }
     map['client_time_stamp'] = i0.Variable<String>(clientTimeStamp);
-    {
-      map['content'] =
-          i0.Variable<i4.Uint8List>(i1.Events.$convertercontent.toSql(content));
+    if (!nullToAbsent || content != null) {
+      map['content'] = i0.Variable<i4.Uint8List>(
+          i1.Events.$convertercontentn.toSql(content));
     }
     return map;
   }
@@ -542,7 +544,9 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
           ? const i0.Value.absent()
           : i0.Value(serverTimeStamp),
       clientTimeStamp: i0.Value(clientTimeStamp),
-      content: i0.Value(content),
+      content: content == null && nullToAbsent
+          ? const i0.Value.absent()
+          : i0.Value(content),
     );
   }
 
@@ -557,8 +561,8 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
       clientId: serializer.fromJson<String>(json['client_id']),
       serverTimeStamp: serializer.fromJson<String?>(json['server_time_stamp']),
       clientTimeStamp: serializer.fromJson<String>(json['client_time_stamp']),
-      content: i1.Events.$convertercontent
-          .fromJson(serializer.fromJson<Object?>(json['content'])),
+      content: i1.Events.$convertercontentn
+          .fromJson(serializer.fromJson<dynamic>(json['content'])),
     );
   }
   @override
@@ -573,7 +577,7 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
       'server_time_stamp': serializer.toJson<String?>(serverTimeStamp),
       'client_time_stamp': serializer.toJson<String>(clientTimeStamp),
       'content': serializer
-          .toJson<Object?>(i1.Events.$convertercontent.toJson(content)),
+          .toJson<dynamic>(i1.Events.$convertercontentn.toJson(content)),
     };
   }
 
@@ -584,7 +588,7 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
           String? clientId,
           i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
           String? clientTimeStamp,
-          i3.EventContent? content}) =>
+          i0.Value<i3.EventContent?> content = const i0.Value.absent()}) =>
       i1.Event(
         id: id ?? this.id,
         type: type.present ? type.value : this.type,
@@ -595,7 +599,7 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
             ? serverTimeStamp.value
             : this.serverTimeStamp,
         clientTimeStamp: clientTimeStamp ?? this.clientTimeStamp,
-        content: content ?? this.content,
+        content: content.present ? content.value : this.content,
       );
   Event copyWithCompanion(i1.EventsCompanion data) {
     return Event(
@@ -652,7 +656,7 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
   final i0.Value<String> clientId;
   final i0.Value<String?> serverTimeStamp;
   final i0.Value<String> clientTimeStamp;
-  final i0.Value<i3.EventContent> content;
+  final i0.Value<i3.EventContent?> content;
   final i0.Value<int> rowid;
   const EventsCompanion({
     this.id = const i0.Value.absent(),
@@ -705,7 +709,7 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
       i0.Value<String>? clientId,
       i0.Value<String?>? serverTimeStamp,
       i0.Value<String>? clientTimeStamp,
-      i0.Value<i3.EventContent>? content,
+      i0.Value<i3.EventContent?>? content,
       i0.Value<int>? rowid}) {
     return i1.EventsCompanion(
       id: id ?? this.id,
@@ -743,7 +747,7 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
     }
     if (content.present) {
       map['content'] = i0.Variable<i4.Uint8List>(
-          i1.Events.$convertercontent.toSql(content.value));
+          i1.Events.$convertercontentn.toSql(content.value));
     }
     if (rowid.present) {
       map['rowid'] = i0.Variable<int>(rowid.value);
@@ -776,6 +780,14 @@ i0.Index get eventClientIdIndex => i0.Index.byDialect('event_client_id_index', {
 
 class SharedEventsDrift extends i5.ModularAccessor {
   SharedEventsDrift(i0.GeneratedDatabase db) : super(db);
+  i0.Selectable<i1.Event> getEvents() {
+    return customSelect('SELECT * FROM events', variables: [], readsFrom: {
+      events,
+    }).asyncMap(events.mapFromRow);
+  }
+
+  i1.Events get events =>
+      i5.ReadDatabaseContainer(attachedDatabase).resultSet<i1.Events>('events');
   i6.SharedUsersDrift get sharedUsersDrift =>
       this.accessor(i6.SharedUsersDrift.new);
 }

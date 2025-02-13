@@ -12,6 +12,12 @@ CREATE TABLE nodes (
     content BLOB MAPPED BY `NodeContent.binaryConverter`
 );
 
+getAllNodes:
+SELECT * FROM nodes;
+
+deleteAllNodes:
+DELETE FROM nodes;
+
 getNodeById:
 SELECT * FROM nodes WHERE id = :id;
 

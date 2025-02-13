@@ -3,5 +3,11 @@ import 'converters.dart';
 CREATE TABLE users (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   name TEXT,
-  preferences TEXT MAPPED BY `Preferences.converter`
+  preferences BLOB MAPPED BY `Preferences.converter`
 );
+
+insertUser:
+INSERT INTO users(id, preferences) VALUES(:id, :preferences) ;
+
+selectUsers:
+SELECT * FROM users;

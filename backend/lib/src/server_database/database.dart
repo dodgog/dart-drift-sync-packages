@@ -92,6 +92,7 @@ class ServerDatabase extends $ServerDatabase {
           id: event.id,
           type: event.type,
           clientId: event.clientId,
+          targetNodeId: event.targetNodeId,
           serverTimeStamp: DateTime.now().toIso8601String(),
           clientTimeStamp: event.clientTimeStamp,
           content: event.content,

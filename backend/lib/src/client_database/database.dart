@@ -74,6 +74,7 @@ class ClientDatabase extends $ClientDatabase {
         await clientDrift.eventsDrift.insertServerEvent(
             id: event.id,
             type: event.type,
+            targetNodeId: event.targetNodeId,
             clientId: event.clientId,
             serverTimeStamp: event.serverTimeStamp,
             clientTimeStamp: event.clientTimeStamp,

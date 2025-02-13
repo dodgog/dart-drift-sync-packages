@@ -6,9 +6,9 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  drift: ^2.24.0
+  drift: ^2.25.0
   # it is important that drift_dev is a regular dependency here.
-  drift_dev: ^2.24.0
+  drift_dev: ^2.25.0
   json_annotation: ^4.9.0
   uuidv7: ^1.0.0
 
@@ -19,10 +19,3 @@ dev_dependencies:
   postgres: ^3.5.0
   drift_postgres: ^1.3.0
   json_serializable: ^6.9.3
-
-dependency_overrides:
-  drift_dev:
-    git:
-      url: https://github.com/simolus3/drift.git
-      ref: develop
-      path: drift_dev

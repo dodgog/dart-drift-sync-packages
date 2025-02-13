@@ -1,8 +1,7 @@
+import 'package:backend/src/shared_definitions/utils/date_comparators.dart';
 import 'package:drift/drift.dart';
 
-import 'event_types.dart';
-import 'shared_events.drift.dart';
-import 'shared_nodes.drift.dart';
+import 'package:backend/client_definitions.dart';
 
 // apply client time and server time as last modified fields
 // later we should change it to using the vector clock ts
@@ -25,7 +24,7 @@ class NodeRetrievalException implements Exception {
 }
 
 extension Applicator on SharedNodesDrift {
-  Future<Node> applyEvent(Event event) async {
+  Future<Node?> applyEvent(Event event) async {
     if (event.type == EventTypes.create) {
       final node = _createNodeFromCreateEvent(event);
       insertNode(
@@ -44,46 +43,52 @@ extension Applicator on SharedNodesDrift {
           "Target nodeId is null in a mutation event");
     }
 
-    final node = await getNodeById(id: event.targetNodeId!).getSingleOrNull() ??
+    final targetNode = await getNodeById(id: event.targetNodeId!).getSingleOrNull() ??
         (throw NodeRetrievalException("There must be exactly one node "
             "with id"));
 
-    late final Node replacedNode;
+    // Last Write Wins LWW
+    if (!_isEventAfterNodeLastModifiedTime(event, targetNode)){
+      return null;
+    }
+
+    late final Node mutatedNode;
 
     switch (event.type) {
       case EventTypes.edit:
-        replacedNode = _applyEditEventToNode(event, node);
+        mutatedNode = _applyEditEventToNode(event, targetNode);
       case EventTypes.delete:
-        replacedNode = _applyDeleteEventToNode(event, node);
+        mutatedNode = _applyDeleteEventToNode(event, targetNode);
       default:
         throw UnsupportedEventException(
             "No such event supported ${event.type}");
     }
 
     mutateNodeById(
-      serverTimeStamp: replacedNode.serverTimeStamp,
-      clientTimeStamp: replacedNode.clientTimeStamp,
-      userId: replacedNode.userId,
-      isDeleted: replacedNode.isDeleted,
-      content: replacedNode.content,
-      id: replacedNode.id,
+      serverTimeStamp: mutatedNode.serverTimeStamp,
+      clientTimeStamp: mutatedNode.clientTimeStamp,
+      userId: mutatedNode.userId,
+      isDeleted: mutatedNode.isDeleted,
+      content: mutatedNode.content,
+      id: mutatedNode.id,
     );
 
-    return replacedNode;
+    return mutatedNode;
   }
 }
 
-bool _isEventAfterNodeLastModifiedTime(Event event, Node node){
+bool _isEventAfterNodeLastModifiedTime(Event event, Node node) {
   // vector clocks here would be nice
-  return false;
+  return WeirdDate.fromEvent(event) > WeirdDate.fromNode(node);
 }
 
 Node _applyEditEventToNode(Event event, Node node) {
-  assert(event.targetNodeId == node.id);
   assert(event.type == EventTypes.edit);
+  assert(event.content != null);
+  assert(event.targetNodeId == node.id);
 
   return node.copyWith(
-    content: event.content.nodeContent,
+    content: event.content!.nodeContent,
     clientTimeStamp: event.clientTimeStamp,
     serverTimeStamp: Value(event.serverTimeStamp),
   );
@@ -92,6 +97,7 @@ Node _applyEditEventToNode(Event event, Node node) {
 Node _applyDeleteEventToNode(Event event, Node node) {
   assert(event.targetNodeId == node.id);
   assert(event.type == EventTypes.delete);
+  assert(event.content == null);
 
   return node.copyWith(
     isDeleted: true,
@@ -103,14 +109,15 @@ Node _applyDeleteEventToNode(Event event, Node node) {
 Node _createNodeFromCreateEvent(Event event) {
   assert(event.targetNodeId != null);
   assert(event.type == EventTypes.create);
+  assert(event.content != null);
 
   return Node(
     id: event.targetNodeId!,
     clientTimeStamp: event.clientTimeStamp,
     serverTimeStamp: event.serverTimeStamp,
-    userId: event.content.userId,
+    userId: event.content!.userId,
     isDeleted: false,
-    content: event.content.nodeContent,
-    type: event.content.nodeType,
+    content: event.content!.nodeContent,
+    type: event.content!.nodeType,
   );
 }

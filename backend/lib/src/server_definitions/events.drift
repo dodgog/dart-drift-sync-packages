@@ -9,10 +9,11 @@ WHERE e.server_time_stamp > :timestamp AND c.user_id = :user_id
 ORDER BY e.server_time_stamp ASC;
 
 insertEvent:
-INSERT INTO events (id, type, client_id, server_time_stamp, client_time_stamp,
-content)
+INSERT INTO events (id, type, client_id, target_node_id, server_time_stamp,
+client_time_stamp, content)
 VALUES
-(:id, :type, :client_id, :server_time_stamp, :client_time_stamp, :content);
+(:id, :type, :client_id, :target_node_id, :server_time_stamp,
+:client_time_stamp, :content);
 
 getLatestTimestampAffectingUser:
 SELECT MAX(e.server_time_stamp)

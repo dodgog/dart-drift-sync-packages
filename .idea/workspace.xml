@@ -5,37 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="73f18ddc-bee0-445b-b6b5-96132ae4f457" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/lib/client_database.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/lib/server_database.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/lib/shared_definitions.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/lib/src/shared/event_content.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/lib/src/shared/event_types.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/test/client_test.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/test/server/memory_test.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/test/server/postgres_test.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/test/server/server_test_executor.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/playground/build.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/playground/lib/src/converters.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/playground/lib/src/test.drift" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/playground/pubspec.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/test/client/reduction_test.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/playground/lib/src/database.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/playground/lib/src/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/build.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/build.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/client.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/client.drift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/client.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/client.drift.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/client_definitions.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/client_definitions.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/server_definitions.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/server_definitions.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/client/events.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/client/events.drift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/client/events.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/client/events.drift.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/client/users.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/client/users.drift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/client/users.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/client/users.drift.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/lib/src/client_database/database.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/client_database/database.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/server/events.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server/events.drift.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/client_definitions/events.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/client_definitions/events.drift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/client_definitions/events.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/client_definitions/events.drift.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/lib/src/server_database/database.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server_database/database.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared/shared_events.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared/shared_events.drift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared/shared_events.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared/shared_events.drift.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/test/server_postgres_test.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/test/server_test.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/server_definitions/events.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server_definitions/events.drift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/server_definitions/events.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server_definitions/events.drift.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/apply_event_to_node.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/apply_event_to_node.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/date_comparators.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/utils/date_comparators.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/event_content.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/event_content.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_events.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_events.drift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_events.drift.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_nodes.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_nodes.drift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_nodes.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_nodes.drift.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/test/client/client_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/test/client/client_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/playground/example/playground_example.dart" beforeDir="false" afterPath="$PROJECT_DIR$/playground/example/playground_example.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/playground/lib/src/converters.dart" beforeDir="false" afterPath="$PROJECT_DIR$/playground/lib/src/converters.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/playground/lib/src/converters.g.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/playground/lib/src/test.drift" beforeDir="false" afterPath="$PROJECT_DIR$/playground/lib/src/test.drift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/playground/lib/src/test.drift.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/playground/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/playground/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,6 +71,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Dart Command Line App.main.dart.executor&quot;: &quot;Run&quot;,
     &quot;Dart Test.Successful queries in query_withregular_postgres_test.dart.executor&quot;: &quot;Run&quot;,
     &quot;Dart Test.Tests in client_test.dart.executor&quot;: &quot;Run&quot;,
     &quot;Dart Test.Tests in memory_test.dart.executor&quot;: &quot;Run&quot;,
@@ -85,6 +79,7 @@
     &quot;Dart Test.Tests in query_aaa.dart.executor&quot;: &quot;Run&quot;,
     &quot;Dart Test.Tests in query_test.dart.executor&quot;: &quot;Run&quot;,
     &quot;Dart Test.Tests in query_withregular_postgres_test.dart.executor&quot;: &quot;Run&quot;,
+    &quot;Dart Test.Tests in reduction_test.dart.executor&quot;: &quot;Run&quot;,
     &quot;Dart Test.Tests in server_test.dart.executor&quot;: &quot;Run&quot;,
     &quot;Dart Test.UTF16 strings in value in query_test.dart.executor&quot;: &quot;Run&quot;,
     &quot;Dart Test.UTF16 strings in value in query_withregular_postgres_test.dart.executor&quot;: &quot;Run&quot;,
@@ -97,6 +92,10 @@
     &quot;Dart Test.interpret event in server_test.dart.executor&quot;: &quot;Run&quot;,
     &quot;Dart Test.pull nothing to push in client_test.dart.executor&quot;: &quot;Run&quot;,
     &quot;Dart Test.push event in client_test.dart.executor&quot;: &quot;Run&quot;,
+    &quot;Dart Test.reduce create event in reduction_test.dart.executor&quot;: &quot;Run&quot;,
+    &quot;Dart Test.reduce create event then delete in reduction_test.dart.executor&quot;: &quot;Run&quot;,
+    &quot;Dart Test.reduce create event then edit in reduction_test.dart.executor&quot;: &quot;Run&quot;,
+    &quot;Dart Test.reduce create event then edit then delete in reduction_test.dart.executor&quot;: &quot;Run&quot;,
     &quot;DefaultPlantUmlFileTemplate&quot;: &quot;UML Sequence&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
@@ -106,62 +105,63 @@
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/vania/data/dev/sync/backend/lib&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;Errors&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/vania/data/dev/sync/backend/test/client&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.fileTypes&quot;,
     &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/backend/test/client" />
+      <recent name="$PROJECT_DIR$/backend/lib/src/shared_definitions" />
       <recent name="$PROJECT_DIR$/backend/lib" />
       <recent name="$PROJECT_DIR$/playground" />
       <recent name="$PROJECT_DIR$/backend/lib/src/client_database" />
-      <recent name="$PROJECT_DIR$/backend/test" />
-      <recent name="$PROJECT_DIR$/backend/lib/src/shared" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/backend/lib/src/shared_definitions/utils" />
+      <recent name="$PROJECT_DIR$/backend/test/client" />
+      <recent name="$PROJECT_DIR$/backend/test" />
       <recent name="$PROJECT_DIR$/docs" />
       <recent name="$PROJECT_DIR$/backend/lib/src/server_database" />
-      <recent name="$PROJECT_DIR$/backend/lib/src" />
-      <recent name="$PROJECT_DIR$/backend/lib" />
-      <recent name="$PROJECT_DIR$/shared/lib/src/shared" />
     </key>
   </component>
-  <component name="RunManager" selected="Dart Test.Tests in memory_test.dart">
-    <configuration name="Tests in memory_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
-      <option name="filePath" value="$PROJECT_DIR$/backend/test/server/memory_test.dart" />
-      <option name="testName" value="memory_test.dart" />
+  <component name="RunManager" selected="Dart Command Line App.main.dart">
+    <configuration name="main.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" temporary="true" nameIsGenerated="true">
+      <option name="filePath" value="$PROJECT_DIR$/playground/lib/src/main.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/playground" />
       <method v="2" />
     </configuration>
-    <configuration name="Tests in postgres_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
-      <option name="filePath" value="$PROJECT_DIR$/backend/test/server/postgres_test.dart" />
-      <option name="testName" value="postgres_test.dart" />
+    <configuration name="Tests in reduction_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
+      <option name="filePath" value="$PROJECT_DIR$/backend/test/client/reduction_test.dart" />
+      <option name="testName" value="reduction_test.dart" />
       <method v="2" />
     </configuration>
-    <configuration name="Tests in server_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
-      <option name="filePath" value="$PROJECT_DIR$/backend/test/server_test.dart" />
-      <option name="testName" value="server_test.dart" />
-      <method v="2" />
-    </configuration>
-    <configuration name="description in server_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
-      <option name="filePath" value="$PROJECT_DIR$/backend/test/server_test.dart" />
+    <configuration name="reduce create event then delete in reduction_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
+      <option name="filePath" value="$PROJECT_DIR$/backend/test/client/reduction_test.dart" />
       <option name="scope" value="GROUP_OR_TEST_BY_NAME" />
-      <option name="testName" value="description" />
+      <option name="testName" value="reduce create event then delete" />
       <method v="2" />
     </configuration>
-    <configuration name="pull nothing to push in client_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
-      <option name="filePath" value="$PROJECT_DIR$/backend/test/client_test.dart" />
+    <configuration name="reduce create event then edit in reduction_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
+      <option name="filePath" value="$PROJECT_DIR$/backend/test/client/reduction_test.dart" />
       <option name="scope" value="GROUP_OR_TEST_BY_NAME" />
-      <option name="testName" value="pull nothing to push" />
+      <option name="testName" value="reduce create event then edit" />
+      <method v="2" />
+    </configuration>
+    <configuration name="reduce create event then edit then delete in reduction_test.dart" type="DartTestRunConfigurationType" factoryName="Dart Test" temporary="true" nameIsGenerated="true">
+      <option name="filePath" value="$PROJECT_DIR$/backend/test/client/reduction_test.dart" />
+      <option name="scope" value="GROUP_OR_TEST_BY_NAME" />
+      <option name="testName" value="reduce create event then edit then delete" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Dart Test.Tests in memory_test.dart" />
-        <item itemvalue="Dart Test.Tests in postgres_test.dart" />
-        <item itemvalue="Dart Test.description in server_test.dart" />
-        <item itemvalue="Dart Test.pull nothing to push in client_test.dart" />
-        <item itemvalue="Dart Test.Tests in server_test.dart" />
+        <item itemvalue="Dart Command Line App.main.dart" />
+        <item itemvalue="Dart Test.Tests in reduction_test.dart" />
+        <item itemvalue="Dart Test.reduce create event then edit then delete in reduction_test.dart" />
+        <item itemvalue="Dart Test.reduce create event then edit in reduction_test.dart" />
+        <item itemvalue="Dart Test.reduce create event then delete in reduction_test.dart" />
       </list>
     </recent_temporary>
   </component>

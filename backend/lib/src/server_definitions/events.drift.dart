@@ -36,24 +36,26 @@ class EventsDrift extends i1.ModularAccessor {
       {required String id,
       required i3.EventTypes? type,
       required String clientId,
+      required String? targetNodeId,
       required String? serverTimeStamp,
       required String clientTimeStamp,
-      required i4.EventContent content}) {
+      required i4.EventContent? content}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>
-          'INSERT INTO events (id, type, client_id, server_time_stamp, client_time_stamp, content) VALUES (?1, ?2, ?3, ?4, ?5, ?6)',
+          'INSERT INTO events (id, type, client_id, target_node_id, server_time_stamp, client_time_stamp, content) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)',
         i0.SqlDialect.postgres ||
         _ =>
-          'INSERT INTO events (id, type, client_id, server_time_stamp, client_time_stamp, content) VALUES (\$1, \$2, \$3, \$4, \$5, \$6)',
+          'INSERT INTO events (id, type, client_id, target_node_id, server_time_stamp, client_time_stamp, content) VALUES (\$1, \$2, \$3, \$4, \$5, \$6, \$7)',
       },
       variables: [
         i0.Variable<String>(id),
         i0.Variable<String>(i2.Events.$convertertypen.toSql(type)),
         i0.Variable<String>(clientId),
+        i0.Variable<String>(targetNodeId),
         i0.Variable<String>(serverTimeStamp),
         i0.Variable<String>(clientTimeStamp),
-        i0.Variable<i5.Uint8List>(i2.Events.$convertercontent.toSql(content))
+        i0.Variable<i5.Uint8List>(i2.Events.$convertercontentn.toSql(content))
       ],
       updates: {events},
     );

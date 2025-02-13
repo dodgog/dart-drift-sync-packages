@@ -737,6 +737,21 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
 
 class SharedNodesDrift extends i5.ModularAccessor {
   SharedNodesDrift(i0.GeneratedDatabase db) : super(db);
+  i0.Selectable<i1.Node> getAllNodes() {
+    return customSelect('SELECT * FROM nodes', variables: [], readsFrom: {
+      nodes,
+    }).asyncMap(nodes.mapFromRow);
+  }
+
+  Future<int> deleteAllNodes() {
+    return customUpdate(
+      'DELETE FROM nodes',
+      variables: [],
+      updates: {nodes},
+      updateKind: i0.UpdateKind.delete,
+    );
+  }
+
   i0.Selectable<i1.Node> getNodeById({required String id}) {
     return customSelect(
         switch (executor.dialect) {

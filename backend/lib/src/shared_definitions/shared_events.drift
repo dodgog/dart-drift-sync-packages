@@ -13,3 +13,6 @@ CREATE TABLE events (
 );
 
 CREATE INDEX event_client_id_index ON events(client_id);
+
+getEvents:
+SELECT * FROM events;
