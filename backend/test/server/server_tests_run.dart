@@ -37,7 +37,7 @@ void runAllServerTests(ServerTestExecutor executor) {
           "wow",
           "user1",
           NodeTypes.document,
-          NodeContent("author", "title", ["list1"]),
+          NodeContent.document("author", "title"),
         ),
       )
     ]);

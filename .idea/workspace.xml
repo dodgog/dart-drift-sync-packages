@@ -5,30 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="73f18ddc-bee0-445b-b6b5-96132ae4f457" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/test/client/reduction_test.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/playground/lib/src/database.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/playground/lib/src/main.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/lib/src/client_definitions/event_helper.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/client_database/database.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/client_database/database.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/client_definitions/events.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/client_definitions/events.drift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/client_definitions/events.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/client_definitions/events.drift.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/server_database/database.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server_database/database.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/server_definitions/events.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server_definitions/events.drift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/server_definitions/events.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/server_definitions/events.drift.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/client_definitions.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/client_definitions.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/shared_definitions.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/shared_definitions.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/apply_event_to_node.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/apply_event_to_node.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/date_comparators.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/utils/date_comparators.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/event_content.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/event_content.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_events.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_events.drift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_events.drift.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_nodes.drift" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_nodes.drift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_nodes.drift.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/shared_nodes.drift.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/node_content.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/node_content.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/lib/src/shared_definitions/node_content.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/lib/src/shared_definitions/node_content.g.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/test/client/client_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/test/client/client_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/playground/example/playground_example.dart" beforeDir="false" afterPath="$PROJECT_DIR$/playground/example/playground_example.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/playground/lib/src/converters.dart" beforeDir="false" afterPath="$PROJECT_DIR$/playground/lib/src/converters.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/playground/lib/src/converters.g.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/playground/lib/src/test.drift" beforeDir="false" afterPath="$PROJECT_DIR$/playground/lib/src/test.drift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/playground/lib/src/test.drift.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/playground/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/playground/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/test/client/reduction_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/test/client/reduction_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/test/server/server_tests_run.dart" beforeDir="false" afterPath="$PROJECT_DIR$/backend/test/server/server_tests_run.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +92,7 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/vania/data/dev/sync/backend/test/client&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.fileTypes&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
 }</component>
@@ -126,7 +112,7 @@
       <recent name="$PROJECT_DIR$/backend/lib/src/server_database" />
     </key>
   </component>
-  <component name="RunManager" selected="Dart Command Line App.main.dart">
+  <component name="RunManager" selected="Dart Test.reduce create event then edit then delete in reduction_test.dart">
     <configuration name="main.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" temporary="true" nameIsGenerated="true">
       <option name="filePath" value="$PROJECT_DIR$/playground/lib/src/main.dart" />
       <option name="workingDirectory" value="$PROJECT_DIR$/playground" />
@@ -157,9 +143,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Dart Test.reduce create event then edit then delete in reduction_test.dart" />
         <item itemvalue="Dart Command Line App.main.dart" />
         <item itemvalue="Dart Test.Tests in reduction_test.dart" />
-        <item itemvalue="Dart Test.reduce create event then edit then delete in reduction_test.dart" />
         <item itemvalue="Dart Test.reduce create event then edit in reduction_test.dart" />
         <item itemvalue="Dart Test.reduce create event then delete in reduction_test.dart" />
       </list>
@@ -175,5 +161,16 @@
       <updated>1737147662189</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/backend/test/client/reduction_test.dart</url>
+          <line>55</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

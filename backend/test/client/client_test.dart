@@ -34,13 +34,18 @@ void main() {
 
   test('push event', () async {
     final event = Event(
-        id: "event1",
-        type: EventTypes.create,
-        clientId: "client1",
-        clientTimeStamp: "2024-01-30T11:55:00.000Z",
-        serverTimeStamp: null,
-        content: EventContent("wow", "user1", NodeTypes.document,
-            NodeContent("author", "title", ["list1"])));
+      id: "event1",
+      type: EventTypes.create,
+      clientId: "client1",
+      clientTimeStamp: "2024-01-30T11:55:00.000Z",
+      serverTimeStamp: null,
+      content: EventContent(
+        "wow",
+        "user1",
+        NodeTypes.document,
+        NodeContent.document("author", "title"),
+      ),
+    );
 
     await db.clientDrift.eventsDrift.insertLocalEvent(
       id: event.id,
@@ -60,13 +65,18 @@ void main() {
 
   test('pull nothing to push', () async {
     final event = Event(
-        id: "event1",
-        type: EventTypes.create,
-        clientId: "client1",
-        clientTimeStamp: "2024-01-30T11:55:00.000Z",
-        serverTimeStamp: "2025-01-30T11:55:00.000Z",
-        content: EventContent("wow", "user1", NodeTypes.document,
-            NodeContent("author", "title", ["list1"])));
+      id: "event1",
+      type: EventTypes.create,
+      clientId: "client1",
+      clientTimeStamp: "2024-01-30T11:55:00.000Z",
+      serverTimeStamp: "2025-01-30T11:55:00.000Z",
+      content: EventContent(
+        "wow",
+        "user1",
+        NodeTypes.document,
+        NodeContent.document("author", "title"),
+      ),
+    );
 
     await db.clientDrift.eventsDrift.insertLocalEvent(
       id: event.id,

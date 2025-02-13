@@ -1,15 +1,22 @@
 import 'package:drift/drift.dart';
 import 'package:json_annotation/json_annotation.dart' as j;
 
+import 'package:backend/client_definitions.dart';
+
 part 'node_content.g.dart';
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
 class NodeContent {
-  String author;
-  String title;
-  List<String> referencedObjectIds;
+  @NodeTypeConverter()
+  NodeTypes nodeType;
+  String? author;
+  String? title;
+  List<String>? referencedObjectIds;
 
-  NodeContent(this.author, this.title, this.referencedObjectIds);
+  NodeContent(this.nodeType, this.author, this.title, this
+      .referencedObjectIds);
+
+  NodeContent.document(this.author, this.title): nodeType = NodeTypes.document;
 
   factory NodeContent.fromJson(Map<String, dynamic> json) =>
       _$NodeContentFromJson(json);

@@ -1,4 +1,4 @@
-import 'package:backend/src/shared_definitions/utils/date_comparators.dart';
+import 'utils/date_comparators.dart';
 import 'package:drift/drift.dart';
 
 import 'package:backend/client_definitions.dart';
@@ -24,6 +24,24 @@ class NodeRetrievalException implements Exception {
 }
 
 extension Applicator on SharedNodesDrift {
+  /// Apply events against a database in one drift transaction
+  ///
+  /// WARNING: Do not nest into more transactions as that is not supported by
+  /// postgres drift
+  /// [docs](https://drift.simonbinder.eu/dart_api/transactions/#supported-implementations)
+  Future<int> applyListOfEventsTransaction(List<Event> events) async {
+    int counter = 0;
+    await transaction(() async {
+      for (final event in events) {
+        final result = await applyEvent(event);
+        if (result != null) counter++;
+      }
+    });
+    return counter;
+  }
+
+  /// Depending on the event type, parse the event, retreive relevant nodes,
+  /// and if the LWW time ordering allows, create or mutate a node
   Future<Node?> applyEvent(Event event) async {
     if (event.type == EventTypes.create) {
       final node = _createNodeFromCreateEvent(event);
@@ -43,12 +61,13 @@ extension Applicator on SharedNodesDrift {
           "Target nodeId is null in a mutation event");
     }
 
-    final targetNode = await getNodeById(id: event.targetNodeId!).getSingleOrNull() ??
-        (throw NodeRetrievalException("There must be exactly one node "
-            "with id"));
+    final targetNode =
+        await getNodeById(id: event.targetNodeId!).getSingleOrNull() ??
+            (throw NodeRetrievalException("There must be exactly one node "
+                "with id"));
 
     // Last Write Wins LWW
-    if (!_isEventAfterNodeLastModifiedTime(event, targetNode)){
+    if (!_isEventAfterNodeLastModifiedTime(event, targetNode)) {
       return null;
     }
 
