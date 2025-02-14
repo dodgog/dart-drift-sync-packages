@@ -7,6 +7,8 @@ part 'node_content.g.dart';
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
 class NodeContent {
+  // TODO: include type, which is normally also a part of the node object for
+  //  debugging
   @NodeTypeConverter()
   NodeTypes nodeType;
   String? author;

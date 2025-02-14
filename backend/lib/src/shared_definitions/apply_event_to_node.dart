@@ -101,10 +101,30 @@ bool _isEventAfterNodeLastModifiedTime(Event event, Node node) {
   return WeirdDate.fromEvent(event) > WeirdDate.fromNode(node);
 }
 
+// TODO: create is kind of like an edit, which is applied to a non-existing node
+// at this stage
+Node _createNodeFromCreateEvent(Event event) {
+  assert(event.targetNodeId != null);
+  assert(event.type == EventTypes.create);
+  assert(event.content != null);
+  assert(event.content!.eventType == event.type);
+
+  return Node(
+    id: event.targetNodeId!,
+    clientTimeStamp: event.clientTimeStamp,
+    serverTimeStamp: event.serverTimeStamp,
+    userId: event.content!.userId,
+    isDeleted: false,
+    content: event.content!.nodeContent,
+    type: event.content!.nodeType,
+  );
+}
+
 Node _applyEditEventToNode(Event event, Node node) {
   assert(event.type == EventTypes.edit);
   assert(event.content != null);
   assert(event.targetNodeId == node.id);
+  assert(event.content!.eventType == event.type);
 
   return node.copyWith(
     content: event.content!.nodeContent,
@@ -125,18 +145,3 @@ Node _applyDeleteEventToNode(Event event, Node node) {
   );
 }
 
-Node _createNodeFromCreateEvent(Event event) {
-  assert(event.targetNodeId != null);
-  assert(event.type == EventTypes.create);
-  assert(event.content != null);
-
-  return Node(
-    id: event.targetNodeId!,
-    clientTimeStamp: event.clientTimeStamp,
-    serverTimeStamp: event.serverTimeStamp,
-    userId: event.content!.userId,
-    isDeleted: false,
-    content: event.content!.nodeContent,
-    type: event.content!.nodeType,
-  );
-}

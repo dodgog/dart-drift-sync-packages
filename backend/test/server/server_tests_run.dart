@@ -36,6 +36,7 @@ void runAllServerTests(ServerTestExecutor executor) {
         content: EventContent(
           "wow",
           "user1",
+          EventTypes.create,
           NodeTypes.document,
           NodeContent.document("author", "title"),
         ),

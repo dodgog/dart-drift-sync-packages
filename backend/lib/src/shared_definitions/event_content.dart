@@ -8,17 +8,21 @@ part 'event_content.g.dart';
 class EventContent {
   String wow;
   String userId;
+  // TODO: include type, which is normally also a part of the event object for
+  //  debugging
+  @EventTypeConverter()
+  EventTypes eventType;
   @NodeTypeConverter()
   NodeTypes nodeType;
   NodeContent nodeContent;
 
-  EventContent(this.wow, this.userId, this.nodeType, this.nodeContent);
+  EventContent(this.wow, this.userId, this.eventType, this.nodeType, this
+      .nodeContent);
 
   factory EventContent.fromJson(Map<String, dynamic> json) =>
       _$EventContentFromJson(json);
 
   Map<String, dynamic> toJson() => _$EventContentToJson(this);
-
 
   // TODO: had to use dynamic type because Object? complains
   // TODO: couldn't reproduce on a smaller sample
@@ -39,19 +43,4 @@ class EventContent {
 //   },
 //     toJson: (EventContent? pref) => pref?.toJson(),
 // );
-}
-
-@j.JsonSerializable()
-class NodeTypeConverter extends j.JsonConverter<NodeTypes, String> {
-  // drift default converter, imported from a generated file
-  static JsonTypeConverter2<NodeTypes, String, String> converter =
-      Nodes.$convertertype;
-
-  const NodeTypeConverter();
-
-  @override
-  NodeTypes fromJson(String json) => converter.fromJson(json);
-
-  @override
-  String toJson(NodeTypes object) => converter.toJson(object);
 }

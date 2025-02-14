@@ -44,6 +44,7 @@ void main() {
         content: EventContent(
           "wow",
           "user1",
+          EventTypes.create,
           NodeTypes.document,
           NodeContent.document("author", "title"),
         ),
@@ -58,6 +59,7 @@ void main() {
         content: EventContent(
           "wowsers",
           "user1",
+          EventTypes.edit,
           NodeTypes.document,
           NodeContent.document("newAuthor", "newTitle"),
         ),
