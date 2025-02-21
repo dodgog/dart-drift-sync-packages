@@ -2,7 +2,7 @@ import 'package:backend/client_definitions.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:uuidv7/uuidv7.dart';
 
-Event issueRawCreateEventFromNode(Node node, Client client) {
+Event issueRawCreateEventFromNode(Node node) {
   return Event(
     // THINK: where should assignment of id happen? maybe on insertion?
     // for now it's in a helper function for insertion
@@ -10,7 +10,8 @@ Event issueRawCreateEventFromNode(Node node, Client client) {
     // THINK: generation happens here and also on the next stage
     targetNodeId: generateUuidV7String(),
     type: EventTypes.create,
-    clientId: client.id,
+    // THINK: happens on the actual insert
+    clientId: "toPopulate",
     timestamp: HLC().issueLocalEventPacked(),
     content: EventContent(
       "wow",
@@ -25,13 +26,14 @@ Event issueRawCreateEventFromNode(Node node, Client client) {
 
 extension NodeEvents on Node {
   Event issueRawEditEventFromMutatedContent(NodeContent nodeContent,
-   Client client, ) {
+   ) {
     return Event(
       id: generateUuidV7String(),
       type: EventTypes.edit,
       targetNodeId: id,
       timestamp: HLC().issueLocalEventPacked(),
-      clientId: client.id,
+      // THINK: happens on the actual insert
+      clientId: "toPopulate",
       content: EventContent(
         "wow",
         userId,
@@ -42,14 +44,14 @@ extension NodeEvents on Node {
     );
   }
 
-  Event issueRawDeleteNodeEvent(Client client) {
+  Event issueRawDeleteNodeEvent() {
     return Event(
       id: generateUuidV7String(),
       type: EventTypes.delete,
       targetNodeId: id,
       timestamp: HLC().issueLocalEventPacked(),
-      // THINK perhaps client id could be retrieved from hlc
-      clientId: client.id,
+      // THINK: happens on the actual insert
+      clientId: "toPopulate",
       content: null,
     );
   }

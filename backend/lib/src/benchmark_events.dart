@@ -40,11 +40,10 @@ void main() async {
         id: 'tobeassigned',
         type: NodeTypes.document,
         lastModifiedAtTimestamp: 'tobedobe',
-        userId: 'user1',
+        userId: client.userId!,
         isDeleted: false,
         content: NodeContent(NodeTypes.document, "author$i", "title$i", null),
       ),
-      client,
     );
 
     // Time insertion if it's at an interval point

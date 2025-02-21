@@ -12,31 +12,23 @@ void main() {
   late Map<String, String> config;
   late Client client;
 
+  final databaseConfig = ClientDatabaseConfig(
+    clientId: "clientId",
+    userId: "userId",
+    userToken: "userToken",
+  );
+
   setUp(() async {
     HLC.reset();
     db = ClientDatabase(
+        initialConfig: databaseConfig,
         executor: DatabaseConnection(
-      NativeDatabase.memory(),
-      closeStreamsSynchronously: true,
-    ));
+          NativeDatabase.memory(),
+          closeStreamsSynchronously: true,
+        ));
 
-    config = {
-      "userToken": "user1token",
-      "clientId": "client1",
-      "userId": "user1"
-    };
 
-    await db.clientDrift.usersDrift.setUserToken(newUserToken: "user1toke"
-        "n");
-    await db.clientDrift.usersDrift.setClientId(newClientId: "client1");
-    await db.clientDrift.usersDrift.setUserId(newUserId: "user1");
-    await db.clientDrift.sharedUsersDrift.createClient(
-        clientId: "client1",
-        userId: "user1"
-    );
-
-    client = await db.clientDrift.usersDrift.getCurrentClient()
-        .getSingle();
+    client = await db.clientDrift.usersDrift.getCurrentClient().getSingle();
   });
   tearDown(() async {
     await db.close();
@@ -47,12 +39,12 @@ void main() {
       Event(
         id: "event1",
         type: EventTypes.create,
-        clientId: "client1",
+        clientId: "will be populated",
         targetNodeId: "node1",
         timestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
         content: EventContent(
           "wow",
-          "user1",
+          client.userId!,
           EventTypes.create,
           NodeTypes.document,
           NodeContent.document("author", "title"),
@@ -61,12 +53,12 @@ void main() {
       Event(
         id: "event2",
         type: EventTypes.edit,
-        clientId: "client1",
+        clientId: "will be populated",
         targetNodeId: "node1",
         timestamp: "2024-01-30T11:55:00.001Z-0000-clientId",
         content: EventContent(
           "wowsers",
-          "user1",
+          client.userId!,
           EventTypes.edit,
           NodeTypes.document,
           NodeContent.document("newAuthor", "newTitle"),
@@ -75,14 +67,17 @@ void main() {
       Event(
         id: "event3",
         type: EventTypes.delete,
-        clientId: "client1",
+        clientId: "will be populated",
         targetNodeId: "node1",
         timestamp: "2024-01-30T11:55:00.002Z-0000-clientId",
         content: null,
       )
     ];
 
-    await db.clientDrift.insertLocalEventListTEST(eventList);
+      for (final event in eventList) {
+        await db.clientDrift.insertLocalEventWithClientId(event
+        );
+      }
 
     final eventsFromStore =
         await db.clientDrift.sharedEventsDrift.getEvents().get();
@@ -102,12 +97,12 @@ void main() {
       Event(
         id: "event1",
         type: EventTypes.create,
-        clientId: "client1",
+        clientId: "will be populated",
         targetNodeId: "node1",
         timestamp: "2024-01-30T11:55:00.001Z-0000-clientId",
         content: EventContent(
           "wow",
-          "user1",
+          client.userId!,
           EventTypes.create,
           NodeTypes.document,
           NodeContent.document("author", "title"),
@@ -116,12 +111,12 @@ void main() {
       Event(
         id: "event2",
         type: EventTypes.edit,
-        clientId: "client1",
+        clientId: "will be populated",
         targetNodeId: "node1",
         timestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
         content: EventContent(
           "wowsers",
-          "user1",
+          client.userId!,
           EventTypes.edit,
           NodeTypes.document,
           NodeContent.document("newAuthor", "newTitle"),
@@ -130,17 +125,20 @@ void main() {
       Event(
         id: "event3",
         type: EventTypes.delete,
-        clientId: "client1",
+        clientId: "will be populated",
         targetNodeId: "node1",
         timestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
         content: null,
       )
     ];
 
-    await db.clientDrift.insertLocalEventListTEST(eventList);
+    for (final event in eventList) {
+      await db.clientDrift.insertLocalEventWithClientId(event
+      );
+    }
 
     final eventsFromStore =
-    await db.clientDrift.sharedEventsDrift.getEvents().get();
+        await db.clientDrift.sharedEventsDrift.getEvents().get();
 
     await db.clientDrift.sharedNodesDrift.applyListOfEvents(eventsFromStore);
 
@@ -157,15 +155,14 @@ void main() {
       Node(
         id: 'tobeassigned',
         type: NodeTypes.document,
-        lastModifiedAtTimestamp : "2024-01-30T11:55:00.000Z-0000-clientId",
-        userId: 'user1',
+        lastModifiedAtTimestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
+        userId: client.userId!,
         isDeleted: false,
         content: NodeContent(NodeTypes.document, "author", "title", null),
-      ), client,
+      ),
     );
 
-    await db.clientDrift.insertLocalEventWithClientId
-      (eventToInsert);
+    await db.clientDrift.insertLocalEventWithClientId(eventToInsert);
 
     final nodes = await db.clientDrift.reduceAllEventsIntoNodes();
 
@@ -175,18 +172,17 @@ void main() {
 
   test("create edit delete node issue and reduce", () async {
     final eventToInsert = issueRawCreateEventFromNode(
-      Node(
-        id: 'tobeassigned',
-        type: NodeTypes.document,
-        lastModifiedAtTimestamp : "2024-01-30T11:55:00.000Z-0000-clientId",
-        userId: 'user1',
-        isDeleted: false,
-        content: NodeContent(NodeTypes.document, "author", "title", null),
-      ), client
-    );
+        Node(
+          id: 'tobeassigned',
+          type: NodeTypes.document,
+          lastModifiedAtTimestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
+          userId: client.userId!,
+          isDeleted: false,
+          content: NodeContent(NodeTypes.document, "author", "title", null),
+        ),
+        );
 
-    await db.clientDrift.insertLocalEventWithClientId
-      (eventToInsert);
+    await db.clientDrift.insertLocalEventWithClientId(eventToInsert);
 
     final nodes = await db.clientDrift.reduceAllEventsIntoNodes();
 
@@ -196,18 +192,18 @@ void main() {
       NodeContent(
         NodeTypes.document,
         "new author",
-        "new title", null,),client,);
+        "new title",
+        null,
+      ),
+    );
     await db.clientDrift.insertLocalEventWithClientId(editEvent);
-    final nodesAfterEdit = await db.clientDrift
-        .reduceAllEventsIntoNodes();
+    final nodesAfterEdit = await db.clientDrift.reduceAllEventsIntoNodes();
     print(nodesAfterEdit.first.toJsonString());
 
     final deleteEvent = nodesAfterEdit.first.issueRawDeleteNodeEvent(
-        client,);
+    );
     await db.clientDrift.insertLocalEventWithClientId(deleteEvent);
-    final nodesAfterDelete = await db.clientDrift
-        .reduceAllEventsIntoNodes();
+    final nodesAfterDelete = await db.clientDrift.reduceAllEventsIntoNodes();
     print(nodesAfterDelete.first.toJsonString());
-
   });
 }

@@ -17,10 +17,13 @@ class UnauthorizedException implements Exception {
   include: {'package:backend/server.drift'},
 )
 class ServerDatabase extends $ServerDatabase {
-  ServerDatabase({QueryExecutor? executor, File? file})
-      : super(executor ?? _openConnection(file: file)) {
-    HLC.initialize(clientNode: ClientNode("server"));
-  }
+  ServerDatabase({
+    this.initialConfig,
+    QueryExecutor? executor,
+    File? file,
+  }) : super(executor ?? _openConnection(file: file));
+
+  final ServerDatabaseConfig? initialConfig;
 
   static QueryExecutor _openConnection({File? file}) {
     if (file != null) {
@@ -37,10 +40,14 @@ class ServerDatabase extends $ServerDatabase {
   MigrationStrategy get migration {
     return MigrationStrategy(
       beforeOpen: (details) async {
-        // if (details.wasCreated) {
-        //   await serverDrift.usersDrift
-        //       .authUser(userId: "user1", token: "user1token");
-        // }
+        // TODO get the last issued timestamp to ensure continuous issuance
+        HLC.initialize(clientNode: ClientNode("server"));
+        if (details.wasCreated) {
+          if (initialConfig == null) {
+            throw InvalidDatabaseConfigException(
+                "Upon initialization no initial Config provided");
+          }
+        }
       },
     );
   }
@@ -53,10 +60,9 @@ class ServerDatabase extends $ServerDatabase {
     }
 
     // TODO: this could be a part of the incoming query
-    final largestIncomingTimestamp = postQuery.events.map((e)=>e.timestamp)
-        .reduce((e1,e2)=> e1
-        .compareTo(e2)
-        > 0 ? e1:e2);
+    final largestIncomingTimestamp = postQuery.events
+        .map((e) => e.timestamp)
+        .reduce((e1, e2) => e1.compareTo(e2) > 0 ? e1 : e2);
 
     HLC().receivePacked(largestIncomingTimestamp);
 

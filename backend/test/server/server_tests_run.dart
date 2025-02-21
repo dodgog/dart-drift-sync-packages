@@ -11,7 +11,7 @@ void runAllServerTests(ServerTestExecutor executor) {
   late ServerDatabase db;
 
   setUp(() async {
-    db = executor.createDatabase();
+    db = executor.createDatabase(initialConfig: ServerDatabaseConfig());
   });
 
   tearDown(() async {
@@ -23,7 +23,6 @@ void runAllServerTests(ServerTestExecutor executor) {
         .createUser(userId: "user1", name: "user1name");
     await db.serverDrift.usersDrift
         .authUser(userId: "user1", token: "user1token");
-
     await db.serverDrift.sharedUsersDrift
         .createClient(userId: "user1", clientId: "client1");
 

@@ -7,31 +7,22 @@ import 'package:test/test.dart';
 
 void main() {
   late ClientDatabase db;
-  late Map<String, String> config;
+  late final Client client;
+  final databaseConfig = ClientDatabaseConfig(
+    clientId: "clientId",
+    userId: "user1",
+    userToken: "user1token",
+  );
 
   setUp(() async {
     db = ClientDatabase(
+      initialConfig: databaseConfig,
         executor: DatabaseConnection(
       NativeDatabase.memory(),
       closeStreamsSynchronously: true,
     ));
 
-    config = {
-      "userToken": "user1token",
-      "clientId": "client1",
-      "userId": "user1"
-    };
-
-    await db.clientDrift.usersDrift.setUserToken(newUserToken: "user1toke"
-        "n");
-    await db.clientDrift.usersDrift.setClientId(newClientId: "client1");
-    await db.clientDrift.usersDrift.setUserId(newUserId: "user1");
-    await db.clientDrift.sharedUsersDrift.createClient(
-        clientId: "client1",
-        userId: "user1"
-    );
-
-    final client = await db.clientDrift.usersDrift.getCurrentClient()
+    client = await db.clientDrift.usersDrift.getCurrentClient()
         .getSingle();
   });
   tearDown(() async {
@@ -42,12 +33,12 @@ void main() {
     final event = Event(
       id: "event1",
       type: EventTypes.create,
-      clientId: "client1",
+      clientId: client.id,
       targetNodeId: 'targetNode',
       timestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
       content: EventContent(
         "wow",
-        "user1",
+        client.userId!,
         EventTypes.create,
         NodeTypes.document,
         NodeContent.document("author", "title"),

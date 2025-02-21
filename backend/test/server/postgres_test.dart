@@ -1,3 +1,4 @@
+import 'package:backend/client_definitions.dart';
 import 'package:backend/server_database.dart';
 import 'package:drift_postgres/drift_postgres.dart';
 import 'package:postgres/postgres.dart' as pg;
@@ -6,8 +7,9 @@ import 'server_tests_run.dart';
 
 class PostgresExecutor extends ServerTestExecutor {
   @override
-  ServerDatabase createDatabase() {
+  ServerDatabase createDatabase({ServerDatabaseConfig? initialConfig}) {
     return ServerDatabase(
+      initialConfig: initialConfig,
       executor: PgDatabase(
         endpoint: pg.Endpoint(
           host: 'localhost',

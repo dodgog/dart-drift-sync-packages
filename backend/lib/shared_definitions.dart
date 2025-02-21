@@ -6,3 +6,4 @@ export 'src/shared_definitions/event_content.dart';
 export 'src/shared_definitions/node_content.dart';
 export 'src/shared_definitions/node_types.dart';
 export 'src/shared_definitions/apply_event_to_node.dart';
+export 'src/shared_definitions/database_config.dart';
