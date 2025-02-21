@@ -9,6 +9,7 @@ dependencies:
   drift: ^2.24.0
   # it is important that drift_dev is a regular dependency here.
   drift_dev: ^2.24.0
+  hybrid_logical_clocks: ^1.0.1
   json_annotation: ^4.9.0
   uuidv7: ^1.0.0
 

@@ -14,10 +14,11 @@ class EventContent {
   EventTypes eventType;
   @NodeTypeConverter()
   NodeTypes nodeType;
+  @NodeContentConverter()
   NodeContent nodeContent;
 
-  EventContent(this.wow, this.userId, this.eventType, this.nodeType, this
-      .nodeContent);
+  EventContent(
+      this.wow, this.userId, this.eventType, this.nodeType, this.nodeContent,);
 
   factory EventContent.fromJson(Map<String, dynamic> json) =>
       _$EventContentFromJson(json);
@@ -28,9 +29,9 @@ class EventContent {
   // TODO: couldn't reproduce on a smaller sample
   // below this definition is another work-around for nullability issues
   static JsonTypeConverter2<EventContent, Uint8List, dynamic> binaryConverter =
-  TypeConverter.jsonb(
-    fromJson: (Object? json) => EventContent.fromJson(json as Map<String,
-        Object?>),
+      TypeConverter.jsonb(
+    fromJson: (Object? json) =>
+        EventContent.fromJson(json as Map<String, Object?>),
     toJson: (EventContent pref) => pref.toJson(),
   );
 

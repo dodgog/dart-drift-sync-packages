@@ -10,21 +10,19 @@ import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i6;
 
 typedef $EventsCreateCompanionBuilder = i1.EventsCompanion Function({
   required String id,
-  i0.Value<i2.EventTypes?> type,
+  required i2.EventTypes type,
   i0.Value<String?> targetNodeId,
   required String clientId,
-  i0.Value<String?> serverTimeStamp,
-  required String clientTimeStamp,
+  required String timestamp,
   i0.Value<i3.EventContent?> content,
   i0.Value<int> rowid,
 });
 typedef $EventsUpdateCompanionBuilder = i1.EventsCompanion Function({
   i0.Value<String> id,
-  i0.Value<i2.EventTypes?> type,
+  i0.Value<i2.EventTypes> type,
   i0.Value<String?> targetNodeId,
   i0.Value<String> clientId,
-  i0.Value<String?> serverTimeStamp,
-  i0.Value<String> clientTimeStamp,
+  i0.Value<String> timestamp,
   i0.Value<i3.EventContent?> content,
   i0.Value<int> rowid,
 });
@@ -69,7 +67,7 @@ class $EventsFilterComposer
   i0.ColumnFilters<String> get id => $composableBuilder(
       column: $table.id, builder: (column) => i0.ColumnFilters(column));
 
-  i0.ColumnWithTypeConverterFilters<i2.EventTypes?, i2.EventTypes, String>
+  i0.ColumnWithTypeConverterFilters<i2.EventTypes, i2.EventTypes, String>
       get type => $composableBuilder(
           column: $table.type,
           builder: (column) => i0.ColumnWithTypeConverterFilters(column));
@@ -78,13 +76,8 @@ class $EventsFilterComposer
       column: $table.targetNodeId,
       builder: (column) => i0.ColumnFilters(column));
 
-  i0.ColumnFilters<String> get serverTimeStamp => $composableBuilder(
-      column: $table.serverTimeStamp,
-      builder: (column) => i0.ColumnFilters(column));
-
-  i0.ColumnFilters<String> get clientTimeStamp => $composableBuilder(
-      column: $table.clientTimeStamp,
-      builder: (column) => i0.ColumnFilters(column));
+  i0.ColumnFilters<String> get timestamp => $composableBuilder(
+      column: $table.timestamp, builder: (column) => i0.ColumnFilters(column));
 
   i0.ColumnWithTypeConverterFilters<i3.EventContent?, i3.EventContent,
           i4.Uint8List>
@@ -134,12 +127,8 @@ class $EventsOrderingComposer
       column: $table.targetNodeId,
       builder: (column) => i0.ColumnOrderings(column));
 
-  i0.ColumnOrderings<String> get serverTimeStamp => $composableBuilder(
-      column: $table.serverTimeStamp,
-      builder: (column) => i0.ColumnOrderings(column));
-
-  i0.ColumnOrderings<String> get clientTimeStamp => $composableBuilder(
-      column: $table.clientTimeStamp,
+  i0.ColumnOrderings<String> get timestamp => $composableBuilder(
+      column: $table.timestamp,
       builder: (column) => i0.ColumnOrderings(column));
 
   i0.ColumnOrderings<i4.Uint8List> get content => $composableBuilder(
@@ -180,17 +169,14 @@ class $EventsAnnotationComposer
   i0.GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  i0.GeneratedColumnWithTypeConverter<i2.EventTypes?, String> get type =>
+  i0.GeneratedColumnWithTypeConverter<i2.EventTypes, String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
 
   i0.GeneratedColumn<String> get targetNodeId => $composableBuilder(
       column: $table.targetNodeId, builder: (column) => column);
 
-  i0.GeneratedColumn<String> get serverTimeStamp => $composableBuilder(
-      column: $table.serverTimeStamp, builder: (column) => column);
-
-  i0.GeneratedColumn<String> get clientTimeStamp => $composableBuilder(
-      column: $table.clientTimeStamp, builder: (column) => column);
+  i0.GeneratedColumn<String> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
 
   i0.GeneratedColumnWithTypeConverter<i3.EventContent?, i4.Uint8List>
       get content => $composableBuilder(
@@ -243,11 +229,10 @@ class $EventsTableManager extends i0.RootTableManager<
               i1.$EventsAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             i0.Value<String> id = const i0.Value.absent(),
-            i0.Value<i2.EventTypes?> type = const i0.Value.absent(),
+            i0.Value<i2.EventTypes> type = const i0.Value.absent(),
             i0.Value<String?> targetNodeId = const i0.Value.absent(),
             i0.Value<String> clientId = const i0.Value.absent(),
-            i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
-            i0.Value<String> clientTimeStamp = const i0.Value.absent(),
+            i0.Value<String> timestamp = const i0.Value.absent(),
             i0.Value<i3.EventContent?> content = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
@@ -256,18 +241,16 @@ class $EventsTableManager extends i0.RootTableManager<
             type: type,
             targetNodeId: targetNodeId,
             clientId: clientId,
-            serverTimeStamp: serverTimeStamp,
-            clientTimeStamp: clientTimeStamp,
+            timestamp: timestamp,
             content: content,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String id,
-            i0.Value<i2.EventTypes?> type = const i0.Value.absent(),
+            required i2.EventTypes type,
             i0.Value<String?> targetNodeId = const i0.Value.absent(),
             required String clientId,
-            i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
-            required String clientTimeStamp,
+            required String timestamp,
             i0.Value<i3.EventContent?> content = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
@@ -276,8 +259,7 @@ class $EventsTableManager extends i0.RootTableManager<
             type: type,
             targetNodeId: targetNodeId,
             clientId: clientId,
-            serverTimeStamp: serverTimeStamp,
-            clientTimeStamp: clientTimeStamp,
+            timestamp: timestamp,
             content: content,
             rowid: rowid,
           ),
@@ -348,12 +330,12 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
       $customConstraints: 'NOT NULL PRIMARY KEY');
   static const i0.VerificationMeta _typeMeta =
       const i0.VerificationMeta('type');
-  late final i0.GeneratedColumnWithTypeConverter<i2.EventTypes?, String> type =
-      i0.GeneratedColumn<String>('type', aliasedName, true,
+  late final i0.GeneratedColumnWithTypeConverter<i2.EventTypes, String> type =
+      i0.GeneratedColumn<String>('type', aliasedName, false,
               type: i0.DriftSqlType.string,
-              requiredDuringInsert: false,
-              $customConstraints: '')
-          .withConverter<i2.EventTypes?>(i1.Events.$convertertypen);
+              requiredDuringInsert: true,
+              $customConstraints: 'NOT NULL')
+          .withConverter<i2.EventTypes>(i1.Events.$convertertype);
   static const i0.VerificationMeta _targetNodeIdMeta =
       const i0.VerificationMeta('targetNodeId');
   late final i0.GeneratedColumn<String> targetNodeId =
@@ -368,20 +350,13 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
       type: i0.DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL REFERENCES clients(id)');
-  static const i0.VerificationMeta _serverTimeStampMeta =
-      const i0.VerificationMeta('serverTimeStamp');
-  late final i0.GeneratedColumn<String> serverTimeStamp =
-      i0.GeneratedColumn<String>('server_time_stamp', aliasedName, true,
-          type: i0.DriftSqlType.string,
-          requiredDuringInsert: false,
-          $customConstraints: '');
-  static const i0.VerificationMeta _clientTimeStampMeta =
-      const i0.VerificationMeta('clientTimeStamp');
-  late final i0.GeneratedColumn<String> clientTimeStamp =
-      i0.GeneratedColumn<String>('client_time_stamp', aliasedName, false,
-          type: i0.DriftSqlType.string,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
+  static const i0.VerificationMeta _timestampMeta =
+      const i0.VerificationMeta('timestamp');
+  late final i0.GeneratedColumn<String> timestamp = i0.GeneratedColumn<String>(
+      'timestamp', aliasedName, false,
+      type: i0.DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
   static const i0.VerificationMeta _contentMeta =
       const i0.VerificationMeta('content');
   late final i0.GeneratedColumnWithTypeConverter<i3.EventContent?, i4.Uint8List>
@@ -391,15 +366,8 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
               $customConstraints: '')
           .withConverter<i3.EventContent?>(i1.Events.$convertercontentn);
   @override
-  List<i0.GeneratedColumn> get $columns => [
-        id,
-        type,
-        targetNodeId,
-        clientId,
-        serverTimeStamp,
-        clientTimeStamp,
-        content
-      ];
+  List<i0.GeneratedColumn> get $columns =>
+      [id, type, targetNodeId, clientId, timestamp, content];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -428,19 +396,11 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
     } else if (isInserting) {
       context.missing(_clientIdMeta);
     }
-    if (data.containsKey('server_time_stamp')) {
-      context.handle(
-          _serverTimeStampMeta,
-          serverTimeStamp.isAcceptableOrUnknown(
-              data['server_time_stamp']!, _serverTimeStampMeta));
-    }
-    if (data.containsKey('client_time_stamp')) {
-      context.handle(
-          _clientTimeStampMeta,
-          clientTimeStamp.isAcceptableOrUnknown(
-              data['client_time_stamp']!, _clientTimeStampMeta));
+    if (data.containsKey('timestamp')) {
+      context.handle(_timestampMeta,
+          timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta));
     } else if (isInserting) {
-      context.missing(_clientTimeStampMeta);
+      context.missing(_timestampMeta);
     }
     context.handle(_contentMeta, const i0.VerificationResult.success());
     return context;
@@ -454,16 +414,14 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
     return i1.Event(
       id: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}id'])!,
-      type: i1.Events.$convertertypen.fromSql(attachedDatabase.typeMapping
-          .read(i0.DriftSqlType.string, data['${effectivePrefix}type'])),
+      type: i1.Events.$convertertype.fromSql(attachedDatabase.typeMapping
+          .read(i0.DriftSqlType.string, data['${effectivePrefix}type'])!),
       targetNodeId: attachedDatabase.typeMapping.read(
           i0.DriftSqlType.string, data['${effectivePrefix}target_node_id']),
       clientId: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}client_id'])!,
-      serverTimeStamp: attachedDatabase.typeMapping.read(
-          i0.DriftSqlType.string, data['${effectivePrefix}server_time_stamp']),
-      clientTimeStamp: attachedDatabase.typeMapping.read(
-          i0.DriftSqlType.string, data['${effectivePrefix}client_time_stamp'])!,
+      timestamp: attachedDatabase.typeMapping
+          .read(i0.DriftSqlType.string, data['${effectivePrefix}timestamp'])!,
       content: i1.Events.$convertercontentn.fromSql(attachedDatabase.typeMapping
           .read(i0.DriftSqlType.blob, data['${effectivePrefix}content'])),
     );
@@ -476,8 +434,6 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
 
   static i0.JsonTypeConverter2<i2.EventTypes, String, String> $convertertype =
       const i0.EnumNameConverter<i2.EventTypes>(i2.EventTypes.values);
-  static i0.JsonTypeConverter2<i2.EventTypes?, String?, String?>
-      $convertertypen = i0.JsonTypeConverter2.asNullable($convertertype);
   static i0.JsonTypeConverter2<i3.EventContent, i4.Uint8List, dynamic>
       $convertercontent = i3.EventContent.binaryConverter;
   static i0.JsonTypeConverter2<i3.EventContent?, i4.Uint8List?, dynamic>
@@ -488,41 +444,32 @@ class Events extends i0.Table with i0.TableInfo<Events, i1.Event> {
 
 class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
   final String id;
-  final i2.EventTypes? type;
+  final i2.EventTypes type;
   final String? targetNodeId;
 
   /// doesn't always reference an existing node, so references is omitted
   final String clientId;
-  final String? serverTimeStamp;
-
-  /// TODO: dialect aware date https://drift.simonbinder.eu/sql_api/types/#dialect-awareness
-  final String clientTimeStamp;
-
-  /// time should be in iso8601
+  final String timestamp;
   final i3.EventContent? content;
   const Event(
       {required this.id,
-      this.type,
+      required this.type,
       this.targetNodeId,
       required this.clientId,
-      this.serverTimeStamp,
-      required this.clientTimeStamp,
+      required this.timestamp,
       this.content});
   @override
   Map<String, i0.Expression> toColumns(bool nullToAbsent) {
     final map = <String, i0.Expression>{};
     map['id'] = i0.Variable<String>(id);
-    if (!nullToAbsent || type != null) {
-      map['type'] = i0.Variable<String>(i1.Events.$convertertypen.toSql(type));
+    {
+      map['type'] = i0.Variable<String>(i1.Events.$convertertype.toSql(type));
     }
     if (!nullToAbsent || targetNodeId != null) {
       map['target_node_id'] = i0.Variable<String>(targetNodeId);
     }
     map['client_id'] = i0.Variable<String>(clientId);
-    if (!nullToAbsent || serverTimeStamp != null) {
-      map['server_time_stamp'] = i0.Variable<String>(serverTimeStamp);
-    }
-    map['client_time_stamp'] = i0.Variable<String>(clientTimeStamp);
+    map['timestamp'] = i0.Variable<String>(timestamp);
     if (!nullToAbsent || content != null) {
       map['content'] = i0.Variable<i4.Uint8List>(
           i1.Events.$convertercontentn.toSql(content));
@@ -533,17 +480,12 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
   i1.EventsCompanion toCompanion(bool nullToAbsent) {
     return i1.EventsCompanion(
       id: i0.Value(id),
-      type: type == null && nullToAbsent
-          ? const i0.Value.absent()
-          : i0.Value(type),
+      type: i0.Value(type),
       targetNodeId: targetNodeId == null && nullToAbsent
           ? const i0.Value.absent()
           : i0.Value(targetNodeId),
       clientId: i0.Value(clientId),
-      serverTimeStamp: serverTimeStamp == null && nullToAbsent
-          ? const i0.Value.absent()
-          : i0.Value(serverTimeStamp),
-      clientTimeStamp: i0.Value(clientTimeStamp),
+      timestamp: i0.Value(timestamp),
       content: content == null && nullToAbsent
           ? const i0.Value.absent()
           : i0.Value(content),
@@ -555,12 +497,11 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
     serializer ??= i0.driftRuntimeOptions.defaultSerializer;
     return Event(
       id: serializer.fromJson<String>(json['id']),
-      type: i1.Events.$convertertypen
-          .fromJson(serializer.fromJson<String?>(json['type'])),
+      type: i1.Events.$convertertype
+          .fromJson(serializer.fromJson<String>(json['type'])),
       targetNodeId: serializer.fromJson<String?>(json['target_node_id']),
       clientId: serializer.fromJson<String>(json['client_id']),
-      serverTimeStamp: serializer.fromJson<String?>(json['server_time_stamp']),
-      clientTimeStamp: serializer.fromJson<String>(json['client_time_stamp']),
+      timestamp: serializer.fromJson<String>(json['timestamp']),
       content: i1.Events.$convertercontentn
           .fromJson(serializer.fromJson<dynamic>(json['content'])),
     );
@@ -570,12 +511,10 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
     serializer ??= i0.driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'type':
-          serializer.toJson<String?>(i1.Events.$convertertypen.toJson(type)),
+      'type': serializer.toJson<String>(i1.Events.$convertertype.toJson(type)),
       'target_node_id': serializer.toJson<String?>(targetNodeId),
       'client_id': serializer.toJson<String>(clientId),
-      'server_time_stamp': serializer.toJson<String?>(serverTimeStamp),
-      'client_time_stamp': serializer.toJson<String>(clientTimeStamp),
+      'timestamp': serializer.toJson<String>(timestamp),
       'content': serializer
           .toJson<dynamic>(i1.Events.$convertercontentn.toJson(content)),
     };
@@ -583,22 +522,18 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
 
   i1.Event copyWith(
           {String? id,
-          i0.Value<i2.EventTypes?> type = const i0.Value.absent(),
+          i2.EventTypes? type,
           i0.Value<String?> targetNodeId = const i0.Value.absent(),
           String? clientId,
-          i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
-          String? clientTimeStamp,
+          String? timestamp,
           i0.Value<i3.EventContent?> content = const i0.Value.absent()}) =>
       i1.Event(
         id: id ?? this.id,
-        type: type.present ? type.value : this.type,
+        type: type ?? this.type,
         targetNodeId:
             targetNodeId.present ? targetNodeId.value : this.targetNodeId,
         clientId: clientId ?? this.clientId,
-        serverTimeStamp: serverTimeStamp.present
-            ? serverTimeStamp.value
-            : this.serverTimeStamp,
-        clientTimeStamp: clientTimeStamp ?? this.clientTimeStamp,
+        timestamp: timestamp ?? this.timestamp,
         content: content.present ? content.value : this.content,
       );
   Event copyWithCompanion(i1.EventsCompanion data) {
@@ -609,12 +544,7 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
           ? data.targetNodeId.value
           : this.targetNodeId,
       clientId: data.clientId.present ? data.clientId.value : this.clientId,
-      serverTimeStamp: data.serverTimeStamp.present
-          ? data.serverTimeStamp.value
-          : this.serverTimeStamp,
-      clientTimeStamp: data.clientTimeStamp.present
-          ? data.clientTimeStamp.value
-          : this.clientTimeStamp,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
       content: data.content.present ? data.content.value : this.content,
     );
   }
@@ -626,16 +556,15 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
           ..write('type: $type, ')
           ..write('targetNodeId: $targetNodeId, ')
           ..write('clientId: $clientId, ')
-          ..write('serverTimeStamp: $serverTimeStamp, ')
-          ..write('clientTimeStamp: $clientTimeStamp, ')
+          ..write('timestamp: $timestamp, ')
           ..write('content: $content')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, type, targetNodeId, clientId,
-      serverTimeStamp, clientTimeStamp, content);
+  int get hashCode =>
+      Object.hash(id, type, targetNodeId, clientId, timestamp, content);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -644,18 +573,16 @@ class Event extends i0.DataClass implements i0.Insertable<i1.Event> {
           other.type == this.type &&
           other.targetNodeId == this.targetNodeId &&
           other.clientId == this.clientId &&
-          other.serverTimeStamp == this.serverTimeStamp &&
-          other.clientTimeStamp == this.clientTimeStamp &&
+          other.timestamp == this.timestamp &&
           other.content == this.content);
 }
 
 class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
   final i0.Value<String> id;
-  final i0.Value<i2.EventTypes?> type;
+  final i0.Value<i2.EventTypes> type;
   final i0.Value<String?> targetNodeId;
   final i0.Value<String> clientId;
-  final i0.Value<String?> serverTimeStamp;
-  final i0.Value<String> clientTimeStamp;
+  final i0.Value<String> timestamp;
   final i0.Value<i3.EventContent?> content;
   final i0.Value<int> rowid;
   const EventsCompanion({
@@ -663,30 +590,28 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
     this.type = const i0.Value.absent(),
     this.targetNodeId = const i0.Value.absent(),
     this.clientId = const i0.Value.absent(),
-    this.serverTimeStamp = const i0.Value.absent(),
-    this.clientTimeStamp = const i0.Value.absent(),
+    this.timestamp = const i0.Value.absent(),
     this.content = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   });
   EventsCompanion.insert({
     required String id,
-    this.type = const i0.Value.absent(),
+    required i2.EventTypes type,
     this.targetNodeId = const i0.Value.absent(),
     required String clientId,
-    this.serverTimeStamp = const i0.Value.absent(),
-    required String clientTimeStamp,
+    required String timestamp,
     this.content = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   })  : id = i0.Value(id),
+        type = i0.Value(type),
         clientId = i0.Value(clientId),
-        clientTimeStamp = i0.Value(clientTimeStamp);
+        timestamp = i0.Value(timestamp);
   static i0.Insertable<i1.Event> custom({
     i0.Expression<String>? id,
     i0.Expression<String>? type,
     i0.Expression<String>? targetNodeId,
     i0.Expression<String>? clientId,
-    i0.Expression<String>? serverTimeStamp,
-    i0.Expression<String>? clientTimeStamp,
+    i0.Expression<String>? timestamp,
     i0.Expression<i4.Uint8List>? content,
     i0.Expression<int>? rowid,
   }) {
@@ -695,8 +620,7 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
       if (type != null) 'type': type,
       if (targetNodeId != null) 'target_node_id': targetNodeId,
       if (clientId != null) 'client_id': clientId,
-      if (serverTimeStamp != null) 'server_time_stamp': serverTimeStamp,
-      if (clientTimeStamp != null) 'client_time_stamp': clientTimeStamp,
+      if (timestamp != null) 'timestamp': timestamp,
       if (content != null) 'content': content,
       if (rowid != null) 'rowid': rowid,
     });
@@ -704,11 +628,10 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
 
   i1.EventsCompanion copyWith(
       {i0.Value<String>? id,
-      i0.Value<i2.EventTypes?>? type,
+      i0.Value<i2.EventTypes>? type,
       i0.Value<String?>? targetNodeId,
       i0.Value<String>? clientId,
-      i0.Value<String?>? serverTimeStamp,
-      i0.Value<String>? clientTimeStamp,
+      i0.Value<String>? timestamp,
       i0.Value<i3.EventContent?>? content,
       i0.Value<int>? rowid}) {
     return i1.EventsCompanion(
@@ -716,8 +639,7 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
       type: type ?? this.type,
       targetNodeId: targetNodeId ?? this.targetNodeId,
       clientId: clientId ?? this.clientId,
-      serverTimeStamp: serverTimeStamp ?? this.serverTimeStamp,
-      clientTimeStamp: clientTimeStamp ?? this.clientTimeStamp,
+      timestamp: timestamp ?? this.timestamp,
       content: content ?? this.content,
       rowid: rowid ?? this.rowid,
     );
@@ -731,7 +653,7 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
     }
     if (type.present) {
       map['type'] =
-          i0.Variable<String>(i1.Events.$convertertypen.toSql(type.value));
+          i0.Variable<String>(i1.Events.$convertertype.toSql(type.value));
     }
     if (targetNodeId.present) {
       map['target_node_id'] = i0.Variable<String>(targetNodeId.value);
@@ -739,11 +661,8 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
     if (clientId.present) {
       map['client_id'] = i0.Variable<String>(clientId.value);
     }
-    if (serverTimeStamp.present) {
-      map['server_time_stamp'] = i0.Variable<String>(serverTimeStamp.value);
-    }
-    if (clientTimeStamp.present) {
-      map['client_time_stamp'] = i0.Variable<String>(clientTimeStamp.value);
+    if (timestamp.present) {
+      map['timestamp'] = i0.Variable<String>(timestamp.value);
     }
     if (content.present) {
       map['content'] = i0.Variable<i4.Uint8List>(
@@ -762,8 +681,7 @@ class EventsCompanion extends i0.UpdateCompanion<i1.Event> {
           ..write('type: $type, ')
           ..write('targetNodeId: $targetNodeId, ')
           ..write('clientId: $clientId, ')
-          ..write('serverTimeStamp: $serverTimeStamp, ')
-          ..write('clientTimeStamp: $clientTimeStamp, ')
+          ..write('timestamp: $timestamp, ')
           ..write('content: $content, ')
           ..write('rowid: $rowid')
           ..write(')'))

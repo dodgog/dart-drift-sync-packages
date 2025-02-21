@@ -1,7 +1,4 @@
-import 'utils/date_comparators.dart';
-import 'package:drift/drift.dart';
-
-import 'package:backend/client_definitions.dart';
+import 'package:backend/shared_definitions.dart';
 
 // apply client time and server time as last modified fields
 // later we should change it to using the vector clock ts
@@ -25,18 +22,12 @@ class NodeRetrievalException implements Exception {
 
 extension Applicator on SharedNodesDrift {
   /// Apply events against a database in one drift transaction
-  ///
-  /// WARNING: Do not nest into more transactions as that is not supported by
-  /// postgres drift
-  /// [docs](https://drift.simonbinder.eu/dart_api/transactions/#supported-implementations)
-  Future<int> applyListOfEventsTransaction(List<Event> events) async {
+  Future<int> applyListOfEvents(List<Event> events) async {
     int counter = 0;
-    await transaction(() async {
-      for (final event in events) {
-        final result = await applyEvent(event);
-        if (result != null) counter++;
-      }
-    });
+    for (final event in events) {
+      final result = await applyEvent(event);
+      if (result != null) counter++;
+    }
     return counter;
   }
 
@@ -48,8 +39,7 @@ extension Applicator on SharedNodesDrift {
       insertNode(
         id: node.id,
         type: node.type,
-        serverTimeStamp: node.serverTimeStamp,
-        clientTimeStamp: node.clientTimeStamp,
+        lastModifiedAtTimestamp: node.lastModifiedAtTimestamp,
         userId: node.userId,
         isDeleted: node.isDeleted,
         content: node.content,
@@ -57,14 +47,12 @@ extension Applicator on SharedNodesDrift {
     }
 
     if (event.targetNodeId == null) {
-      throw UnsupportedEventFormatException(
-          "Target nodeId is null in a mutation event");
+      throw UnsupportedEventFormatException("Target nodeId is null in a mutation event");
     }
 
-    final targetNode =
-        await getNodeById(id: event.targetNodeId!).getSingleOrNull() ??
-            (throw NodeRetrievalException("There must be exactly one node "
-                "with id"));
+    final targetNode = await getNodeById(id: event.targetNodeId!).getSingleOrNull() ??
+        (throw NodeRetrievalException("There must be exactly one node "
+            "with id"));
 
     // Last Write Wins LWW
     if (!_isEventAfterNodeLastModifiedTime(event, targetNode)) {
@@ -79,13 +67,11 @@ extension Applicator on SharedNodesDrift {
       case EventTypes.delete:
         mutatedNode = _applyDeleteEventToNode(event, targetNode);
       default:
-        throw UnsupportedEventException(
-            "No such event supported ${event.type}");
+        throw UnsupportedEventException("No such event supported ${event.type}");
     }
 
     mutateNodeById(
-      serverTimeStamp: mutatedNode.serverTimeStamp,
-      clientTimeStamp: mutatedNode.clientTimeStamp,
+      lastModifiedAtTimestamp:  mutatedNode.lastModifiedAtTimestamp,
       userId: mutatedNode.userId,
       isDeleted: mutatedNode.isDeleted,
       content: mutatedNode.content,
@@ -97,12 +83,11 @@ extension Applicator on SharedNodesDrift {
 }
 
 bool _isEventAfterNodeLastModifiedTime(Event event, Node node) {
-  // vector clocks here would be nice
-  return WeirdDate.fromEvent(event) > WeirdDate.fromNode(node);
+  return event.timestamp.compareTo(node.lastModifiedAtTimestamp) > 0;
 }
 
-// TODO: create is kind of like an edit, which is applied to a non-existing node
-// at this stage
+// THINK: create is kind of like an edit, which is applied to a non-existing
+// node at this stage
 Node _createNodeFromCreateEvent(Event event) {
   assert(event.targetNodeId != null);
   assert(event.type == EventTypes.create);
@@ -111,8 +96,7 @@ Node _createNodeFromCreateEvent(Event event) {
 
   return Node(
     id: event.targetNodeId!,
-    clientTimeStamp: event.clientTimeStamp,
-    serverTimeStamp: event.serverTimeStamp,
+    lastModifiedAtTimestamp: event.timestamp,
     userId: event.content!.userId,
     isDeleted: false,
     content: event.content!.nodeContent,
@@ -128,8 +112,7 @@ Node _applyEditEventToNode(Event event, Node node) {
 
   return node.copyWith(
     content: event.content!.nodeContent,
-    clientTimeStamp: event.clientTimeStamp,
-    serverTimeStamp: Value(event.serverTimeStamp),
+    lastModifiedAtTimestamp: event.timestamp,
   );
 }
 
@@ -140,8 +123,6 @@ Node _applyDeleteEventToNode(Event event, Node node) {
 
   return node.copyWith(
     isDeleted: true,
-    clientTimeStamp: event.clientTimeStamp,
-    serverTimeStamp: Value(event.serverTimeStamp),
+    lastModifiedAtTimestamp: event.timestamp,
   );
 }
-

@@ -22,3 +22,11 @@ Map<String, dynamic> _$NodeContentToJson(NodeContent instance) =>
       'title': instance.title,
       'referenced_object_ids': instance.referencedObjectIds,
     };
+
+NodeContentConverter _$NodeContentConverterFromJson(
+        Map<String, dynamic> json) =>
+    NodeContentConverter();
+
+Map<String, dynamic> _$NodeContentConverterToJson(
+        NodeContentConverter instance) =>
+    <String, dynamic>{};

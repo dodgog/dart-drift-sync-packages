@@ -11,8 +11,7 @@ import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i6;
 typedef $NodesCreateCompanionBuilder = i1.NodesCompanion Function({
   required String id,
   required i2.NodeTypes type,
-  i0.Value<String?> serverTimeStamp,
-  required String clientTimeStamp,
+  required String lastModifiedAtTimestamp,
   required String userId,
   i0.Value<bool> isDeleted,
   i0.Value<i3.NodeContent> content,
@@ -21,8 +20,7 @@ typedef $NodesCreateCompanionBuilder = i1.NodesCompanion Function({
 typedef $NodesUpdateCompanionBuilder = i1.NodesCompanion Function({
   i0.Value<String> id,
   i0.Value<i2.NodeTypes> type,
-  i0.Value<String?> serverTimeStamp,
-  i0.Value<String> clientTimeStamp,
+  i0.Value<String> lastModifiedAtTimestamp,
   i0.Value<String> userId,
   i0.Value<bool> isDeleted,
   i0.Value<i3.NodeContent> content,
@@ -69,12 +67,8 @@ class $NodesFilterComposer extends i0.Composer<i0.GeneratedDatabase, i1.Nodes> {
           column: $table.type,
           builder: (column) => i0.ColumnWithTypeConverterFilters(column));
 
-  i0.ColumnFilters<String> get serverTimeStamp => $composableBuilder(
-      column: $table.serverTimeStamp,
-      builder: (column) => i0.ColumnFilters(column));
-
-  i0.ColumnFilters<String> get clientTimeStamp => $composableBuilder(
-      column: $table.clientTimeStamp,
+  i0.ColumnFilters<String> get lastModifiedAtTimestamp => $composableBuilder(
+      column: $table.lastModifiedAtTimestamp,
       builder: (column) => i0.ColumnFilters(column));
 
   i0.ColumnFilters<bool> get isDeleted => $composableBuilder(
@@ -124,12 +118,8 @@ class $NodesOrderingComposer
   i0.ColumnOrderings<String> get type => $composableBuilder(
       column: $table.type, builder: (column) => i0.ColumnOrderings(column));
 
-  i0.ColumnOrderings<String> get serverTimeStamp => $composableBuilder(
-      column: $table.serverTimeStamp,
-      builder: (column) => i0.ColumnOrderings(column));
-
-  i0.ColumnOrderings<String> get clientTimeStamp => $composableBuilder(
-      column: $table.clientTimeStamp,
+  i0.ColumnOrderings<String> get lastModifiedAtTimestamp => $composableBuilder(
+      column: $table.lastModifiedAtTimestamp,
       builder: (column) => i0.ColumnOrderings(column));
 
   i0.ColumnOrderings<bool> get isDeleted => $composableBuilder(
@@ -177,11 +167,8 @@ class $NodesAnnotationComposer
   i0.GeneratedColumnWithTypeConverter<i2.NodeTypes, String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
 
-  i0.GeneratedColumn<String> get serverTimeStamp => $composableBuilder(
-      column: $table.serverTimeStamp, builder: (column) => column);
-
-  i0.GeneratedColumn<String> get clientTimeStamp => $composableBuilder(
-      column: $table.clientTimeStamp, builder: (column) => column);
+  i0.GeneratedColumn<String> get lastModifiedAtTimestamp => $composableBuilder(
+      column: $table.lastModifiedAtTimestamp, builder: (column) => column);
 
   i0.GeneratedColumn<bool> get isDeleted =>
       $composableBuilder(column: $table.isDeleted, builder: (column) => column);
@@ -238,8 +225,7 @@ class $NodesTableManager extends i0.RootTableManager<
           updateCompanionCallback: ({
             i0.Value<String> id = const i0.Value.absent(),
             i0.Value<i2.NodeTypes> type = const i0.Value.absent(),
-            i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
-            i0.Value<String> clientTimeStamp = const i0.Value.absent(),
+            i0.Value<String> lastModifiedAtTimestamp = const i0.Value.absent(),
             i0.Value<String> userId = const i0.Value.absent(),
             i0.Value<bool> isDeleted = const i0.Value.absent(),
             i0.Value<i3.NodeContent> content = const i0.Value.absent(),
@@ -248,8 +234,7 @@ class $NodesTableManager extends i0.RootTableManager<
               i1.NodesCompanion(
             id: id,
             type: type,
-            serverTimeStamp: serverTimeStamp,
-            clientTimeStamp: clientTimeStamp,
+            lastModifiedAtTimestamp: lastModifiedAtTimestamp,
             userId: userId,
             isDeleted: isDeleted,
             content: content,
@@ -258,8 +243,7 @@ class $NodesTableManager extends i0.RootTableManager<
           createCompanionCallback: ({
             required String id,
             required i2.NodeTypes type,
-            i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
-            required String clientTimeStamp,
+            required String lastModifiedAtTimestamp,
             required String userId,
             i0.Value<bool> isDeleted = const i0.Value.absent(),
             i0.Value<i3.NodeContent> content = const i0.Value.absent(),
@@ -268,8 +252,7 @@ class $NodesTableManager extends i0.RootTableManager<
               i1.NodesCompanion.insert(
             id: id,
             type: type,
-            serverTimeStamp: serverTimeStamp,
-            clientTimeStamp: clientTimeStamp,
+            lastModifiedAtTimestamp: lastModifiedAtTimestamp,
             userId: userId,
             isDeleted: isDeleted,
             content: content,
@@ -347,17 +330,11 @@ class Nodes extends i0.Table with i0.TableInfo<Nodes, i1.Node> {
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<i2.NodeTypes>(i1.Nodes.$convertertype);
-  static const i0.VerificationMeta _serverTimeStampMeta =
-      const i0.VerificationMeta('serverTimeStamp');
-  late final i0.GeneratedColumn<String> serverTimeStamp =
-      i0.GeneratedColumn<String>('server_time_stamp', aliasedName, true,
-          type: i0.DriftSqlType.string,
-          requiredDuringInsert: false,
-          $customConstraints: '');
-  static const i0.VerificationMeta _clientTimeStampMeta =
-      const i0.VerificationMeta('clientTimeStamp');
-  late final i0.GeneratedColumn<String> clientTimeStamp =
-      i0.GeneratedColumn<String>('client_time_stamp', aliasedName, false,
+  static const i0.VerificationMeta _lastModifiedAtTimestampMeta =
+      const i0.VerificationMeta('lastModifiedAtTimestamp');
+  late final i0.GeneratedColumn<String> lastModifiedAtTimestamp =
+      i0.GeneratedColumn<String>(
+          'last_modified_at_timestamp', aliasedName, false,
           type: i0.DriftSqlType.string,
           requiredDuringInsert: true,
           $customConstraints: 'NOT NULL');
@@ -386,7 +363,7 @@ class Nodes extends i0.Table with i0.TableInfo<Nodes, i1.Node> {
           .withConverter<i3.NodeContent>(i1.Nodes.$convertercontent);
   @override
   List<i0.GeneratedColumn> get $columns =>
-      [id, type, serverTimeStamp, clientTimeStamp, userId, isDeleted, content];
+      [id, type, lastModifiedAtTimestamp, userId, isDeleted, content];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -403,19 +380,14 @@ class Nodes extends i0.Table with i0.TableInfo<Nodes, i1.Node> {
       context.missing(_idMeta);
     }
     context.handle(_typeMeta, const i0.VerificationResult.success());
-    if (data.containsKey('server_time_stamp')) {
+    if (data.containsKey('last_modified_at_timestamp')) {
       context.handle(
-          _serverTimeStampMeta,
-          serverTimeStamp.isAcceptableOrUnknown(
-              data['server_time_stamp']!, _serverTimeStampMeta));
-    }
-    if (data.containsKey('client_time_stamp')) {
-      context.handle(
-          _clientTimeStampMeta,
-          clientTimeStamp.isAcceptableOrUnknown(
-              data['client_time_stamp']!, _clientTimeStampMeta));
+          _lastModifiedAtTimestampMeta,
+          lastModifiedAtTimestamp.isAcceptableOrUnknown(
+              data['last_modified_at_timestamp']!,
+              _lastModifiedAtTimestampMeta));
     } else if (isInserting) {
-      context.missing(_clientTimeStampMeta);
+      context.missing(_lastModifiedAtTimestampMeta);
     }
     if (data.containsKey('user_id')) {
       context.handle(_userIdMeta,
@@ -441,10 +413,9 @@ class Nodes extends i0.Table with i0.TableInfo<Nodes, i1.Node> {
           .read(i0.DriftSqlType.string, data['${effectivePrefix}id'])!,
       type: i1.Nodes.$convertertype.fromSql(attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}type'])!),
-      serverTimeStamp: attachedDatabase.typeMapping.read(
-          i0.DriftSqlType.string, data['${effectivePrefix}server_time_stamp']),
-      clientTimeStamp: attachedDatabase.typeMapping.read(
-          i0.DriftSqlType.string, data['${effectivePrefix}client_time_stamp'])!,
+      lastModifiedAtTimestamp: attachedDatabase.typeMapping.read(
+          i0.DriftSqlType.string,
+          data['${effectivePrefix}last_modified_at_timestamp'])!,
       userId: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}user_id'])!,
       isDeleted: attachedDatabase.typeMapping
@@ -470,16 +441,14 @@ class Nodes extends i0.Table with i0.TableInfo<Nodes, i1.Node> {
 class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
   final String id;
   final i2.NodeTypes type;
-  final String? serverTimeStamp;
-  final String clientTimeStamp;
+  final String lastModifiedAtTimestamp;
   final String userId;
   final bool isDeleted;
   final i3.NodeContent content;
   const Node(
       {required this.id,
       required this.type,
-      this.serverTimeStamp,
-      required this.clientTimeStamp,
+      required this.lastModifiedAtTimestamp,
       required this.userId,
       required this.isDeleted,
       required this.content});
@@ -490,10 +459,8 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
     {
       map['type'] = i0.Variable<String>(i1.Nodes.$convertertype.toSql(type));
     }
-    if (!nullToAbsent || serverTimeStamp != null) {
-      map['server_time_stamp'] = i0.Variable<String>(serverTimeStamp);
-    }
-    map['client_time_stamp'] = i0.Variable<String>(clientTimeStamp);
+    map['last_modified_at_timestamp'] =
+        i0.Variable<String>(lastModifiedAtTimestamp);
     map['user_id'] = i0.Variable<String>(userId);
     map['is_deleted'] = i0.Variable<bool>(isDeleted);
     {
@@ -507,10 +474,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
     return i1.NodesCompanion(
       id: i0.Value(id),
       type: i0.Value(type),
-      serverTimeStamp: serverTimeStamp == null && nullToAbsent
-          ? const i0.Value.absent()
-          : i0.Value(serverTimeStamp),
-      clientTimeStamp: i0.Value(clientTimeStamp),
+      lastModifiedAtTimestamp: i0.Value(lastModifiedAtTimestamp),
       userId: i0.Value(userId),
       isDeleted: i0.Value(isDeleted),
       content: i0.Value(content),
@@ -524,8 +488,8 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
       id: serializer.fromJson<String>(json['id']),
       type: i1.Nodes.$convertertype
           .fromJson(serializer.fromJson<String>(json['type'])),
-      serverTimeStamp: serializer.fromJson<String?>(json['server_time_stamp']),
-      clientTimeStamp: serializer.fromJson<String>(json['client_time_stamp']),
+      lastModifiedAtTimestamp:
+          serializer.fromJson<String>(json['last_modified_at_timestamp']),
       userId: serializer.fromJson<String>(json['user_id']),
       isDeleted: serializer.fromJson<bool>(json['is_deleted']),
       content: i1.Nodes.$convertercontent
@@ -538,8 +502,8 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'type': serializer.toJson<String>(i1.Nodes.$convertertype.toJson(type)),
-      'server_time_stamp': serializer.toJson<String?>(serverTimeStamp),
-      'client_time_stamp': serializer.toJson<String>(clientTimeStamp),
+      'last_modified_at_timestamp':
+          serializer.toJson<String>(lastModifiedAtTimestamp),
       'user_id': serializer.toJson<String>(userId),
       'is_deleted': serializer.toJson<bool>(isDeleted),
       'content': serializer
@@ -550,18 +514,15 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
   i1.Node copyWith(
           {String? id,
           i2.NodeTypes? type,
-          i0.Value<String?> serverTimeStamp = const i0.Value.absent(),
-          String? clientTimeStamp,
+          String? lastModifiedAtTimestamp,
           String? userId,
           bool? isDeleted,
           i3.NodeContent? content}) =>
       i1.Node(
         id: id ?? this.id,
         type: type ?? this.type,
-        serverTimeStamp: serverTimeStamp.present
-            ? serverTimeStamp.value
-            : this.serverTimeStamp,
-        clientTimeStamp: clientTimeStamp ?? this.clientTimeStamp,
+        lastModifiedAtTimestamp:
+            lastModifiedAtTimestamp ?? this.lastModifiedAtTimestamp,
         userId: userId ?? this.userId,
         isDeleted: isDeleted ?? this.isDeleted,
         content: content ?? this.content,
@@ -570,12 +531,9 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
     return Node(
       id: data.id.present ? data.id.value : this.id,
       type: data.type.present ? data.type.value : this.type,
-      serverTimeStamp: data.serverTimeStamp.present
-          ? data.serverTimeStamp.value
-          : this.serverTimeStamp,
-      clientTimeStamp: data.clientTimeStamp.present
-          ? data.clientTimeStamp.value
-          : this.clientTimeStamp,
+      lastModifiedAtTimestamp: data.lastModifiedAtTimestamp.present
+          ? data.lastModifiedAtTimestamp.value
+          : this.lastModifiedAtTimestamp,
       userId: data.userId.present ? data.userId.value : this.userId,
       isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
       content: data.content.present ? data.content.value : this.content,
@@ -587,8 +545,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
     return (StringBuffer('Node(')
           ..write('id: $id, ')
           ..write('type: $type, ')
-          ..write('serverTimeStamp: $serverTimeStamp, ')
-          ..write('clientTimeStamp: $clientTimeStamp, ')
+          ..write('lastModifiedAtTimestamp: $lastModifiedAtTimestamp, ')
           ..write('userId: $userId, ')
           ..write('isDeleted: $isDeleted, ')
           ..write('content: $content')
@@ -598,15 +555,14 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
 
   @override
   int get hashCode => Object.hash(
-      id, type, serverTimeStamp, clientTimeStamp, userId, isDeleted, content);
+      id, type, lastModifiedAtTimestamp, userId, isDeleted, content);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is i1.Node &&
           other.id == this.id &&
           other.type == this.type &&
-          other.serverTimeStamp == this.serverTimeStamp &&
-          other.clientTimeStamp == this.clientTimeStamp &&
+          other.lastModifiedAtTimestamp == this.lastModifiedAtTimestamp &&
           other.userId == this.userId &&
           other.isDeleted == this.isDeleted &&
           other.content == this.content);
@@ -615,8 +571,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
 class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
   final i0.Value<String> id;
   final i0.Value<i2.NodeTypes> type;
-  final i0.Value<String?> serverTimeStamp;
-  final i0.Value<String> clientTimeStamp;
+  final i0.Value<String> lastModifiedAtTimestamp;
   final i0.Value<String> userId;
   final i0.Value<bool> isDeleted;
   final i0.Value<i3.NodeContent> content;
@@ -624,8 +579,7 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
   const NodesCompanion({
     this.id = const i0.Value.absent(),
     this.type = const i0.Value.absent(),
-    this.serverTimeStamp = const i0.Value.absent(),
-    this.clientTimeStamp = const i0.Value.absent(),
+    this.lastModifiedAtTimestamp = const i0.Value.absent(),
     this.userId = const i0.Value.absent(),
     this.isDeleted = const i0.Value.absent(),
     this.content = const i0.Value.absent(),
@@ -634,21 +588,19 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
   NodesCompanion.insert({
     required String id,
     required i2.NodeTypes type,
-    this.serverTimeStamp = const i0.Value.absent(),
-    required String clientTimeStamp,
+    required String lastModifiedAtTimestamp,
     required String userId,
     this.isDeleted = const i0.Value.absent(),
     this.content = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   })  : id = i0.Value(id),
         type = i0.Value(type),
-        clientTimeStamp = i0.Value(clientTimeStamp),
+        lastModifiedAtTimestamp = i0.Value(lastModifiedAtTimestamp),
         userId = i0.Value(userId);
   static i0.Insertable<i1.Node> custom({
     i0.Expression<String>? id,
     i0.Expression<String>? type,
-    i0.Expression<String>? serverTimeStamp,
-    i0.Expression<String>? clientTimeStamp,
+    i0.Expression<String>? lastModifiedAtTimestamp,
     i0.Expression<String>? userId,
     i0.Expression<bool>? isDeleted,
     i0.Expression<i4.Uint8List>? content,
@@ -657,8 +609,8 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
     return i0.RawValuesInsertable({
       if (id != null) 'id': id,
       if (type != null) 'type': type,
-      if (serverTimeStamp != null) 'server_time_stamp': serverTimeStamp,
-      if (clientTimeStamp != null) 'client_time_stamp': clientTimeStamp,
+      if (lastModifiedAtTimestamp != null)
+        'last_modified_at_timestamp': lastModifiedAtTimestamp,
       if (userId != null) 'user_id': userId,
       if (isDeleted != null) 'is_deleted': isDeleted,
       if (content != null) 'content': content,
@@ -669,8 +621,7 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
   i1.NodesCompanion copyWith(
       {i0.Value<String>? id,
       i0.Value<i2.NodeTypes>? type,
-      i0.Value<String?>? serverTimeStamp,
-      i0.Value<String>? clientTimeStamp,
+      i0.Value<String>? lastModifiedAtTimestamp,
       i0.Value<String>? userId,
       i0.Value<bool>? isDeleted,
       i0.Value<i3.NodeContent>? content,
@@ -678,8 +629,8 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
     return i1.NodesCompanion(
       id: id ?? this.id,
       type: type ?? this.type,
-      serverTimeStamp: serverTimeStamp ?? this.serverTimeStamp,
-      clientTimeStamp: clientTimeStamp ?? this.clientTimeStamp,
+      lastModifiedAtTimestamp:
+          lastModifiedAtTimestamp ?? this.lastModifiedAtTimestamp,
       userId: userId ?? this.userId,
       isDeleted: isDeleted ?? this.isDeleted,
       content: content ?? this.content,
@@ -697,11 +648,9 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
       map['type'] =
           i0.Variable<String>(i1.Nodes.$convertertype.toSql(type.value));
     }
-    if (serverTimeStamp.present) {
-      map['server_time_stamp'] = i0.Variable<String>(serverTimeStamp.value);
-    }
-    if (clientTimeStamp.present) {
-      map['client_time_stamp'] = i0.Variable<String>(clientTimeStamp.value);
+    if (lastModifiedAtTimestamp.present) {
+      map['last_modified_at_timestamp'] =
+          i0.Variable<String>(lastModifiedAtTimestamp.value);
     }
     if (userId.present) {
       map['user_id'] = i0.Variable<String>(userId.value);
@@ -724,8 +673,7 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
     return (StringBuffer('NodesCompanion(')
           ..write('id: $id, ')
           ..write('type: $type, ')
-          ..write('serverTimeStamp: $serverTimeStamp, ')
-          ..write('clientTimeStamp: $clientTimeStamp, ')
+          ..write('lastModifiedAtTimestamp: $lastModifiedAtTimestamp, ')
           ..write('userId: $userId, ')
           ..write('isDeleted: $isDeleted, ')
           ..write('content: $content, ')
@@ -767,8 +715,7 @@ class SharedNodesDrift extends i5.ModularAccessor {
   }
 
   Future<int> mutateNodeById(
-      {required String? serverTimeStamp,
-      required String clientTimeStamp,
+      {required String lastModifiedAtTimestamp,
       required String userId,
       required bool isDeleted,
       required i3.NodeContent content,
@@ -776,14 +723,13 @@ class SharedNodesDrift extends i5.ModularAccessor {
     return customUpdate(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>
-          'UPDATE nodes SET server_time_stamp = ?1, client_time_stamp = ?2, user_id = ?3, is_deleted = ?4, content = ?5 WHERE id = ?6',
+          'UPDATE nodes SET last_modified_at_timestamp = ?1, user_id = ?2, is_deleted = ?3, content = ?4 WHERE id = ?5',
         i0.SqlDialect.postgres ||
         _ =>
-          'UPDATE nodes SET server_time_stamp = \$1, client_time_stamp = \$2, user_id = \$3, is_deleted = \$4, content = \$5 WHERE id = \$6',
+          'UPDATE nodes SET last_modified_at_timestamp = \$1, user_id = \$2, is_deleted = \$3, content = \$4 WHERE id = \$5',
       },
       variables: [
-        i0.Variable<String>(serverTimeStamp),
-        i0.Variable<String>(clientTimeStamp),
+        i0.Variable<String>(lastModifiedAtTimestamp),
         i0.Variable<String>(userId),
         i0.Variable<bool>(isDeleted),
         i0.Variable<i4.Uint8List>(i1.Nodes.$convertercontent.toSql(content)),
@@ -797,24 +743,22 @@ class SharedNodesDrift extends i5.ModularAccessor {
   Future<int> insertNode(
       {required String id,
       required i2.NodeTypes type,
-      required String? serverTimeStamp,
-      required String clientTimeStamp,
+      required String lastModifiedAtTimestamp,
       required String userId,
       required bool isDeleted,
       required i3.NodeContent content}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>
-          'INSERT INTO nodes (id, type, server_time_stamp, client_time_stamp, user_id, is_deleted, content) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)',
+          'INSERT INTO nodes (id, type, last_modified_at_timestamp, user_id, is_deleted, content) VALUES (?1, ?2, ?3, ?4, ?5, ?6)',
         i0.SqlDialect.postgres ||
         _ =>
-          'INSERT INTO nodes (id, type, server_time_stamp, client_time_stamp, user_id, is_deleted, content) VALUES (\$1, \$2, \$3, \$4, \$5, \$6, \$7)',
+          'INSERT INTO nodes (id, type, last_modified_at_timestamp, user_id, is_deleted, content) VALUES (\$1, \$2, \$3, \$4, \$5, \$6)',
       },
       variables: [
         i0.Variable<String>(id),
         i0.Variable<String>(i1.Nodes.$convertertype.toSql(type)),
-        i0.Variable<String>(serverTimeStamp),
-        i0.Variable<String>(clientTimeStamp),
+        i0.Variable<String>(lastModifiedAtTimestamp),
         i0.Variable<String>(userId),
         i0.Variable<bool>(isDeleted),
         i0.Variable<i4.Uint8List>(i1.Nodes.$convertercontent.toSql(content))

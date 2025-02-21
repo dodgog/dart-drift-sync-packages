@@ -21,18 +21,19 @@ void runAllServerTests(ServerTestExecutor executor) {
   test('interpret event', () async {
     await db.serverDrift.usersDrift
         .createUser(userId: "user1", name: "user1name");
-    await db.serverDrift.sharedUsersDrift
-        .createClient(userId: "user1", clientId: "client1");
     await db.serverDrift.usersDrift
         .authUser(userId: "user1", token: "user1token");
 
-    final query = PostQuery("user1token", "user1", "2024-01-30T12:00:00Z", [
+    await db.serverDrift.sharedUsersDrift
+        .createClient(userId: "user1", clientId: "client1");
+
+    final query = PostQuery("user1token", "user1", "${DateTime.now().toUtc()
+        .toIso8601String()}-0000-clientId", [
       Event(
         id: "event1",
         type: EventTypes.create,
         clientId: "client1",
-        clientTimeStamp: "2024-01-30T11:55:00Z",
-        serverTimeStamp: null,
+        timestamp: "${DateTime.now().toUtc().toIso8601String()}-0000-clientId",
         content: EventContent(
           "wow",
           "user1",
@@ -47,8 +48,3 @@ void runAllServerTests(ServerTestExecutor executor) {
     print(jsonEncode(a.toJson()));
   });
 }
-
-// event -> eventContent -> nodeContent
-// node -> nodeContent
-
-// event1 create event2 edit event3 delete ==> nodes

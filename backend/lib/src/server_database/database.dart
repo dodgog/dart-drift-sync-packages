@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:backend/messaging.dart';
 import 'package:drift/drift.dart';
+import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'database.drift.dart';
 import 'package:backend/server_definitions.dart';
 import 'package:drift/native.dart';
@@ -17,7 +18,9 @@ class UnauthorizedException implements Exception {
 )
 class ServerDatabase extends $ServerDatabase {
   ServerDatabase({QueryExecutor? executor, File? file})
-      : super(executor ?? _openConnection(file: file));
+      : super(executor ?? _openConnection(file: file)) {
+    HLC.initialize(clientNode: ClientNode("server"));
+  }
 
   static QueryExecutor _openConnection({File? file}) {
     if (file != null) {
@@ -49,24 +52,31 @@ class ServerDatabase extends $ServerDatabase {
       throw UnauthorizedException('Invalid user credentials');
     }
 
+    // TODO: this could be a part of the incoming query
+    final largestIncomingTimestamp = postQuery.events.map((e)=>e.timestamp)
+        .reduce((e1,e2)=> e1
+        .compareTo(e2)
+        > 0 ? e1:e2);
+
+    HLC().receivePacked(largestIncomingTimestamp);
+
     final newEvents = await insertEventsForUserAndGetEventsSinceTimestamp(
       postQuery.events,
       postQuery.lastIssuedServerTimestamp,
       postQuery.userId,
     );
 
-    final currentServerTimestamp =
-        await getLatestServerTimestamp(postQuery.userId);
-
-    return PostResponse(currentServerTimestamp, newEvents);
+    return PostResponse(HLC().sendPacked(), newEvents);
   }
 
-  Future<String> getLatestServerTimestamp(String userId) async {
-    final retrievedTimeStamp = await (serverDrift.eventsDrift
-        .getLatestTimestampAffectingUser(userId: userId)
-        .getSingle());
-    return retrievedTimeStamp ?? DateTime.now().toIso8601String();
-  }
+  // // TODO: this should be equivalent to an hlc send
+  // not used because switched to hlc
+  // Future<String> getLatestServerTimestamp(String userId) async {
+  //   final retrievedTimeStamp = await (serverDrift.eventsDrift
+  //       .getLatestTimestampAffectingUser(userId: userId)
+  //       .getSingle());
+  //   return retrievedTimeStamp ?? DateTime.now().toIso8601String();
+  // }
 
   Future<bool> verifyUser(String userId, String token) async {
     return await serverDrift.usersDrift
@@ -78,23 +88,16 @@ class ServerDatabase extends $ServerDatabase {
   }
 
   Future<List<Event>> insertEventsForUserAndGetEventsSinceTimestamp(
-      List<Event> events, String timestamp, String userId) async {
+      List<Event> events, String? timestamp, String userId) async {
     late final List<Event> eventsSinceTimestamp;
     await transaction(() async {
       for (final event in events) {
-        if (event.serverTimeStamp != null) {
-          // todo
-          // FIXME
-          // FEEDBACK
-          print("inserting an event already with server timestamp");
-        }
         await serverDrift.eventsDrift.insertEvent(
           id: event.id,
           type: event.type,
           clientId: event.clientId,
           targetNodeId: event.targetNodeId,
-          serverTimeStamp: DateTime.now().toIso8601String(),
-          clientTimeStamp: event.clientTimeStamp,
+          timestamp: event.timestamp,
           content: event.content,
         );
       }

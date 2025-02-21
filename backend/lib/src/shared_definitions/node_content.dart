@@ -15,19 +15,27 @@ class NodeContent {
   String? title;
   List<String>? referencedObjectIds;
 
-  NodeContent(this.nodeType, this.author, this.title, this
-      .referencedObjectIds);
+  NodeContent(this.nodeType, this.author, this.title, this.referencedObjectIds);
 
-  NodeContent.document(this.author, this.title): nodeType = NodeTypes.document;
+  NodeContent.document(this.author, this.title) : nodeType = NodeTypes.document;
 
-  factory NodeContent.fromJson(Map<String, dynamic> json) =>
-      _$NodeContentFromJson(json);
+  factory NodeContent.fromJson(Map<String, dynamic> json) => _$NodeContentFromJson(json);
 
   Map<String, dynamic> toJson() => _$NodeContentToJson(this);
 
-  static JsonTypeConverter2<NodeContent, Uint8List?, Object?> binaryConverter =
-      TypeConverter.jsonb(
+  static JsonTypeConverter2<NodeContent, Uint8List?, Object?> binaryConverter = TypeConverter.jsonb(
     fromJson: (json) => NodeContent.fromJson(json as Map<String, Object?>),
     toJson: (pref) => pref.toJson(),
   );
+}
+
+@j.JsonSerializable()
+class NodeContentConverter extends j.JsonConverter<NodeContent, Map<String, dynamic>> {
+  const NodeContentConverter();
+
+  @override
+  NodeContent fromJson(Map<String, dynamic> json) => NodeContent.fromJson(json);
+
+  @override
+  Map<String, dynamic> toJson(NodeContent object) => object.toJson();
 }

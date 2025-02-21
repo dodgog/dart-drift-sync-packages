@@ -5,8 +5,7 @@ import 'node_content.dart';
 CREATE TABLE nodes (
     id TEXT NOT NULL PRIMARY KEY,
     type ENUMNAME(NodeTypes) NOT NULL,
-    server_time_stamp TEXT,
-    client_time_stamp TEXT NOT NULL,
+    last_modified_at_timestamp TEXT NOT NULL,
     user_id TEXT NOT NULL REFERENCES users(id),
     is_deleted BOOL DEFAULT 0 NOT NULL,
     content BLOB MAPPED BY `NodeContent.binaryConverter`
@@ -23,8 +22,7 @@ SELECT * FROM nodes WHERE id = :id;
 
 mutateNodeById:
 UPDATE nodes
-SET server_time_stamp = :server_time_stamp,
-    client_time_stamp = :client_time_stamp,
+SET last_modified_at_timestamp = :last_modified_at_timestamp,
     user_id = :user_id,
     is_deleted = :is_deleted,
     content = :content
@@ -34,16 +32,14 @@ insertNode:
 INSERT INTO nodes (
     id,
     type,
-    server_time_stamp,
-    client_time_stamp,
+    last_modified_at_timestamp,
     user_id,
     is_deleted,
     content
 ) VALUES (
     :id,
     :type,
-    :server_time_stamp,
-    :client_time_stamp,
+    :last_modified_at_timestamp,
     :user_id,
     :is_deleted,
     :content

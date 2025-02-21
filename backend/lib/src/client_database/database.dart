@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:backend/messaging.dart';
-import 'package:backend/src/shared_definitions/apply_event_to_node.dart';
 import 'package:drift/drift.dart';
+import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'database.drift.dart';
-import 'package:backend/client_definitions.dart';
 import 'package:drift/native.dart';
 import 'dart:io';
 
@@ -18,7 +15,9 @@ class InvalidConfigException implements Exception {
 )
 class ClientDatabase extends $ClientDatabase {
   ClientDatabase({QueryExecutor? executor, File? file})
-      : super(executor ?? _openConnection(file: file));
+      : super(executor ?? _openConnection(file: file)) {
+    // TODO ideally it should be initialized with the id value from config
+  }
 
   static QueryExecutor _openConnection({File? file}) {
     if (file != null) {
@@ -35,6 +34,7 @@ class ClientDatabase extends $ClientDatabase {
   MigrationStrategy get migration {
     return MigrationStrategy(
       beforeOpen: (details) async {
+        HLC.initialize(clientNode: ClientNode("client"));
         if (details.wasCreated) {
           await clientDrift.usersDrift.initializeConfig();
           // await clientDrift.usersDrift.setUserToken(newUserToken: newUserToken);
@@ -43,16 +43,12 @@ class ClientDatabase extends $ClientDatabase {
     );
   }
 
-  void aa()async{
-    final eventsList = await events.select().get();
-    clientDrift.sharedNodesDrift.applyEvent(eventsList.first);
-  }
-
   Future<PostQuery> pushEvents() async {
     final events = await clientDrift.eventsDrift.getLocalEventsToPush().get();
-    final config = await clientDrift.usersDrift.getConfig().getSingleOrNull() ??
-        (throw InvalidConfigException(
-            "Not exactly one row in the user config table"));
+    final config =
+        await clientDrift.usersDrift.getConfig().getSingleOrNull() ??
+            (throw InvalidConfigException(
+                "Not exactly one row in the user config table"));
 
     if (config.userToken == null ||
         config.userId == null ||
@@ -60,11 +56,7 @@ class ClientDatabase extends $ClientDatabase {
       throw InvalidConfigException("Config contains uninitialized values");
     }
     final query = PostQuery(
-        config.userToken!,
-        config.userId!,
-        config.lastIssuedTimestamp ??
-            DateTime.fromMillisecondsSinceEpoch(0).toIso8601String(),
-        events);
+        config.userToken!, config.userId!, config.lastServerIssuedTimestamp, events);
     return query;
   }
 
@@ -76,8 +68,7 @@ class ClientDatabase extends $ClientDatabase {
             type: event.type,
             targetNodeId: event.targetNodeId,
             clientId: event.clientId,
-            serverTimeStamp: event.serverTimeStamp,
-            clientTimeStamp: event.clientTimeStamp,
+            timestamp: event.timestamp,
             content: event.content);
       }
       await clientDrift.usersDrift

@@ -8,6 +8,42 @@ CREATE TABLE clients (
   user_id TEXT REFERENCES users (id)
 );
 
+--
+--CREATE TABLE config (
+--   client_id TEXT, -- unique per device
+--   last_issued_timestamp TEXT,
+--   user_id TEXT REFERENCES users (id),
+--   user_token TEXT
+--);
+--
+--getCurrentClient:
+--SELECT c.*
+--FROM clients c
+--INNER JOIN config conf ON conf.client_id = c.id;
+--
+--initializeConfig:
+--INSERT INTO config (client_id, last_issued_timestamp, user_id, user_token)
+--VALUES (NULL, NULL, NULL, NULL);
+--
+--setClientId:
+--UPDATE config
+--SET client_id = :new_client_id;
+--
+--setLastSyncTime:
+--UPDATE config
+--SET last_issued_timestamp = :new_last_sync_time;
+--
+--getConfig:
+--SELECT * FROM config;
+--
+--setUserId:
+--UPDATE config
+--SET user_id = :new_user_id;
+--
+--setUserToken:
+--UPDATE config
+--SET user_token = :new_user_token;
+--
 createClient:
 INSERT INTO clients (id, user_id) VALUES (:client_id, :user_id);
 

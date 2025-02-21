@@ -3,19 +3,19 @@
 import 'package:drift/drift.dart' as i0;
 import 'package:backend/src/client_definitions/users.drift.dart' as i1;
 import 'package:drift/internal/modular.dart' as i2;
-import 'package:backend/client.drift.dart' as i3;
-import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i4;
+import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i3;
+import 'package:backend/client.drift.dart' as i4;
 
 typedef $ConfigCreateCompanionBuilder = i1.ConfigCompanion Function({
   i0.Value<String?> clientId,
-  i0.Value<String?> lastIssuedTimestamp,
+  i0.Value<String?> lastServerIssuedTimestamp,
   i0.Value<String?> userId,
   i0.Value<String?> userToken,
   i0.Value<int> rowid,
 });
 typedef $ConfigUpdateCompanionBuilder = i1.ConfigCompanion Function({
   i0.Value<String?> clientId,
-  i0.Value<String?> lastIssuedTimestamp,
+  i0.Value<String?> lastServerIssuedTimestamp,
   i0.Value<String?> userId,
   i0.Value<String?> userToken,
   i0.Value<int> rowid,
@@ -25,20 +25,20 @@ final class $ConfigReferences
     extends i0.BaseReferences<i0.GeneratedDatabase, i1.Config, i1.ConfigData> {
   $ConfigReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static i4.Users _userIdTable(i0.GeneratedDatabase db) =>
-      i2.ReadDatabaseContainer(db).resultSet<i4.Users>('users').createAlias(
+  static i3.Users _userIdTable(i0.GeneratedDatabase db) =>
+      i2.ReadDatabaseContainer(db).resultSet<i3.Users>('users').createAlias(
           i0.$_aliasNameGenerator(
               i2.ReadDatabaseContainer(db)
                   .resultSet<i1.Config>('config')
                   .userId,
-              i2.ReadDatabaseContainer(db).resultSet<i4.Users>('users').id));
+              i2.ReadDatabaseContainer(db).resultSet<i3.Users>('users').id));
 
-  i4.$UsersProcessedTableManager? get userId {
+  i3.$UsersProcessedTableManager? get userId {
     final $_column = $_itemColumn<String>('user_id');
     if ($_column == null) return null;
-    final manager = i4
+    final manager = i3
         .$UsersTableManager(
-            $_db, i2.ReadDatabaseContainer($_db).resultSet<i4.Users>('users'))
+            $_db, i2.ReadDatabaseContainer($_db).resultSet<i3.Users>('users'))
         .filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_userIdTable($_db));
     if (item == null) return manager;
@@ -59,27 +59,27 @@ class $ConfigFilterComposer
   i0.ColumnFilters<String> get clientId => $composableBuilder(
       column: $table.clientId, builder: (column) => i0.ColumnFilters(column));
 
-  i0.ColumnFilters<String> get lastIssuedTimestamp => $composableBuilder(
-      column: $table.lastIssuedTimestamp,
+  i0.ColumnFilters<String> get lastServerIssuedTimestamp => $composableBuilder(
+      column: $table.lastServerIssuedTimestamp,
       builder: (column) => i0.ColumnFilters(column));
 
   i0.ColumnFilters<String> get userToken => $composableBuilder(
       column: $table.userToken, builder: (column) => i0.ColumnFilters(column));
 
-  i4.$UsersFilterComposer get userId {
-    final i4.$UsersFilterComposer composer = $composerBuilder(
+  i3.$UsersFilterComposer get userId {
+    final i3.$UsersFilterComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.userId,
         referencedTable:
-            i2.ReadDatabaseContainer($db).resultSet<i4.Users>('users'),
+            i2.ReadDatabaseContainer($db).resultSet<i3.Users>('users'),
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            i4.$UsersFilterComposer(
+            i3.$UsersFilterComposer(
               $db: $db,
               $table:
-                  i2.ReadDatabaseContainer($db).resultSet<i4.Users>('users'),
+                  i2.ReadDatabaseContainer($db).resultSet<i3.Users>('users'),
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -101,28 +101,29 @@ class $ConfigOrderingComposer
   i0.ColumnOrderings<String> get clientId => $composableBuilder(
       column: $table.clientId, builder: (column) => i0.ColumnOrderings(column));
 
-  i0.ColumnOrderings<String> get lastIssuedTimestamp => $composableBuilder(
-      column: $table.lastIssuedTimestamp,
-      builder: (column) => i0.ColumnOrderings(column));
+  i0.ColumnOrderings<String> get lastServerIssuedTimestamp =>
+      $composableBuilder(
+          column: $table.lastServerIssuedTimestamp,
+          builder: (column) => i0.ColumnOrderings(column));
 
   i0.ColumnOrderings<String> get userToken => $composableBuilder(
       column: $table.userToken,
       builder: (column) => i0.ColumnOrderings(column));
 
-  i4.$UsersOrderingComposer get userId {
-    final i4.$UsersOrderingComposer composer = $composerBuilder(
+  i3.$UsersOrderingComposer get userId {
+    final i3.$UsersOrderingComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.userId,
         referencedTable:
-            i2.ReadDatabaseContainer($db).resultSet<i4.Users>('users'),
+            i2.ReadDatabaseContainer($db).resultSet<i3.Users>('users'),
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            i4.$UsersOrderingComposer(
+            i3.$UsersOrderingComposer(
               $db: $db,
               $table:
-                  i2.ReadDatabaseContainer($db).resultSet<i4.Users>('users'),
+                  i2.ReadDatabaseContainer($db).resultSet<i3.Users>('users'),
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -144,26 +145,28 @@ class $ConfigAnnotationComposer
   i0.GeneratedColumn<String> get clientId =>
       $composableBuilder(column: $table.clientId, builder: (column) => column);
 
-  i0.GeneratedColumn<String> get lastIssuedTimestamp => $composableBuilder(
-      column: $table.lastIssuedTimestamp, builder: (column) => column);
+  i0.GeneratedColumn<String> get lastServerIssuedTimestamp =>
+      $composableBuilder(
+          column: $table.lastServerIssuedTimestamp,
+          builder: (column) => column);
 
   i0.GeneratedColumn<String> get userToken =>
       $composableBuilder(column: $table.userToken, builder: (column) => column);
 
-  i4.$UsersAnnotationComposer get userId {
-    final i4.$UsersAnnotationComposer composer = $composerBuilder(
+  i3.$UsersAnnotationComposer get userId {
+    final i3.$UsersAnnotationComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.userId,
         referencedTable:
-            i2.ReadDatabaseContainer($db).resultSet<i4.Users>('users'),
+            i2.ReadDatabaseContainer($db).resultSet<i3.Users>('users'),
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            i4.$UsersAnnotationComposer(
+            i3.$UsersAnnotationComposer(
               $db: $db,
               $table:
-                  i2.ReadDatabaseContainer($db).resultSet<i4.Users>('users'),
+                  i2.ReadDatabaseContainer($db).resultSet<i3.Users>('users'),
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -197,28 +200,30 @@ class $ConfigTableManager extends i0.RootTableManager<
               i1.$ConfigAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             i0.Value<String?> clientId = const i0.Value.absent(),
-            i0.Value<String?> lastIssuedTimestamp = const i0.Value.absent(),
+            i0.Value<String?> lastServerIssuedTimestamp =
+                const i0.Value.absent(),
             i0.Value<String?> userId = const i0.Value.absent(),
             i0.Value<String?> userToken = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
               i1.ConfigCompanion(
             clientId: clientId,
-            lastIssuedTimestamp: lastIssuedTimestamp,
+            lastServerIssuedTimestamp: lastServerIssuedTimestamp,
             userId: userId,
             userToken: userToken,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             i0.Value<String?> clientId = const i0.Value.absent(),
-            i0.Value<String?> lastIssuedTimestamp = const i0.Value.absent(),
+            i0.Value<String?> lastServerIssuedTimestamp =
+                const i0.Value.absent(),
             i0.Value<String?> userId = const i0.Value.absent(),
             i0.Value<String?> userToken = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
               i1.ConfigCompanion.insert(
             clientId: clientId,
-            lastIssuedTimestamp: lastIssuedTimestamp,
+            lastServerIssuedTimestamp: lastServerIssuedTimestamp,
             userId: userId,
             userToken: userToken,
             rowid: rowid,
@@ -288,10 +293,11 @@ class Config extends i0.Table with i0.TableInfo<Config, i1.ConfigData> {
       type: i0.DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
-  static const i0.VerificationMeta _lastIssuedTimestampMeta =
-      const i0.VerificationMeta('lastIssuedTimestamp');
-  late final i0.GeneratedColumn<String> lastIssuedTimestamp =
-      i0.GeneratedColumn<String>('last_issued_timestamp', aliasedName, true,
+  static const i0.VerificationMeta _lastServerIssuedTimestampMeta =
+      const i0.VerificationMeta('lastServerIssuedTimestamp');
+  late final i0.GeneratedColumn<String> lastServerIssuedTimestamp =
+      i0.GeneratedColumn<String>(
+          'last_server_issued_timestamp', aliasedName, true,
           type: i0.DriftSqlType.string,
           requiredDuringInsert: false,
           $customConstraints: '');
@@ -311,7 +317,7 @@ class Config extends i0.Table with i0.TableInfo<Config, i1.ConfigData> {
       $customConstraints: '');
   @override
   List<i0.GeneratedColumn> get $columns =>
-      [clientId, lastIssuedTimestamp, userId, userToken];
+      [clientId, lastServerIssuedTimestamp, userId, userToken];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -327,11 +333,12 @@ class Config extends i0.Table with i0.TableInfo<Config, i1.ConfigData> {
       context.handle(_clientIdMeta,
           clientId.isAcceptableOrUnknown(data['client_id']!, _clientIdMeta));
     }
-    if (data.containsKey('last_issued_timestamp')) {
+    if (data.containsKey('last_server_issued_timestamp')) {
       context.handle(
-          _lastIssuedTimestampMeta,
-          lastIssuedTimestamp.isAcceptableOrUnknown(
-              data['last_issued_timestamp']!, _lastIssuedTimestampMeta));
+          _lastServerIssuedTimestampMeta,
+          lastServerIssuedTimestamp.isAcceptableOrUnknown(
+              data['last_server_issued_timestamp']!,
+              _lastServerIssuedTimestampMeta));
     }
     if (data.containsKey('user_id')) {
       context.handle(_userIdMeta,
@@ -352,9 +359,9 @@ class Config extends i0.Table with i0.TableInfo<Config, i1.ConfigData> {
     return i1.ConfigData(
       clientId: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}client_id']),
-      lastIssuedTimestamp: attachedDatabase.typeMapping.read(
+      lastServerIssuedTimestamp: attachedDatabase.typeMapping.read(
           i0.DriftSqlType.string,
-          data['${effectivePrefix}last_issued_timestamp']),
+          data['${effectivePrefix}last_server_issued_timestamp']),
       userId: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}user_id']),
       userToken: attachedDatabase.typeMapping
@@ -375,19 +382,23 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
   final String? clientId;
 
   /// unique per device
-  final String? lastIssuedTimestamp;
+  final String? lastServerIssuedTimestamp;
   final String? userId;
   final String? userToken;
   const ConfigData(
-      {this.clientId, this.lastIssuedTimestamp, this.userId, this.userToken});
+      {this.clientId,
+      this.lastServerIssuedTimestamp,
+      this.userId,
+      this.userToken});
   @override
   Map<String, i0.Expression> toColumns(bool nullToAbsent) {
     final map = <String, i0.Expression>{};
     if (!nullToAbsent || clientId != null) {
       map['client_id'] = i0.Variable<String>(clientId);
     }
-    if (!nullToAbsent || lastIssuedTimestamp != null) {
-      map['last_issued_timestamp'] = i0.Variable<String>(lastIssuedTimestamp);
+    if (!nullToAbsent || lastServerIssuedTimestamp != null) {
+      map['last_server_issued_timestamp'] =
+          i0.Variable<String>(lastServerIssuedTimestamp);
     }
     if (!nullToAbsent || userId != null) {
       map['user_id'] = i0.Variable<String>(userId);
@@ -403,9 +414,10 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
       clientId: clientId == null && nullToAbsent
           ? const i0.Value.absent()
           : i0.Value(clientId),
-      lastIssuedTimestamp: lastIssuedTimestamp == null && nullToAbsent
-          ? const i0.Value.absent()
-          : i0.Value(lastIssuedTimestamp),
+      lastServerIssuedTimestamp:
+          lastServerIssuedTimestamp == null && nullToAbsent
+              ? const i0.Value.absent()
+              : i0.Value(lastServerIssuedTimestamp),
       userId: userId == null && nullToAbsent
           ? const i0.Value.absent()
           : i0.Value(userId),
@@ -420,8 +432,8 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
     serializer ??= i0.driftRuntimeOptions.defaultSerializer;
     return ConfigData(
       clientId: serializer.fromJson<String?>(json['client_id']),
-      lastIssuedTimestamp:
-          serializer.fromJson<String?>(json['last_issued_timestamp']),
+      lastServerIssuedTimestamp:
+          serializer.fromJson<String?>(json['last_server_issued_timestamp']),
       userId: serializer.fromJson<String?>(json['user_id']),
       userToken: serializer.fromJson<String?>(json['user_token']),
     );
@@ -431,7 +443,8 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
     serializer ??= i0.driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'client_id': serializer.toJson<String?>(clientId),
-      'last_issued_timestamp': serializer.toJson<String?>(lastIssuedTimestamp),
+      'last_server_issued_timestamp':
+          serializer.toJson<String?>(lastServerIssuedTimestamp),
       'user_id': serializer.toJson<String?>(userId),
       'user_token': serializer.toJson<String?>(userToken),
     };
@@ -439,23 +452,23 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
 
   i1.ConfigData copyWith(
           {i0.Value<String?> clientId = const i0.Value.absent(),
-          i0.Value<String?> lastIssuedTimestamp = const i0.Value.absent(),
+          i0.Value<String?> lastServerIssuedTimestamp = const i0.Value.absent(),
           i0.Value<String?> userId = const i0.Value.absent(),
           i0.Value<String?> userToken = const i0.Value.absent()}) =>
       i1.ConfigData(
         clientId: clientId.present ? clientId.value : this.clientId,
-        lastIssuedTimestamp: lastIssuedTimestamp.present
-            ? lastIssuedTimestamp.value
-            : this.lastIssuedTimestamp,
+        lastServerIssuedTimestamp: lastServerIssuedTimestamp.present
+            ? lastServerIssuedTimestamp.value
+            : this.lastServerIssuedTimestamp,
         userId: userId.present ? userId.value : this.userId,
         userToken: userToken.present ? userToken.value : this.userToken,
       );
   ConfigData copyWithCompanion(i1.ConfigCompanion data) {
     return ConfigData(
       clientId: data.clientId.present ? data.clientId.value : this.clientId,
-      lastIssuedTimestamp: data.lastIssuedTimestamp.present
-          ? data.lastIssuedTimestamp.value
-          : this.lastIssuedTimestamp,
+      lastServerIssuedTimestamp: data.lastServerIssuedTimestamp.present
+          ? data.lastServerIssuedTimestamp.value
+          : this.lastServerIssuedTimestamp,
       userId: data.userId.present ? data.userId.value : this.userId,
       userToken: data.userToken.present ? data.userToken.value : this.userToken,
     );
@@ -465,7 +478,7 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
   String toString() {
     return (StringBuffer('ConfigData(')
           ..write('clientId: $clientId, ')
-          ..write('lastIssuedTimestamp: $lastIssuedTimestamp, ')
+          ..write('lastServerIssuedTimestamp: $lastServerIssuedTimestamp, ')
           ..write('userId: $userId, ')
           ..write('userToken: $userToken')
           ..write(')'))
@@ -474,48 +487,48 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
 
   @override
   int get hashCode =>
-      Object.hash(clientId, lastIssuedTimestamp, userId, userToken);
+      Object.hash(clientId, lastServerIssuedTimestamp, userId, userToken);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is i1.ConfigData &&
           other.clientId == this.clientId &&
-          other.lastIssuedTimestamp == this.lastIssuedTimestamp &&
+          other.lastServerIssuedTimestamp == this.lastServerIssuedTimestamp &&
           other.userId == this.userId &&
           other.userToken == this.userToken);
 }
 
 class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
   final i0.Value<String?> clientId;
-  final i0.Value<String?> lastIssuedTimestamp;
+  final i0.Value<String?> lastServerIssuedTimestamp;
   final i0.Value<String?> userId;
   final i0.Value<String?> userToken;
   final i0.Value<int> rowid;
   const ConfigCompanion({
     this.clientId = const i0.Value.absent(),
-    this.lastIssuedTimestamp = const i0.Value.absent(),
+    this.lastServerIssuedTimestamp = const i0.Value.absent(),
     this.userId = const i0.Value.absent(),
     this.userToken = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   });
   ConfigCompanion.insert({
     this.clientId = const i0.Value.absent(),
-    this.lastIssuedTimestamp = const i0.Value.absent(),
+    this.lastServerIssuedTimestamp = const i0.Value.absent(),
     this.userId = const i0.Value.absent(),
     this.userToken = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   });
   static i0.Insertable<i1.ConfigData> custom({
     i0.Expression<String>? clientId,
-    i0.Expression<String>? lastIssuedTimestamp,
+    i0.Expression<String>? lastServerIssuedTimestamp,
     i0.Expression<String>? userId,
     i0.Expression<String>? userToken,
     i0.Expression<int>? rowid,
   }) {
     return i0.RawValuesInsertable({
       if (clientId != null) 'client_id': clientId,
-      if (lastIssuedTimestamp != null)
-        'last_issued_timestamp': lastIssuedTimestamp,
+      if (lastServerIssuedTimestamp != null)
+        'last_server_issued_timestamp': lastServerIssuedTimestamp,
       if (userId != null) 'user_id': userId,
       if (userToken != null) 'user_token': userToken,
       if (rowid != null) 'rowid': rowid,
@@ -524,13 +537,14 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
 
   i1.ConfigCompanion copyWith(
       {i0.Value<String?>? clientId,
-      i0.Value<String?>? lastIssuedTimestamp,
+      i0.Value<String?>? lastServerIssuedTimestamp,
       i0.Value<String?>? userId,
       i0.Value<String?>? userToken,
       i0.Value<int>? rowid}) {
     return i1.ConfigCompanion(
       clientId: clientId ?? this.clientId,
-      lastIssuedTimestamp: lastIssuedTimestamp ?? this.lastIssuedTimestamp,
+      lastServerIssuedTimestamp:
+          lastServerIssuedTimestamp ?? this.lastServerIssuedTimestamp,
       userId: userId ?? this.userId,
       userToken: userToken ?? this.userToken,
       rowid: rowid ?? this.rowid,
@@ -543,9 +557,9 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
     if (clientId.present) {
       map['client_id'] = i0.Variable<String>(clientId.value);
     }
-    if (lastIssuedTimestamp.present) {
-      map['last_issued_timestamp'] =
-          i0.Variable<String>(lastIssuedTimestamp.value);
+    if (lastServerIssuedTimestamp.present) {
+      map['last_server_issued_timestamp'] =
+          i0.Variable<String>(lastServerIssuedTimestamp.value);
     }
     if (userId.present) {
       map['user_id'] = i0.Variable<String>(userId.value);
@@ -563,7 +577,7 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
   String toString() {
     return (StringBuffer('ConfigCompanion(')
           ..write('clientId: $clientId, ')
-          ..write('lastIssuedTimestamp: $lastIssuedTimestamp, ')
+          ..write('lastServerIssuedTimestamp: $lastServerIssuedTimestamp, ')
           ..write('userId: $userId, ')
           ..write('userToken: $userToken, ')
           ..write('rowid: $rowid')
@@ -574,9 +588,19 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
 
 class UsersDrift extends i2.ModularAccessor {
   UsersDrift(i0.GeneratedDatabase db) : super(db);
+  i0.Selectable<i3.Client> getCurrentClient() {
+    return customSelect(
+        'SELECT c.* FROM clients AS c INNER JOIN config AS conf ON conf.client_id = c.id',
+        variables: [],
+        readsFrom: {
+          clients,
+          config,
+        }).asyncMap(clients.mapFromRow);
+  }
+
   Future<int> initializeConfig() {
     return customInsert(
-      'INSERT INTO config (client_id, last_issued_timestamp, user_id, user_token) VALUES (NULL, NULL, NULL, NULL)',
+      'INSERT INTO config (client_id, last_server_issued_timestamp, user_id, user_token) VALUES (NULL, NULL, NULL, NULL)',
       variables: [],
       updates: {config},
     );
@@ -597,10 +621,11 @@ class UsersDrift extends i2.ModularAccessor {
   Future<int> setLastSyncTime({required String? newLastSyncTime}) {
     return customUpdate(
       switch (executor.dialect) {
-        i0.SqlDialect.sqlite => 'UPDATE config SET last_issued_timestamp = ?1',
+        i0.SqlDialect.sqlite =>
+          'UPDATE config SET last_server_issued_timestamp = ?1',
         i0.SqlDialect.postgres ||
         _ =>
-          'UPDATE config SET last_issued_timestamp = \$1',
+          'UPDATE config SET last_server_issued_timestamp = \$1',
       },
       variables: [i0.Variable<String>(newLastSyncTime)],
       updates: {config},
@@ -638,7 +663,9 @@ class UsersDrift extends i2.ModularAccessor {
     );
   }
 
+  i3.Clients get clients => i2.ReadDatabaseContainer(attachedDatabase)
+      .resultSet<i3.Clients>('clients');
   i1.Config get config =>
       i2.ReadDatabaseContainer(attachedDatabase).resultSet<i1.Config>('config');
-  i3.ClientDrift get clientDrift => this.accessor(i3.ClientDrift.new);
+  i4.ClientDrift get clientDrift => this.accessor(i4.ClientDrift.new);
 }

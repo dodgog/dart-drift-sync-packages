@@ -2,13 +2,18 @@ import 'package:backend/client.drift';
 
 CREATE TABLE config (
    client_id TEXT, -- unique per device
-   last_issued_timestamp TEXT,
+   last_server_issued_timestamp TEXT,
    user_id TEXT REFERENCES users (id),
    user_token TEXT
 );
 
+getCurrentClient:
+SELECT c.*
+FROM clients c
+INNER JOIN config conf ON conf.client_id = c.id;
+
 initializeConfig:
-INSERT INTO config (client_id, last_issued_timestamp, user_id, user_token)
+INSERT INTO config (client_id, last_server_issued_timestamp, user_id, user_token)
 VALUES (NULL, NULL, NULL, NULL);
 
 setClientId:
@@ -17,7 +22,7 @@ SET client_id = :new_client_id;
 
 setLastSyncTime:
 UPDATE config
-SET last_issued_timestamp = :new_last_sync_time;
+SET last_server_issued_timestamp = :new_last_sync_time;
 
 getConfig:
 SELECT * FROM config;

@@ -7,7 +7,7 @@ part 'client_server.g.dart';
 class PostQuery {
   String token;
   String userId;
-  String lastIssuedServerTimestamp;
+  String? lastIssuedServerTimestamp;
   @EventConverter()
   List<Event> events;
 

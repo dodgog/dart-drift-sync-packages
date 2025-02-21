@@ -13,14 +13,14 @@ import 'package:backend/src/server_definitions/users.drift.dart' as i8;
 class EventsDrift extends i1.ModularAccessor {
   EventsDrift(i0.GeneratedDatabase db) : super(db);
   i0.Selectable<i2.Event> getUserEventsSinceTimestamp(
-      {required String? timestamp, required String? userId}) {
+      {required String? timestamp, required String userId}) {
     return customSelect(
         switch (executor.dialect) {
           i0.SqlDialect.sqlite =>
-            'SELECT e.* FROM events AS e JOIN clients AS c ON e.client_id = c.id WHERE e.server_time_stamp > ?1 AND c.user_id = ?2 ORDER BY e.server_time_stamp ASC',
+            'SELECT e.* FROM events AS e JOIN clients AS c ON e.client_id = c.id WHERE e.timestamp > COALESCE(?1, \'1969-01-01T00:00:01.000Z-0000-00000\') AND c.user_id = ?2 ORDER BY e.timestamp ASC',
           i0.SqlDialect.postgres ||
           _ =>
-            'SELECT e.* FROM events AS e JOIN clients AS c ON e.client_id = c.id WHERE e.server_time_stamp > \$1 AND c.user_id = \$2 ORDER BY e.server_time_stamp ASC',
+            'SELECT e.* FROM events AS e JOIN clients AS c ON e.client_id = c.id WHERE e.timestamp > COALESCE(\$1, \'1969-01-01T00:00:01.000Z-0000-00000\') AND c.user_id = \$2 ORDER BY e.timestamp ASC',
         },
         variables: [
           i0.Variable<String>(timestamp),
@@ -34,27 +34,25 @@ class EventsDrift extends i1.ModularAccessor {
 
   Future<int> insertEvent(
       {required String id,
-      required i3.EventTypes? type,
+      required i3.EventTypes type,
       required String clientId,
       required String? targetNodeId,
-      required String? serverTimeStamp,
-      required String clientTimeStamp,
+      required String timestamp,
       required i4.EventContent? content}) {
     return customInsert(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>
-          'INSERT INTO events (id, type, client_id, target_node_id, server_time_stamp, client_time_stamp, content) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)',
+          'INSERT INTO events (id, type, client_id, target_node_id, timestamp, content) VALUES (?1, ?2, ?3, ?4, ?5, ?6)',
         i0.SqlDialect.postgres ||
         _ =>
-          'INSERT INTO events (id, type, client_id, target_node_id, server_time_stamp, client_time_stamp, content) VALUES (\$1, \$2, \$3, \$4, \$5, \$6, \$7)',
+          'INSERT INTO events (id, type, client_id, target_node_id, timestamp, content) VALUES (\$1, \$2, \$3, \$4, \$5, \$6)',
       },
       variables: [
         i0.Variable<String>(id),
-        i0.Variable<String>(i2.Events.$convertertypen.toSql(type)),
+        i0.Variable<String>(i2.Events.$convertertype.toSql(type)),
         i0.Variable<String>(clientId),
         i0.Variable<String>(targetNodeId),
-        i0.Variable<String>(serverTimeStamp),
-        i0.Variable<String>(clientTimeStamp),
+        i0.Variable<String>(timestamp),
         i0.Variable<i5.Uint8List>(i2.Events.$convertercontentn.toSql(content))
       ],
       updates: {events},
@@ -66,10 +64,10 @@ class EventsDrift extends i1.ModularAccessor {
     return customSelect(
         switch (executor.dialect) {
           i0.SqlDialect.sqlite =>
-            'SELECT MAX(e.server_time_stamp) AS _c0 FROM events AS e JOIN clients AS c ON e.client_id = c.id WHERE c.user_id = ?1',
+            'SELECT MAX(e.timestamp) AS _c0 FROM events AS e JOIN clients AS c ON e.client_id = c.id WHERE c.user_id = ?1',
           i0.SqlDialect.postgres ||
           _ =>
-            'SELECT MAX(e.server_time_stamp) AS _c0 FROM events AS e JOIN clients AS c ON e.client_id = c.id WHERE c.user_id = \$1',
+            'SELECT MAX(e.timestamp) AS _c0 FROM events AS e JOIN clients AS c ON e.client_id = c.id WHERE c.user_id = \$1',
         },
         variables: [
           i0.Variable<String>(userId)
