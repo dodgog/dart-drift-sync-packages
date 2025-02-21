@@ -6,13 +6,14 @@ extension ClientEventHelper on ClientDrift {
   Future<int> insertLocalEventWithClientId(Event event) async {
     final client = await usersDrift.getCurrentClient().getSingle();
     // THINK here about when timestamp id and client id are populated
-    return await eventsDrift.insertLocalEvent(
+    return await sharedEventsDrift.insertEvent(
       id: event.id,
       type: event.type,
       clientId: client.id,
       targetNodeId: event.targetNodeId,
       timestamp: event.timestamp,
-      content: event.content,
+      // TODO:
+      content: event.content?..userId = client.userId ?? "NOUSERIDPROBLEM",
     );
   }
 }

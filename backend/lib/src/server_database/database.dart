@@ -98,7 +98,7 @@ class ServerDatabase extends $ServerDatabase {
     late final List<Event> eventsSinceTimestamp;
     await transaction(() async {
       for (final event in events) {
-        await serverDrift.eventsDrift.insertEvent(
+        await serverDrift.sharedEventsDrift.insertEvent(
           id: event.id,
           type: event.type,
           clientId: event.clientId,

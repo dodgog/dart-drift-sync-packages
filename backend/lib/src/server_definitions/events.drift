@@ -9,12 +9,6 @@ WHERE e.timestamp > COALESCE(:timestamp, '1969-01-01T00:00:01.000Z-0000-00000')
 AND c.user_id = :user_id
 ORDER BY e.timestamp ASC;
 
-insertEvent:
-INSERT INTO events (id, type, client_id, target_node_id, timestamp,
- content)
-VALUES
-(:id, :type, :client_id, :target_node_id, :timestamp, :content);
-
 getLatestTimestampAffectingUser:
 SELECT MAX(e.timestamp)
 FROM events e

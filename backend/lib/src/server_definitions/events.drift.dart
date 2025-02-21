@@ -3,12 +3,9 @@
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/internal/modular.dart' as i1;
 import 'package:backend/src/shared_definitions/shared_events.drift.dart' as i2;
-import 'package:backend/src/shared_definitions/event_types.dart' as i3;
-import 'package:backend/src/shared_definitions/event_content.dart' as i4;
-import 'dart:typed_data' as i5;
-import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i6;
-import 'package:backend/server.drift.dart' as i7;
-import 'package:backend/src/server_definitions/users.drift.dart' as i8;
+import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i3;
+import 'package:backend/server.drift.dart' as i4;
+import 'package:backend/src/server_definitions/users.drift.dart' as i5;
 
 class EventsDrift extends i1.ModularAccessor {
   EventsDrift(i0.GeneratedDatabase db) : super(db);
@@ -32,33 +29,6 @@ class EventsDrift extends i1.ModularAccessor {
         }).asyncMap(events.mapFromRow);
   }
 
-  Future<int> insertEvent(
-      {required String id,
-      required i3.EventTypes type,
-      required String clientId,
-      required String? targetNodeId,
-      required String timestamp,
-      required i4.EventContent? content}) {
-    return customInsert(
-      switch (executor.dialect) {
-        i0.SqlDialect.sqlite =>
-          'INSERT INTO events (id, type, client_id, target_node_id, timestamp, content) VALUES (?1, ?2, ?3, ?4, ?5, ?6)',
-        i0.SqlDialect.postgres ||
-        _ =>
-          'INSERT INTO events (id, type, client_id, target_node_id, timestamp, content) VALUES (\$1, \$2, \$3, \$4, \$5, \$6)',
-      },
-      variables: [
-        i0.Variable<String>(id),
-        i0.Variable<String>(i2.Events.$convertertype.toSql(type)),
-        i0.Variable<String>(clientId),
-        i0.Variable<String>(targetNodeId),
-        i0.Variable<String>(timestamp),
-        i0.Variable<i5.Uint8List>(i2.Events.$convertercontentn.toSql(content))
-      ],
-      updates: {events},
-    );
-  }
-
   i0.Selectable<String?> getLatestTimestampAffectingUser(
       {required String? userId}) {
     return customSelect(
@@ -80,8 +50,8 @@ class EventsDrift extends i1.ModularAccessor {
 
   i2.Events get events =>
       i1.ReadDatabaseContainer(attachedDatabase).resultSet<i2.Events>('events');
-  i6.Clients get clients => i1.ReadDatabaseContainer(attachedDatabase)
-      .resultSet<i6.Clients>('clients');
-  i7.ServerDrift get serverDrift => this.accessor(i7.ServerDrift.new);
-  i8.UsersDrift get usersDrift => this.accessor(i8.UsersDrift.new);
+  i3.Clients get clients => i1.ReadDatabaseContainer(attachedDatabase)
+      .resultSet<i3.Clients>('clients');
+  i4.ServerDrift get serverDrift => this.accessor(i4.ServerDrift.new);
+  i5.UsersDrift get usersDrift => this.accessor(i5.UsersDrift.new);
 }

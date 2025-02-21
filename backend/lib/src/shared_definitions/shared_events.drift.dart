@@ -704,6 +704,33 @@ class SharedEventsDrift extends i5.ModularAccessor {
     }).asyncMap(events.mapFromRow);
   }
 
+  Future<int> insertEvent(
+      {required String id,
+      required i2.EventTypes type,
+      required String clientId,
+      required String? targetNodeId,
+      required String timestamp,
+      required i3.EventContent? content}) {
+    return customInsert(
+      switch (executor.dialect) {
+        i0.SqlDialect.sqlite =>
+          'INSERT INTO events (id, type, client_id, target_node_id, timestamp, content) VALUES (?1, ?2, ?3, ?4, ?5, ?6) ON CONFLICT (id) DO NOTHING',
+        i0.SqlDialect.postgres ||
+        _ =>
+          'INSERT INTO events (id, type, client_id, target_node_id, timestamp, content) VALUES (\$1, \$2, \$3, \$4, \$5, \$6) ON CONFLICT (id) DO NOTHING',
+      },
+      variables: [
+        i0.Variable<String>(id),
+        i0.Variable<String>(i1.Events.$convertertype.toSql(type)),
+        i0.Variable<String>(clientId),
+        i0.Variable<String>(targetNodeId),
+        i0.Variable<String>(timestamp),
+        i0.Variable<i4.Uint8List>(i1.Events.$convertercontentn.toSql(content))
+      ],
+      updates: {events},
+    );
+  }
+
   i1.Events get events =>
       i5.ReadDatabaseContainer(attachedDatabase).resultSet<i1.Events>('events');
   i6.SharedUsersDrift get sharedUsersDrift =>

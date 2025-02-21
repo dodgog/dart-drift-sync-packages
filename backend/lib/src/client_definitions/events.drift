@@ -5,33 +5,28 @@ getLocalEventsToPush:
 SELECT e.*
 FROM events e;
 
-insertLocalEvent:
-INSERT INTO events (id, type, client_id, target_node_id, timestamp,
-content)
-VALUES
-(:id, :type, :client_id, :target_node_id, :timestamp, :content);
-
-insertServerEvent:
-INSERT INTO events (
-    id,
-    type,
-    client_id,
-    target_node_id,
-    timestamp,
-    content
-)
-VALUES (
-    :id,
-    :type,
-    :client_id,
-    :target_node_id,
-    :timestamp,
-    :content
-)
-ON CONFLICT (id) DO UPDATE
-SET timestamp = EXCLUDED.timestamp
-WHERE
-    events.type = EXCLUDED.type
-    AND events.client_id = EXCLUDED.client_id
-    AND events.target_node_id = EXCLUDED.target_node_id
-    AND events.content = EXCLUDED.content;
+--insertLocalEvent:
+--INSERT INTO events (id, type, client_id, target_node_id, timestamp,
+--content)
+--VALUES
+--(:id, :type, :client_id, :target_node_id, :timestamp, :content);
+--
+---- SERVER events no longer work differently
+--insertServerEvent:
+--INSERT INTO events (
+--    id,
+--    type,
+--    client_id,
+--    target_node_id,
+--    timestamp,
+--    content
+--)
+--VALUES (
+--    :id,
+--    :type,
+--    :client_id,
+--    :target_node_id,
+--    :timestamp,
+--    :content
+--)
+--ON CONFLICT (id) DO NOTHING;

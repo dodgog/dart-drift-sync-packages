@@ -35,13 +35,13 @@ void main() async {
   final stopwatch = Stopwatch()..start();
 
   for (var i = 1; i <= maxEvents; i++) {
-    final event = issueRawCreateEventFromNode(
+    final event = issueRawCreateEventFromNodeTEST(
       Node(
         id: 'tobeassigned',
         type: NodeTypes.document,
         lastModifiedAtTimestamp: 'tobedobe',
         userId: client.userId!,
-        isDeleted: false,
+        isDeleted: 0,
         content: NodeContent(NodeTypes.document, "author$i", "title$i", null),
       ),
     );

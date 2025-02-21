@@ -13,7 +13,7 @@ typedef $NodesCreateCompanionBuilder = i1.NodesCompanion Function({
   required i2.NodeTypes type,
   required String lastModifiedAtTimestamp,
   required String userId,
-  i0.Value<bool> isDeleted,
+  i0.Value<int> isDeleted,
   i0.Value<i3.NodeContent> content,
   i0.Value<int> rowid,
 });
@@ -22,7 +22,7 @@ typedef $NodesUpdateCompanionBuilder = i1.NodesCompanion Function({
   i0.Value<i2.NodeTypes> type,
   i0.Value<String> lastModifiedAtTimestamp,
   i0.Value<String> userId,
-  i0.Value<bool> isDeleted,
+  i0.Value<int> isDeleted,
   i0.Value<i3.NodeContent> content,
   i0.Value<int> rowid,
 });
@@ -71,7 +71,7 @@ class $NodesFilterComposer extends i0.Composer<i0.GeneratedDatabase, i1.Nodes> {
       column: $table.lastModifiedAtTimestamp,
       builder: (column) => i0.ColumnFilters(column));
 
-  i0.ColumnFilters<bool> get isDeleted => $composableBuilder(
+  i0.ColumnFilters<int> get isDeleted => $composableBuilder(
       column: $table.isDeleted, builder: (column) => i0.ColumnFilters(column));
 
   i0.ColumnWithTypeConverterFilters<i3.NodeContent, i3.NodeContent,
@@ -122,7 +122,7 @@ class $NodesOrderingComposer
       column: $table.lastModifiedAtTimestamp,
       builder: (column) => i0.ColumnOrderings(column));
 
-  i0.ColumnOrderings<bool> get isDeleted => $composableBuilder(
+  i0.ColumnOrderings<int> get isDeleted => $composableBuilder(
       column: $table.isDeleted,
       builder: (column) => i0.ColumnOrderings(column));
 
@@ -170,7 +170,7 @@ class $NodesAnnotationComposer
   i0.GeneratedColumn<String> get lastModifiedAtTimestamp => $composableBuilder(
       column: $table.lastModifiedAtTimestamp, builder: (column) => column);
 
-  i0.GeneratedColumn<bool> get isDeleted =>
+  i0.GeneratedColumn<int> get isDeleted =>
       $composableBuilder(column: $table.isDeleted, builder: (column) => column);
 
   i0.GeneratedColumnWithTypeConverter<i3.NodeContent, i4.Uint8List>
@@ -227,7 +227,7 @@ class $NodesTableManager extends i0.RootTableManager<
             i0.Value<i2.NodeTypes> type = const i0.Value.absent(),
             i0.Value<String> lastModifiedAtTimestamp = const i0.Value.absent(),
             i0.Value<String> userId = const i0.Value.absent(),
-            i0.Value<bool> isDeleted = const i0.Value.absent(),
+            i0.Value<int> isDeleted = const i0.Value.absent(),
             i0.Value<i3.NodeContent> content = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
@@ -245,7 +245,7 @@ class $NodesTableManager extends i0.RootTableManager<
             required i2.NodeTypes type,
             required String lastModifiedAtTimestamp,
             required String userId,
-            i0.Value<bool> isDeleted = const i0.Value.absent(),
+            i0.Value<int> isDeleted = const i0.Value.absent(),
             i0.Value<i3.NodeContent> content = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
@@ -347,9 +347,9 @@ class Nodes extends i0.Table with i0.TableInfo<Nodes, i1.Node> {
       $customConstraints: 'NOT NULL REFERENCES users(id)');
   static const i0.VerificationMeta _isDeletedMeta =
       const i0.VerificationMeta('isDeleted');
-  late final i0.GeneratedColumn<bool> isDeleted = i0.GeneratedColumn<bool>(
+  late final i0.GeneratedColumn<int> isDeleted = i0.GeneratedColumn<int>(
       'is_deleted', aliasedName, false,
-      type: i0.DriftSqlType.bool,
+      type: i0.DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: 'DEFAULT 0 NOT NULL',
       defaultValue: const i0.CustomExpression('0'));
@@ -419,7 +419,7 @@ class Nodes extends i0.Table with i0.TableInfo<Nodes, i1.Node> {
       userId: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}user_id'])!,
       isDeleted: attachedDatabase.typeMapping
-          .read(i0.DriftSqlType.bool, data['${effectivePrefix}is_deleted'])!,
+          .read(i0.DriftSqlType.int, data['${effectivePrefix}is_deleted'])!,
       content: i1.Nodes.$convertercontent.fromSql(attachedDatabase.typeMapping
           .read(i0.DriftSqlType.blob, data['${effectivePrefix}content'])),
     );
@@ -443,7 +443,9 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
   final i2.NodeTypes type;
   final String lastModifiedAtTimestamp;
   final String userId;
-  final bool isDeleted;
+
+  /// for postgres compatibility using int
+  final int isDeleted;
   final i3.NodeContent content;
   const Node(
       {required this.id,
@@ -462,7 +464,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
     map['last_modified_at_timestamp'] =
         i0.Variable<String>(lastModifiedAtTimestamp);
     map['user_id'] = i0.Variable<String>(userId);
-    map['is_deleted'] = i0.Variable<bool>(isDeleted);
+    map['is_deleted'] = i0.Variable<int>(isDeleted);
     {
       map['content'] =
           i0.Variable<i4.Uint8List>(i1.Nodes.$convertercontent.toSql(content));
@@ -491,7 +493,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
       lastModifiedAtTimestamp:
           serializer.fromJson<String>(json['last_modified_at_timestamp']),
       userId: serializer.fromJson<String>(json['user_id']),
-      isDeleted: serializer.fromJson<bool>(json['is_deleted']),
+      isDeleted: serializer.fromJson<int>(json['is_deleted']),
       content: i1.Nodes.$convertercontent
           .fromJson(serializer.fromJson<Object?>(json['content'])),
     );
@@ -505,7 +507,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
       'last_modified_at_timestamp':
           serializer.toJson<String>(lastModifiedAtTimestamp),
       'user_id': serializer.toJson<String>(userId),
-      'is_deleted': serializer.toJson<bool>(isDeleted),
+      'is_deleted': serializer.toJson<int>(isDeleted),
       'content': serializer
           .toJson<Object?>(i1.Nodes.$convertercontent.toJson(content)),
     };
@@ -516,7 +518,7 @@ class Node extends i0.DataClass implements i0.Insertable<i1.Node> {
           i2.NodeTypes? type,
           String? lastModifiedAtTimestamp,
           String? userId,
-          bool? isDeleted,
+          int? isDeleted,
           i3.NodeContent? content}) =>
       i1.Node(
         id: id ?? this.id,
@@ -573,7 +575,7 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
   final i0.Value<i2.NodeTypes> type;
   final i0.Value<String> lastModifiedAtTimestamp;
   final i0.Value<String> userId;
-  final i0.Value<bool> isDeleted;
+  final i0.Value<int> isDeleted;
   final i0.Value<i3.NodeContent> content;
   final i0.Value<int> rowid;
   const NodesCompanion({
@@ -602,7 +604,7 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
     i0.Expression<String>? type,
     i0.Expression<String>? lastModifiedAtTimestamp,
     i0.Expression<String>? userId,
-    i0.Expression<bool>? isDeleted,
+    i0.Expression<int>? isDeleted,
     i0.Expression<i4.Uint8List>? content,
     i0.Expression<int>? rowid,
   }) {
@@ -623,7 +625,7 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
       i0.Value<i2.NodeTypes>? type,
       i0.Value<String>? lastModifiedAtTimestamp,
       i0.Value<String>? userId,
-      i0.Value<bool>? isDeleted,
+      i0.Value<int>? isDeleted,
       i0.Value<i3.NodeContent>? content,
       i0.Value<int>? rowid}) {
     return i1.NodesCompanion(
@@ -656,7 +658,7 @@ class NodesCompanion extends i0.UpdateCompanion<i1.Node> {
       map['user_id'] = i0.Variable<String>(userId.value);
     }
     if (isDeleted.present) {
-      map['is_deleted'] = i0.Variable<bool>(isDeleted.value);
+      map['is_deleted'] = i0.Variable<int>(isDeleted.value);
     }
     if (content.present) {
       map['content'] = i0.Variable<i4.Uint8List>(
@@ -717,7 +719,7 @@ class SharedNodesDrift extends i5.ModularAccessor {
   Future<int> mutateNodeById(
       {required String lastModifiedAtTimestamp,
       required String userId,
-      required bool isDeleted,
+      required int isDeleted,
       required i3.NodeContent content,
       required String id}) {
     return customUpdate(
@@ -731,7 +733,7 @@ class SharedNodesDrift extends i5.ModularAccessor {
       variables: [
         i0.Variable<String>(lastModifiedAtTimestamp),
         i0.Variable<String>(userId),
-        i0.Variable<bool>(isDeleted),
+        i0.Variable<int>(isDeleted),
         i0.Variable<i4.Uint8List>(i1.Nodes.$convertercontent.toSql(content)),
         i0.Variable<String>(id)
       ],
@@ -745,7 +747,7 @@ class SharedNodesDrift extends i5.ModularAccessor {
       required i2.NodeTypes type,
       required String lastModifiedAtTimestamp,
       required String userId,
-      required bool isDeleted,
+      required int isDeleted,
       required i3.NodeContent content}) {
     return customInsert(
       switch (executor.dialect) {
@@ -760,7 +762,7 @@ class SharedNodesDrift extends i5.ModularAccessor {
         i0.Variable<String>(i1.Nodes.$convertertype.toSql(type)),
         i0.Variable<String>(lastModifiedAtTimestamp),
         i0.Variable<String>(userId),
-        i0.Variable<bool>(isDeleted),
+        i0.Variable<int>(isDeleted),
         i0.Variable<i4.Uint8List>(i1.Nodes.$convertercontent.toSql(content))
       ],
       updates: {nodes},

@@ -45,7 +45,7 @@ void main() {
       ),
     );
 
-    await db.clientDrift.eventsDrift.insertLocalEvent(
+    await db.clientDrift.sharedEventsDrift.insertEvent(
       id: event.id,
       type: event.type,
       clientId: event.clientId,

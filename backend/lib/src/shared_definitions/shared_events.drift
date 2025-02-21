@@ -15,3 +15,22 @@ CREATE INDEX event_client_id_index ON events(client_id);
 
 getEvents:
 SELECT * FROM events;
+
+insertEvent:
+INSERT INTO events (
+    id,
+    type,
+    client_id,
+    target_node_id,
+    timestamp,
+    content
+)
+VALUES (
+    :id,
+    :type,
+    :client_id,
+    :target_node_id,
+    :timestamp,
+    :content
+)
+ON CONFLICT (id) DO NOTHING;

@@ -89,7 +89,7 @@ class ClientDatabase extends $ClientDatabase {
   Future<void> pullEvents(PostResponse response) async {
     await transaction(() async {
       for (final event in response.events) {
-        await clientDrift.eventsDrift.insertServerEvent(
+        await clientDrift.sharedEventsDrift.insertEvent(
             id: event.id,
             type: event.type,
             targetNodeId: event.targetNodeId,

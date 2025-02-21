@@ -151,13 +151,13 @@ void main() {
   });
 
   test("create node issue and reduce", () async {
-    final eventToInsert = issueRawCreateEventFromNode(
+    final eventToInsert = issueRawCreateEventFromNodeTEST(
       Node(
         id: 'tobeassigned',
         type: NodeTypes.document,
         lastModifiedAtTimestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
         userId: client.userId!,
-        isDeleted: false,
+        isDeleted: 0,
         content: NodeContent(NodeTypes.document, "author", "title", null),
       ),
     );
@@ -171,13 +171,13 @@ void main() {
   });
 
   test("create edit delete node issue and reduce", () async {
-    final eventToInsert = issueRawCreateEventFromNode(
+    final eventToInsert = issueRawCreateEventFromNodeTEST(
         Node(
           id: 'tobeassigned',
           type: NodeTypes.document,
           lastModifiedAtTimestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
           userId: client.userId!,
-          isDeleted: false,
+          isDeleted: 0,
           content: NodeContent(NodeTypes.document, "author", "title", null),
         ),
         );

@@ -98,7 +98,7 @@ Node _createNodeFromCreateEvent(Event event) {
     id: event.targetNodeId!,
     lastModifiedAtTimestamp: event.timestamp,
     userId: event.content!.userId,
-    isDeleted: false,
+    isDeleted: 0,
     content: event.content!.nodeContent,
     type: event.content!.nodeType,
   );
@@ -122,7 +122,7 @@ Node _applyDeleteEventToNode(Event event, Node node) {
   assert(event.content == null);
 
   return node.copyWith(
-    isDeleted: true,
+    isDeleted: 1,
     lastModifiedAtTimestamp: event.timestamp,
   );
 }
