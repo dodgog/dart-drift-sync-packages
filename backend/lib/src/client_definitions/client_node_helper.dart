@@ -1,16 +1,20 @@
 import 'package:backend/client_definitions.dart';
 
 /// A client-specific reducer of all events into nodes
-extension ClientNodeHelper on ClientDrift {
-  // we use the fact that modular accessors are linked and so from
-  // eventsDrift we go back a level to client drift and then into shared
-  Future<List<Node>> reduceAllEventsIntoNodes() async {
-    final deletedCount = await sharedNodesDrift.deleteAllNodes();
+extension ClientNodeHelper on SharedAttributesDrift {
+  Future<int> cleanAndReduceAttributeTable() async {
+    final deletedCount = await cleanAttributesTable();
 
-    final allEvents = await sharedEventsDrift.getEvents().get();
+    return await insertAllEventsIntoAttributes();
+  }
 
-    final appliedCount = await sharedNodesDrift.applyListOfEvents(allEvents);
+  Future<List<DocumentNodeObj>> getDocuments() async {
+    final attributes = await getAttributes().get();
+    return DocumentNodeObj.fromAllAttributes(attributes);
+  }
 
-    return await sharedNodesDrift.getAllNodes().get();
+  Future<List<SimpleNodeObj>> getScribbles() async {
+    final attributes = await getAttributes().get();
+    return SimpleNodeObj.fromAllAttributes(attributes);
   }
 }

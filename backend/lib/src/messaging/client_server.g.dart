@@ -9,6 +9,7 @@ part of 'client_server.dart';
 PostQuery _$PostQueryFromJson(Map<String, dynamic> json) => PostQuery(
       json['token'] as String,
       json['user_id'] as String,
+      json['client_timestamp'] as String,
       json['last_issued_server_timestamp'] as String?,
       (json['events'] as List<dynamic>)
           .map(
@@ -19,6 +20,7 @@ PostQuery _$PostQueryFromJson(Map<String, dynamic> json) => PostQuery(
 Map<String, dynamic> _$PostQueryToJson(PostQuery instance) => <String, dynamic>{
       'token': instance.token,
       'user_id': instance.userId,
+      'client_timestamp': instance.clientTimestamp,
       'last_issued_server_timestamp': instance.lastIssuedServerTimestamp,
       'events': instance.events.map(const EventConverter().toJson).toList(),
     };

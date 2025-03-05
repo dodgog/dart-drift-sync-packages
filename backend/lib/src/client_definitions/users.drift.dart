@@ -11,6 +11,7 @@ typedef $ConfigCreateCompanionBuilder = i1.ConfigCompanion Function({
   i0.Value<String?> lastServerIssuedTimestamp,
   i0.Value<String?> userId,
   i0.Value<String?> userToken,
+  i0.Value<String> hlcAbsoluteZero,
   i0.Value<int> rowid,
 });
 typedef $ConfigUpdateCompanionBuilder = i1.ConfigCompanion Function({
@@ -18,6 +19,7 @@ typedef $ConfigUpdateCompanionBuilder = i1.ConfigCompanion Function({
   i0.Value<String?> lastServerIssuedTimestamp,
   i0.Value<String?> userId,
   i0.Value<String?> userToken,
+  i0.Value<String> hlcAbsoluteZero,
   i0.Value<int> rowid,
 });
 
@@ -66,6 +68,10 @@ class $ConfigFilterComposer
   i0.ColumnFilters<String> get userToken => $composableBuilder(
       column: $table.userToken, builder: (column) => i0.ColumnFilters(column));
 
+  i0.ColumnFilters<String> get hlcAbsoluteZero => $composableBuilder(
+      column: $table.hlcAbsoluteZero,
+      builder: (column) => i0.ColumnFilters(column));
+
   i3.$UsersFilterComposer get userId {
     final i3.$UsersFilterComposer composer = $composerBuilder(
         composer: this,
@@ -110,6 +116,10 @@ class $ConfigOrderingComposer
       column: $table.userToken,
       builder: (column) => i0.ColumnOrderings(column));
 
+  i0.ColumnOrderings<String> get hlcAbsoluteZero => $composableBuilder(
+      column: $table.hlcAbsoluteZero,
+      builder: (column) => i0.ColumnOrderings(column));
+
   i3.$UsersOrderingComposer get userId {
     final i3.$UsersOrderingComposer composer = $composerBuilder(
         composer: this,
@@ -152,6 +162,9 @@ class $ConfigAnnotationComposer
 
   i0.GeneratedColumn<String> get userToken =>
       $composableBuilder(column: $table.userToken, builder: (column) => column);
+
+  i0.GeneratedColumn<String> get hlcAbsoluteZero => $composableBuilder(
+      column: $table.hlcAbsoluteZero, builder: (column) => column);
 
   i3.$UsersAnnotationComposer get userId {
     final i3.$UsersAnnotationComposer composer = $composerBuilder(
@@ -204,6 +217,7 @@ class $ConfigTableManager extends i0.RootTableManager<
                 const i0.Value.absent(),
             i0.Value<String?> userId = const i0.Value.absent(),
             i0.Value<String?> userToken = const i0.Value.absent(),
+            i0.Value<String> hlcAbsoluteZero = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
               i1.ConfigCompanion(
@@ -211,6 +225,7 @@ class $ConfigTableManager extends i0.RootTableManager<
             lastServerIssuedTimestamp: lastServerIssuedTimestamp,
             userId: userId,
             userToken: userToken,
+            hlcAbsoluteZero: hlcAbsoluteZero,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -219,6 +234,7 @@ class $ConfigTableManager extends i0.RootTableManager<
                 const i0.Value.absent(),
             i0.Value<String?> userId = const i0.Value.absent(),
             i0.Value<String?> userToken = const i0.Value.absent(),
+            i0.Value<String> hlcAbsoluteZero = const i0.Value.absent(),
             i0.Value<int> rowid = const i0.Value.absent(),
           }) =>
               i1.ConfigCompanion.insert(
@@ -226,6 +242,7 @@ class $ConfigTableManager extends i0.RootTableManager<
             lastServerIssuedTimestamp: lastServerIssuedTimestamp,
             userId: userId,
             userToken: userToken,
+            hlcAbsoluteZero: hlcAbsoluteZero,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -315,9 +332,19 @@ class Config extends i0.Table with i0.TableInfo<Config, i1.ConfigData> {
       type: i0.DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
+  static const i0.VerificationMeta _hlcAbsoluteZeroMeta =
+      const i0.VerificationMeta('hlcAbsoluteZero');
+  late final i0.GeneratedColumn<String> hlcAbsoluteZero =
+      i0.GeneratedColumn<String>('hlc_absolute_zero', aliasedName, false,
+          type: i0.DriftSqlType.string,
+          requiredDuringInsert: false,
+          $customConstraints:
+              'NOT NULL DEFAULT \'1969-01-01T00:00:01.000Z-0000-00000\'',
+          defaultValue: const i0.CustomExpression(
+              '\'1969-01-01T00:00:01.000Z-0000-00000\''));
   @override
   List<i0.GeneratedColumn> get $columns =>
-      [clientId, lastServerIssuedTimestamp, userId, userToken];
+      [clientId, lastServerIssuedTimestamp, userId, userToken, hlcAbsoluteZero];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -348,6 +375,12 @@ class Config extends i0.Table with i0.TableInfo<Config, i1.ConfigData> {
       context.handle(_userTokenMeta,
           userToken.isAcceptableOrUnknown(data['user_token']!, _userTokenMeta));
     }
+    if (data.containsKey('hlc_absolute_zero')) {
+      context.handle(
+          _hlcAbsoluteZeroMeta,
+          hlcAbsoluteZero.isAcceptableOrUnknown(
+              data['hlc_absolute_zero']!, _hlcAbsoluteZeroMeta));
+    }
     return context;
   }
 
@@ -366,6 +399,8 @@ class Config extends i0.Table with i0.TableInfo<Config, i1.ConfigData> {
           .read(i0.DriftSqlType.string, data['${effectivePrefix}user_id']),
       userToken: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}user_token']),
+      hlcAbsoluteZero: attachedDatabase.typeMapping.read(
+          i0.DriftSqlType.string, data['${effectivePrefix}hlc_absolute_zero'])!,
     );
   }
 
@@ -385,11 +420,13 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
   final String? lastServerIssuedTimestamp;
   final String? userId;
   final String? userToken;
+  final String hlcAbsoluteZero;
   const ConfigData(
       {this.clientId,
       this.lastServerIssuedTimestamp,
       this.userId,
-      this.userToken});
+      this.userToken,
+      required this.hlcAbsoluteZero});
   @override
   Map<String, i0.Expression> toColumns(bool nullToAbsent) {
     final map = <String, i0.Expression>{};
@@ -406,6 +443,7 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
     if (!nullToAbsent || userToken != null) {
       map['user_token'] = i0.Variable<String>(userToken);
     }
+    map['hlc_absolute_zero'] = i0.Variable<String>(hlcAbsoluteZero);
     return map;
   }
 
@@ -424,6 +462,7 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
       userToken: userToken == null && nullToAbsent
           ? const i0.Value.absent()
           : i0.Value(userToken),
+      hlcAbsoluteZero: i0.Value(hlcAbsoluteZero),
     );
   }
 
@@ -436,6 +475,7 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
           serializer.fromJson<String?>(json['last_server_issued_timestamp']),
       userId: serializer.fromJson<String?>(json['user_id']),
       userToken: serializer.fromJson<String?>(json['user_token']),
+      hlcAbsoluteZero: serializer.fromJson<String>(json['hlc_absolute_zero']),
     );
   }
   @override
@@ -447,6 +487,7 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
           serializer.toJson<String?>(lastServerIssuedTimestamp),
       'user_id': serializer.toJson<String?>(userId),
       'user_token': serializer.toJson<String?>(userToken),
+      'hlc_absolute_zero': serializer.toJson<String>(hlcAbsoluteZero),
     };
   }
 
@@ -454,7 +495,8 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
           {i0.Value<String?> clientId = const i0.Value.absent(),
           i0.Value<String?> lastServerIssuedTimestamp = const i0.Value.absent(),
           i0.Value<String?> userId = const i0.Value.absent(),
-          i0.Value<String?> userToken = const i0.Value.absent()}) =>
+          i0.Value<String?> userToken = const i0.Value.absent(),
+          String? hlcAbsoluteZero}) =>
       i1.ConfigData(
         clientId: clientId.present ? clientId.value : this.clientId,
         lastServerIssuedTimestamp: lastServerIssuedTimestamp.present
@@ -462,6 +504,7 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
             : this.lastServerIssuedTimestamp,
         userId: userId.present ? userId.value : this.userId,
         userToken: userToken.present ? userToken.value : this.userToken,
+        hlcAbsoluteZero: hlcAbsoluteZero ?? this.hlcAbsoluteZero,
       );
   ConfigData copyWithCompanion(i1.ConfigCompanion data) {
     return ConfigData(
@@ -471,6 +514,9 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
           : this.lastServerIssuedTimestamp,
       userId: data.userId.present ? data.userId.value : this.userId,
       userToken: data.userToken.present ? data.userToken.value : this.userToken,
+      hlcAbsoluteZero: data.hlcAbsoluteZero.present
+          ? data.hlcAbsoluteZero.value
+          : this.hlcAbsoluteZero,
     );
   }
 
@@ -480,14 +526,15 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
           ..write('clientId: $clientId, ')
           ..write('lastServerIssuedTimestamp: $lastServerIssuedTimestamp, ')
           ..write('userId: $userId, ')
-          ..write('userToken: $userToken')
+          ..write('userToken: $userToken, ')
+          ..write('hlcAbsoluteZero: $hlcAbsoluteZero')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(clientId, lastServerIssuedTimestamp, userId, userToken);
+  int get hashCode => Object.hash(
+      clientId, lastServerIssuedTimestamp, userId, userToken, hlcAbsoluteZero);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -495,7 +542,8 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
           other.clientId == this.clientId &&
           other.lastServerIssuedTimestamp == this.lastServerIssuedTimestamp &&
           other.userId == this.userId &&
-          other.userToken == this.userToken);
+          other.userToken == this.userToken &&
+          other.hlcAbsoluteZero == this.hlcAbsoluteZero);
 }
 
 class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
@@ -503,12 +551,14 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
   final i0.Value<String?> lastServerIssuedTimestamp;
   final i0.Value<String?> userId;
   final i0.Value<String?> userToken;
+  final i0.Value<String> hlcAbsoluteZero;
   final i0.Value<int> rowid;
   const ConfigCompanion({
     this.clientId = const i0.Value.absent(),
     this.lastServerIssuedTimestamp = const i0.Value.absent(),
     this.userId = const i0.Value.absent(),
     this.userToken = const i0.Value.absent(),
+    this.hlcAbsoluteZero = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   });
   ConfigCompanion.insert({
@@ -516,6 +566,7 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
     this.lastServerIssuedTimestamp = const i0.Value.absent(),
     this.userId = const i0.Value.absent(),
     this.userToken = const i0.Value.absent(),
+    this.hlcAbsoluteZero = const i0.Value.absent(),
     this.rowid = const i0.Value.absent(),
   });
   static i0.Insertable<i1.ConfigData> custom({
@@ -523,6 +574,7 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
     i0.Expression<String>? lastServerIssuedTimestamp,
     i0.Expression<String>? userId,
     i0.Expression<String>? userToken,
+    i0.Expression<String>? hlcAbsoluteZero,
     i0.Expression<int>? rowid,
   }) {
     return i0.RawValuesInsertable({
@@ -531,6 +583,7 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
         'last_server_issued_timestamp': lastServerIssuedTimestamp,
       if (userId != null) 'user_id': userId,
       if (userToken != null) 'user_token': userToken,
+      if (hlcAbsoluteZero != null) 'hlc_absolute_zero': hlcAbsoluteZero,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -540,6 +593,7 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
       i0.Value<String?>? lastServerIssuedTimestamp,
       i0.Value<String?>? userId,
       i0.Value<String?>? userToken,
+      i0.Value<String>? hlcAbsoluteZero,
       i0.Value<int>? rowid}) {
     return i1.ConfigCompanion(
       clientId: clientId ?? this.clientId,
@@ -547,6 +601,7 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
           lastServerIssuedTimestamp ?? this.lastServerIssuedTimestamp,
       userId: userId ?? this.userId,
       userToken: userToken ?? this.userToken,
+      hlcAbsoluteZero: hlcAbsoluteZero ?? this.hlcAbsoluteZero,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -567,6 +622,9 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
     if (userToken.present) {
       map['user_token'] = i0.Variable<String>(userToken.value);
     }
+    if (hlcAbsoluteZero.present) {
+      map['hlc_absolute_zero'] = i0.Variable<String>(hlcAbsoluteZero.value);
+    }
     if (rowid.present) {
       map['rowid'] = i0.Variable<int>(rowid.value);
     }
@@ -580,6 +638,7 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
           ..write('lastServerIssuedTimestamp: $lastServerIssuedTimestamp, ')
           ..write('userId: $userId, ')
           ..write('userToken: $userToken, ')
+          ..write('hlcAbsoluteZero: $hlcAbsoluteZero, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

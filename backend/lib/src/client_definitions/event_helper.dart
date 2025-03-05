@@ -1,19 +1,24 @@
 import 'package:backend/client_definitions.dart';
-import 'package:uuidv7/uuidv7.dart';
 
-// THINK what to make this an extension on? perhaps on a modular accessor?
 extension ClientEventHelper on ClientDrift {
   Future<int> insertLocalEventWithClientId(Event event) async {
     final client = await usersDrift.getCurrentClient().getSingle();
-    // THINK here about when timestamp id and client id are populated
-    return await sharedEventsDrift.insertEvent(
+    return sharedEventsDrift.insertEvent(
       id: event.id,
-      type: event.type,
       clientId: client.id,
-      targetNodeId: event.targetNodeId,
+      entityId: event.entityId,
+      attribute: event.attribute,
+      value: event.value,
       timestamp: event.timestamp,
-      // TODO:
-      content: event.content?..userId = client.userId ?? "NOUSERIDPROBLEM",
+    );
+  }
+
+  Future<int> insertLocalEventIntoAttributes(Event event) async {
+    return sharedAttributesDrift.insertEventIntoAttributes(
+      entityId: event.entityId,
+      attribute: event.attribute,
+      value: event.value,
+      timestamp: event.timestamp,
     );
   }
 }

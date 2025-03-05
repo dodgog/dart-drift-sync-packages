@@ -3,30 +3,11 @@ import 'package:backend/client.drift';
 
 getLocalEventsToPush:
 SELECT e.*
-FROM events e;
-
---insertLocalEvent:
---INSERT INTO events (id, type, client_id, target_node_id, timestamp,
---content)
---VALUES
---(:id, :type, :client_id, :target_node_id, :timestamp, :content);
---
----- SERVER events no longer work differently
---insertServerEvent:
---INSERT INTO events (
---    id,
---    type,
---    client_id,
---    target_node_id,
---    timestamp,
---    content
---)
---VALUES (
---    :id,
---    :type,
---    :client_id,
---    :target_node_id,
---    :timestamp,
---    :content
---)
---ON CONFLICT (id) DO NOTHING;
+FROM events e
+WHERE e.timestamp > (
+  -- TODO hlc could provide the absolute zero timestamp
+  -- AIUSE help with this coalesce
+  SELECT COALESCE(last_server_issued_timestamp, hlc_absolute_zero)
+  FROM config
+  LIMIT 1
+);

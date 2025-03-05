@@ -1,15 +1,16 @@
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:backend/messaging.dart';
-import 'package:drift/drift.dart';
-import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
-import 'database.drift.dart';
 import 'package:backend/server_definitions.dart';
+import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'dart:io';
+import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
+
+import 'database.drift.dart';
 
 class UnauthorizedException implements Exception {
   final String message;
+
   UnauthorizedException(this.message);
 }
 
@@ -59,12 +60,7 @@ class ServerDatabase extends $ServerDatabase {
       throw UnauthorizedException('Invalid user credentials');
     }
 
-    // TODO: this could be a part of the incoming query
-    final largestIncomingTimestamp = postQuery.events
-        .map((e) => e.timestamp)
-        .reduce((e1, e2) => e1.compareTo(e2) > 0 ? e1 : e2);
-
-    HLC().receivePacked(largestIncomingTimestamp);
+    HLC().receivePacked(postQuery.clientTimestamp);
 
     final newEvents = await insertEventsForUserAndGetEventsSinceTimestamp(
       postQuery.events,
@@ -74,15 +70,6 @@ class ServerDatabase extends $ServerDatabase {
 
     return PostResponse(HLC().sendPacked(), newEvents);
   }
-
-  // // TODO: this should be equivalent to an hlc send
-  // not used because switched to hlc
-  // Future<String> getLatestServerTimestamp(String userId) async {
-  //   final retrievedTimeStamp = await (serverDrift.eventsDrift
-  //       .getLatestTimestampAffectingUser(userId: userId)
-  //       .getSingle());
-  //   return retrievedTimeStamp ?? DateTime.now().toIso8601String();
-  // }
 
   Future<bool> verifyUser(String userId, String token) async {
     return await serverDrift.usersDrift
@@ -100,11 +87,11 @@ class ServerDatabase extends $ServerDatabase {
       for (final event in events) {
         await serverDrift.sharedEventsDrift.insertEvent(
           id: event.id,
-          type: event.type,
           clientId: event.clientId,
-          targetNodeId: event.targetNodeId,
+          entityId: event.entityId,
+          attribute: event.attribute,
+          value: event.value,
           timestamp: event.timestamp,
-          content: event.content,
         );
       }
 

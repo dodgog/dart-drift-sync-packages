@@ -2,4 +2,5 @@ import 'src/client_definitions/events.drift';
 import 'src/client_definitions/users.drift';
 import 'src/shared_definitions/shared_events.drift';
 import 'src/shared_definitions/shared_users.drift';
-import 'src/shared_definitions/shared_nodes.drift';
+--import 'src/shared_definitions/shared_nodes.drift';
+import 'src/shared_definitions/shared_attributes.drift';

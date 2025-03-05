@@ -1,81 +1,131 @@
-import 'package:backend/client_definitions.dart';
+import 'package:backend/shared_definitions.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:uuidv7/uuidv7.dart';
 
-Event issueRawDocumentCreateEventFromContent(NodeContent content) {
+/// todo make these executable in the context of client
+
+/// Creates a base event with missing client ID that will be populated during insertion
+Event createEventWithMissingClient({
+  required String entityId,
+  required String attribute,
+  required String value,
+}) {
   return Event(
-    // THINK: where should assignment of id happen? maybe on insertion?
-    // for now it's in a helper function for insertion
     id: generateUuidV7String(),
-    // THINK: generation happens here and also on the next stage
-    targetNodeId: generateUuidV7String(),
-    type: EventTypes.create,
-    // THINK: happens on the actual insert
     clientId: "toPopulate",
+    entityId: entityId,
+    attribute: attribute,
+    value: value,
     timestamp: HLC().issueLocalEventPacked(),
-    content: EventContent(
-      "wow",
-      // THINK where is config values like client and user assigned
-      "toPopulate",
-      EventTypes.create,
-      NodeTypes.document,
-      content,
-    ),
   );
 }
 
-Event issueRawCreateEventFromNodeTEST(Node node) {
-  return Event(
-    // THINK: where should assignment of id happen? maybe on insertion?
-    // for now it's in a helper function for insertion
-    id: generateUuidV7String(),
-    // THINK: generation happens here and also on the next stage
-    targetNodeId: generateUuidV7String(),
-    type: EventTypes.create,
-    // THINK: happens on the actual insert
-    clientId: "toPopulate",
-    timestamp: HLC().issueLocalEventPacked(),
-    content: EventContent(
-      "wow",
-      // THINK where is config values like client and user assigned
-      "toPopulate",
-      EventTypes.create,
-      node.type,
-      node.content,
+/// Creates a new node with basic attributes
+List<Event> createNode({
+  required NodeTypes type,
+}) {
+  final entityId = generateUuidV7String();
+
+  return [
+    createEventWithMissingClient(
+      entityId: entityId,
+      attribute: "type",
+      value: type.toString(),
     ),
-  );
+  ];
 }
 
-extension NodeEvents on Node {
-  Event issueRawEditEventFromMutatedContent(
-    NodeContent nodeContent,
-  ) {
-    return Event(
-      id: generateUuidV7String(),
-      type: EventTypes.edit,
-      targetNodeId: id,
-      timestamp: HLC().issueLocalEventPacked(),
-      // THINK: happens on the actual insert
-      clientId: "toPopulate",
-      content: EventContent(
-        "wow",
-        "toPopulate",
-        EventTypes.edit,
-        type,
-        nodeContent,
+/// Creates a new document node with all required attributes
+List<Event> createDocumentNode({
+  required String author,
+  required String title,
+  String? url,
+}) {
+  final events = createNode(type: NodeTypes.document);
+  final entityId = events.first.entityId;
+
+  events.addAll([
+    createEventWithMissingClient(
+      entityId: entityId,
+      attribute: "author",
+      value: author,
+    ),
+    createEventWithMissingClient(
+      entityId: entityId,
+      attribute: "title",
+      value: title,
+    ),
+  ]);
+
+  if (url != null) {
+    events.add(
+      createEventWithMissingClient(
+        entityId: entityId,
+        attribute: "url",
+        value: url,
       ),
     );
   }
 
-  Event issueRawDeleteNodeEvent() {
-    return Event(
-      id: generateUuidV7String(),
-      type: EventTypes.delete,
-      targetNodeId: id,
-      timestamp: HLC().issueLocalEventPacked(),
-      // THINK: happens on the actual insert
-      clientId: "toPopulate",
-      content: null,
-    );
+  return events;
+}
+
+/// Modifies an existing node's attribute
+Event modifyNode({
+  required String nodeId,
+  required String attribute,
+  required String value,
+}) {
+  return createEventWithMissingClient(
+    entityId: nodeId,
+    attribute: attribute,
+    value: value,
+  );
+}
+
+/// Modifies a document node's attributes
+List<Event> modifyDocumentNode({
+  required String nodeId,
+  String? author,
+  String? title,
+  String? url,
+}) {
+  final events = <Event>[];
+
+  if (author != null) {
+    events.add(modifyNode(
+      nodeId: nodeId,
+      attribute: "author",
+      value: author,
+    ));
   }
+
+  if (title != null) {
+    events.add(modifyNode(
+      nodeId: nodeId,
+      attribute: "title",
+      value: title,
+    ));
+  }
+
+  if (url != null) {
+    events.add(modifyNode(
+      nodeId: nodeId,
+      attribute: "url",
+      value: url,
+    ));
+  }
+
+  return events;
+}
+
+/// Marks a node as deleted
+Event deleteNode({
+  required String nodeId,
+}) {
+  return createEventWithMissingClient(
+    entityId: nodeId,
+    attribute: "is_deleted",
+    value: "1",
+  );
 }

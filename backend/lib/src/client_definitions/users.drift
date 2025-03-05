@@ -4,7 +4,9 @@ CREATE TABLE config (
    client_id TEXT, -- unique per device
    last_server_issued_timestamp TEXT,
    user_id TEXT REFERENCES users (id),
-   user_token TEXT
+   user_token TEXT,
+   hlc_absolute_zero TEXT NOT NULL DEFAULT '1969-01-01T00:00:01.000Z-0000-00000'
+   -- TODO add hlc absolute zero time to use in lookups
 );
 
 getCurrentClient:

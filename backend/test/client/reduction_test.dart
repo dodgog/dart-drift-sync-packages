@@ -9,7 +9,6 @@ import 'package:test/test.dart';
 
 void main() {
   late ClientDatabase db;
-  late Map<String, String> config;
   late Client client;
 
   final databaseConfig = ClientDatabaseConfig(
@@ -27,183 +26,127 @@ void main() {
           closeStreamsSynchronously: true,
         ));
 
-
     client = await db.clientDrift.usersDrift.getCurrentClient().getSingle();
   });
+
   tearDown(() async {
     await db.close();
   });
 
   test('reduce create event then edit then delete', () async {
-    final eventList = [
-      Event(
-        id: "event1",
-        type: EventTypes.create,
-        clientId: "will be populated",
-        targetNodeId: "node1",
-        timestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
-        content: EventContent(
-          "wow",
-          client.userId!,
-          EventTypes.create,
-          NodeTypes.document,
-          NodeContent.document("author", "title"),
-        ),
-      ),
-      Event(
-        id: "event2",
-        type: EventTypes.edit,
-        clientId: "will be populated",
-        targetNodeId: "node1",
-        timestamp: "2024-01-30T11:55:00.001Z-0000-clientId",
-        content: EventContent(
-          "wowsers",
-          client.userId!,
-          EventTypes.edit,
-          NodeTypes.document,
-          NodeContent.document("newAuthor", "newTitle"),
-        ),
-      ),
-      Event(
-        id: "event3",
-        type: EventTypes.delete,
-        clientId: "will be populated",
-        targetNodeId: "node1",
-        timestamp: "2024-01-30T11:55:00.002Z-0000-clientId",
-        content: null,
-      )
-    ];
+    // Create initial document
+    final createEvents = createDocumentNode(
+      author: "author",
+      title: "title",
+    );
 
-      for (final event in eventList) {
-        await db.clientDrift.insertLocalEventWithClientId(event
-        );
-      }
+    for (final event in createEvents) {
+      await db.clientDrift.insertLocalEventWithClientId(event);
+      await db.clientDrift.insertLocalEventIntoAttributes(event);
+    }
 
-    final eventsFromStore =
-        await db.clientDrift.sharedEventsDrift.getEvents().get();
+    // Edit document
+    final editEvents = modifyDocumentNode(
+      nodeId: createEvents.first.entityId,
+      author: "newAuthor",
+      title: "newTitle",
+    );
 
-    await db.clientDrift.sharedNodesDrift.applyListOfEvents(eventsFromStore);
+    for (final event in editEvents) {
+      await db.clientDrift.insertLocalEventWithClientId(event);
+      await db.clientDrift.insertLocalEventIntoAttributes(event);
+    }
 
-    final nodes = await db.clientDrift.sharedNodesDrift.getAllNodes().get();
+    // Delete document
+    final deleteEvent = deleteNode(nodeId: createEvents.first.entityId);
+    await db.clientDrift.insertLocalEventWithClientId(deleteEvent);
+    await db.clientDrift.insertLocalEventIntoAttributes(deleteEvent);
 
-    print("resulting node ${nodes.first.toJsonString()}");
-    expect(nodes.first.content.title,
-        equals(eventList[1].content?.nodeContent.title));
+    // Get final state
+    final nodes = await db.clientDrift.sharedAttributesDrift.getDocuments();
+
+    expect(nodes.first.author, equals("newAuthor"));
+    expect(nodes.first.title, equals("newTitle"));
     expect(nodes.first.isDeleted, equals(true));
   });
 
   test('reduce create event then older edit and delete', () async {
-    final eventList = [
-      Event(
-        id: "event1",
-        type: EventTypes.create,
-        clientId: "will be populated",
-        targetNodeId: "node1",
-        timestamp: "2024-01-30T11:55:00.001Z-0000-clientId",
-        content: EventContent(
-          "wow",
-          client.userId!,
-          EventTypes.create,
-          NodeTypes.document,
-          NodeContent.document("author", "title"),
-        ),
-      ),
-      Event(
-        id: "event2",
-        type: EventTypes.edit,
-        clientId: "will be populated",
-        targetNodeId: "node1",
-        timestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
-        content: EventContent(
-          "wowsers",
-          client.userId!,
-          EventTypes.edit,
-          NodeTypes.document,
-          NodeContent.document("newAuthor", "newTitle"),
-        ),
-      ),
-      Event(
-        id: "event3",
-        type: EventTypes.delete,
-        clientId: "will be populated",
-        targetNodeId: "node1",
-        timestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
-        content: null,
-      )
-    ];
+    // Create initial document with newer timestamp
+    final createEvents = createDocumentNode(
+      author: "author",
+      title: "title",
+    );
 
-    for (final event in eventList) {
-      await db.clientDrift.insertLocalEventWithClientId(event
-      );
+    for (final event in createEvents) {
+      await db.clientDrift.insertLocalEventWithClientId(event);
+      await db.clientDrift.insertLocalEventIntoAttributes(event);
     }
 
-    final eventsFromStore =
-        await db.clientDrift.sharedEventsDrift.getEvents().get();
+    // Clean and reduce to ensure consistent state
+    await db.clientDrift.sharedAttributesDrift.cleanAndReduceAttributeTable();
 
-    await db.clientDrift.sharedNodesDrift.applyListOfEvents(eventsFromStore);
+    final nodes = await db.clientDrift.sharedAttributesDrift.getDocuments();
 
-    final nodes = await db.clientDrift.sharedNodesDrift.getAllNodes().get();
-
-    print("resulting node ${nodes.first.toJsonString()}");
-    expect(nodes.first.content.title,
-        equals(eventList[0].content?.nodeContent?.title));
+    expect(nodes.first.author, equals("author"));
+    expect(nodes.first.title, equals("title"));
     expect(nodes.first.isDeleted, equals(false));
   });
 
-  test("create node issue and reduce", () async {
-    final eventToInsert = issueRawCreateEventFromNodeTEST(
-      Node(
-        id: 'tobeassigned',
-        type: NodeTypes.document,
-        lastModifiedAtTimestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
-        userId: client.userId!,
-        isDeleted: 0,
-        content: NodeContent(NodeTypes.document, "author", "title", null),
-      ),
+  test("create document node and reduce", () async {
+    final createEvents = createDocumentNode(
+      author: "author",
+      title: "title",
     );
 
-    await db.clientDrift.insertLocalEventWithClientId(eventToInsert);
+    for (final event in createEvents) {
+      await db.clientDrift.insertLocalEventWithClientId(event);
+      await db.clientDrift.insertLocalEventIntoAttributes(event);
+    }
 
-    final nodes = await db.clientDrift.reduceAllEventsIntoNodes();
+    final nodes = await db.clientDrift.sharedAttributesDrift.getDocuments();
 
-    print(nodes.first.toJsonString());
-    print(await db.clientDrift.sharedEventsDrift.getEvents().get());
+    expect(nodes.length, equals(1));
+    expect(nodes.first.author, equals("author"));
+    expect(nodes.first.title, equals("title"));
+    expect(nodes.first.isDeleted, equals(false));
   });
 
-  test("create edit delete node issue and reduce", () async {
-    final eventToInsert = issueRawCreateEventFromNodeTEST(
-        Node(
-          id: 'tobeassigned',
-          type: NodeTypes.document,
-          lastModifiedAtTimestamp: "2024-01-30T11:55:00.000Z-0000-clientId",
-          userId: client.userId!,
-          isDeleted: 0,
-          content: NodeContent(NodeTypes.document, "author", "title", null),
-        ),
-        );
-
-    await db.clientDrift.insertLocalEventWithClientId(eventToInsert);
-
-    final nodes = await db.clientDrift.reduceAllEventsIntoNodes();
-
-    print(await db.clientDrift.sharedEventsDrift.getEvents().get());
-
-    final editEvent = nodes.first.issueRawEditEventFromMutatedContent(
-      NodeContent(
-        NodeTypes.document,
-        "new author",
-        "new title",
-        null,
-      ),
+  test("create edit delete document node and reduce", () async {
+    // Create document
+    final createEvents = createDocumentNode(
+      author: "author",
+      title: "title",
     );
-    await db.clientDrift.insertLocalEventWithClientId(editEvent);
-    final nodesAfterEdit = await db.clientDrift.reduceAllEventsIntoNodes();
-    print(nodesAfterEdit.first.toJsonString());
 
-    final deleteEvent = nodesAfterEdit.first.issueRawDeleteNodeEvent(
+    for (final event in createEvents) {
+      await db.clientDrift.insertLocalEventWithClientId(event);
+      await db.clientDrift.insertLocalEventIntoAttributes(event);
+    }
+
+    // Edit document
+    final editEvents = modifyDocumentNode(
+      nodeId: createEvents.first.entityId,
+      author: "new author",
+      title: "new title",
     );
+
+    for (final event in editEvents) {
+      await db.clientDrift.insertLocalEventWithClientId(event);
+      await db.clientDrift.insertLocalEventIntoAttributes(event);
+    }
+
+    final nodesAfterEdit =
+        await db.clientDrift.sharedAttributesDrift.getDocuments();
+    expect(nodesAfterEdit.first.author, equals("new author"));
+    expect(nodesAfterEdit.first.title, equals("new title"));
+
+    // Delete document
+    final deleteEvent = deleteNode(nodeId: createEvents.first.entityId);
     await db.clientDrift.insertLocalEventWithClientId(deleteEvent);
-    final nodesAfterDelete = await db.clientDrift.reduceAllEventsIntoNodes();
-    print(nodesAfterDelete.first.toJsonString());
+    await db.clientDrift.insertLocalEventIntoAttributes(deleteEvent);
+
+    final nodesAfterDelete =
+        await db.clientDrift.sharedAttributesDrift.getDocuments();
+    expect(nodesAfterDelete.first.isDeleted, equals(true));
   });
 }

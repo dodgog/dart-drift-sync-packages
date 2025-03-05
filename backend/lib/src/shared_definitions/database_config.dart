@@ -4,15 +4,18 @@ class DatabaseConfig {
   // final ClientNode uniqueClientNode;
   final bool isServer;
 
-  const DatabaseConfig(this.isServer, );
+  const DatabaseConfig(
+    this.isServer,
+  );
 }
-class ServerDatabaseConfig extends DatabaseConfig {
 
+class ServerDatabaseConfig extends DatabaseConfig {
   ServerDatabaseConfig(//{ClientNode? clientNode}
       // TODO: the stupidest way to declare client's priority in conflict
       //  resolution
-  // ) : super(false, clientNode?? ClientNode("3Server"));
-  ) : super(true );
+      // ) : super(false, clientNode?? ClientNode("3Server"));
+      )
+      : super(true);
 }
 
 class ClientDatabaseConfig extends DatabaseConfig {

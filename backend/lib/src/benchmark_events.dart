@@ -7,59 +7,69 @@ import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 // AI GENERATED
 
 void main() async {
-  final maxEvents = 100;
+  final maxEvents = 10000;
   final interval = 100;
 
-  print('N,InsertTime,ReductionTime');
+  print('N,InsertTime,ReductionTime,CleanAndReduceTime');
 
-  final db = ClientDatabase(
-      executor: DatabaseConnection(
-    NativeDatabase.memory(),
-    closeStreamsSynchronously: true,
-  ));
-
-  await db.clientDrift.usersDrift.setUserToken(newUserToken: "user1toke"
-      "n");
-  await db.clientDrift.usersDrift.setClientId(newClientId: "client1");
-  await db.clientDrift.usersDrift.setUserId(newUserId: "user1");
-  await db.clientDrift.sharedUsersDrift.createClient(
-      clientId: "client1",
-      userId: "user1"
+  final databaseConfig = ClientDatabaseConfig(
+    clientId: "client1",
+    userId: "user1",
+    userToken: "user1token",
   );
 
-  final client = await db.clientDrift.usersDrift.getCurrentClient()
-      .getSingle();
+  final db = ClientDatabase(
+    initialConfig: databaseConfig,
+    executor: DatabaseConnection(
+      NativeDatabase.memory(),
+      closeStreamsSynchronously: true,
+    ),
+  );
 
-  HLC.initialize(clientNode: ClientNode("client1"));
+  final client = await db.clientDrift.usersDrift.getCurrentClient().getSingle();
 
   final stopwatch = Stopwatch()..start();
 
   for (var i = 1; i <= maxEvents; i++) {
-    final event = issueRawCreateEventFromNodeTEST(
-      Node(
-        id: 'tobeassigned',
-        type: NodeTypes.document,
-        lastModifiedAtTimestamp: 'tobedobe',
-        userId: client.userId!,
-        isDeleted: 0,
-        content: NodeContent(NodeTypes.document, "author$i", "title$i", null),
-      ),
+    // Create document node events using the helper function
+    final events = createDocumentNode(
+      author: "author$i",
+      title: "title$i",
     );
 
     // Time insertion if it's at an interval point
     if (i % interval == 0) {
       stopwatch.reset();
-      await db.clientDrift.insertLocalEventWithClientId(event);
+
+      // Insert all events
+      for (final event in events) {
+        await db.clientDrift.insertLocalEventWithClientId(event);
+        await db.clientDrift.insertLocalEventIntoAttributes(event);
+      }
       final insertTime = stopwatch.elapsedMilliseconds;
 
+      // Time reduction
       stopwatch.reset();
-      await db.clientDrift.reduceAllEventsIntoNodes();
+      final nodes = await db.clientDrift.sharedAttributesDrift
+          .getAttributes()
+          .get()
+          .then((attrs) => DocumentNodeObj.fromAllAttributes(attrs));
       final reduceTime = stopwatch.elapsedMilliseconds;
 
-      print('$i,$insertTime,$reduceTime');
+      // Time clean and reduce from events
+      stopwatch.reset();
+      await db.clientDrift.sharedAttributesDrift.cleanAttributesTable();
+      await db.clientDrift.sharedAttributesDrift
+          .insertAllEventsIntoAttributes();
+      final cleanAndReduceTime = stopwatch.elapsedMilliseconds;
+
+      print('$i,$insertTime,$reduceTime,$cleanAndReduceTime');
     } else {
-      // Just insert without timing or reducing
-      await db.clientDrift.insertLocalEventWithClientId(event);
+      // Just insert without timing
+      for (final event in events) {
+        await db.clientDrift.insertLocalEventWithClientId(event);
+        await db.clientDrift.insertLocalEventIntoAttributes(event);
+      }
     }
   }
 

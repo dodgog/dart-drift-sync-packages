@@ -1,13 +1,16 @@
+import 'dart:io';
+
 import 'package:backend/client_definitions.dart';
 import 'package:backend/messaging.dart';
 import 'package:drift/drift.dart';
-import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
-import 'database.drift.dart';
 import 'package:drift/native.dart';
-import 'dart:io';
+import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
+
+import 'database.drift.dart';
 
 class InvalidConfigException implements Exception {
   final String message;
+
   InvalidConfigException(this.message);
 }
 
@@ -49,17 +52,16 @@ class ClientDatabase extends $ClientDatabase {
           await clientDrift.usersDrift.initializeConfig();
           await clientDrift.usersDrift
               .setUserToken(newUserToken: initialConfig!.userToken);
-          await clientDrift.usersDrift.setClientId(newClientId: initialConfig!
-              .clientId);
-          await clientDrift.usersDrift.setUserId(newUserId: initialConfig!.userId);
+          await clientDrift.usersDrift
+              .setClientId(newClientId: initialConfig!.clientId);
+          await clientDrift.usersDrift
+              .setUserId(newUserId: initialConfig!.userId);
 
-          await clientDrift.sharedUsersDrift
-              .createClient(clientId: initialConfig!.clientId, userId:
-          initialConfig!
-              .userId);
+          await clientDrift.sharedUsersDrift.createClient(
+              clientId: initialConfig!.clientId, userId: initialConfig!.userId);
         }
-        final currentClient = await clientDrift.usersDrift.getCurrentClient()
-            .getSingle();
+        final currentClient =
+            await clientDrift.usersDrift.getCurrentClient().getSingle();
         // TODO: also initialize previous locally issued time!
         // For now initialize to physical time
         // hoping that it will always be larger on the same device than the
@@ -82,20 +84,15 @@ class ClientDatabase extends $ClientDatabase {
       throw InvalidConfigException("Config contains uninitialized values");
     }
     final query = PostQuery(config.userToken!, config.userId!,
-        config.lastServerIssuedTimestamp, events);
+        HLC().sendPacked(), config.lastServerIssuedTimestamp, events);
     return query;
   }
 
   Future<void> pullEvents(PostResponse response) async {
     await transaction(() async {
       for (final event in response.events) {
-        await clientDrift.sharedEventsDrift.insertEvent(
-            id: event.id,
-            type: event.type,
-            targetNodeId: event.targetNodeId,
-            clientId: event.clientId,
-            timestamp: event.timestamp,
-            content: event.content);
+        clientDrift.insertLocalEventWithClientId(event);
+        clientDrift.insertLocalEventIntoAttributes(event);
       }
       await clientDrift.usersDrift
           .setLastSyncTime(newLastSyncTime: response.lastIssuedServerTimestamp);

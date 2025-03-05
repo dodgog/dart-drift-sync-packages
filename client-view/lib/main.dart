@@ -29,7 +29,7 @@ void main() async {
   );
 
   final syncService = DataSyncService(
-    serverUrl: 'https://29a1-2601-645-c683-3c60-3de5-6e85-cabb-b55e.ngrok-free.app/data',
+    serverUrl: 'https://1078-2601-645-c683-3c60-3de5-6e85-cabb-b55e.ngrok-free.app/data',
     db: db,
   );
 

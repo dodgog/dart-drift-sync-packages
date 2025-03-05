@@ -7,12 +7,13 @@ part 'client_server.g.dart';
 class PostQuery {
   String token;
   String userId;
+  String clientTimestamp;
   String? lastIssuedServerTimestamp;
   @EventConverter()
   List<Event> events;
 
-  PostQuery(
-      this.token, this.userId, this.lastIssuedServerTimestamp, this.events);
+  PostQuery(this.token, this.userId, this.clientTimestamp,
+      this.lastIssuedServerTimestamp, this.events);
 
   factory PostQuery.fromJson(Map<String, dynamic> json) =>
       _$PostQueryFromJson(json);
