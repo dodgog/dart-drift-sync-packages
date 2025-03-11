@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:backend/client_database.dart';
-import 'package:backend/messaging.dart';
 import 'package:backend/client_definitions.dart';
+import 'package:backend/messaging.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:test/test.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
+import 'package:test/test.dart';
+import 'package:uuidv7/uuidv7.dart';
 
 void main() {
   late ClientDatabase db;
@@ -16,6 +19,7 @@ void main() {
 
   setUp(() async {
     HLC.reset();
+    // HLC.initialize(clientNode: ClientNode("clientId"));
     db = ClientDatabase(
       initialConfig: databaseConfig,
       executor: DatabaseConnection(
@@ -23,6 +27,9 @@ void main() {
         closeStreamsSynchronously: true,
       ),
     );
+
+    // TODO: read ensureInitialized todo!!!!!
+    await db.ensureInitialized();
   });
 
   tearDown(() async {
@@ -46,13 +53,29 @@ void main() {
 
     // Create expected query
     final expectedQuery = PostQuery(
-      "user1token",
-      "user1",
-      HLC().sendPacked(),
-      null,
-      events,
-    );
+        "user1token",
+        "user1",
+        HLC().sendPacked(),
+        "${DateTime.fromMillisecondsSinceEpoch(0).toUtc().toIso8601String()}-0000-serverId",
+        [
+          Bundle(
+            id: generateUuidV7String(),
+            userId: "user1",
+            timestamp:
+                "${DateTime.now().toUtc().toIso8601String()}-0000-clientId",
+            payload: jsonEncode(EventPayload(events: events)),
+          )
+        ]);
 
-    expect(postQuery.toJson(), equals(expectedQuery.toJson()));
+    expect(postQuery.userId, equals(expectedQuery.userId));
+    expect(postQuery.bundles.length, equals(expectedQuery.bundles.length));
+    expect(postQuery.bundles.first.userId,
+        equals(expectedQuery.bundles.first.userId));
+
+    final decodedEvents = postQuery.bundles
+        .map((e) => e.payload)
+        .expand((e) => EventPayload.fromJson(jsonDecode(e!)).events);
+    expect(decodedEvents,
+        equals(events.map((e) => e.copyWith(clientId: "clientId"))));
   });
 }

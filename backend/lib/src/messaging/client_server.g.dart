@@ -10,10 +10,10 @@ PostQuery _$PostQueryFromJson(Map<String, dynamic> json) => PostQuery(
       json['token'] as String,
       json['user_id'] as String,
       json['client_timestamp'] as String,
-      json['last_issued_server_timestamp'] as String?,
-      (json['events'] as List<dynamic>)
-          .map(
-              (e) => const EventConverter().fromJson(e as Map<String, dynamic>))
+      json['last_issued_server_timestamp'] as String,
+      (json['bundles'] as List<dynamic>)
+          .map((e) =>
+              const BundleConverter().fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
@@ -22,25 +22,24 @@ Map<String, dynamic> _$PostQueryToJson(PostQuery instance) => <String, dynamic>{
       'user_id': instance.userId,
       'client_timestamp': instance.clientTimestamp,
       'last_issued_server_timestamp': instance.lastIssuedServerTimestamp,
-      'events': instance.events.map(const EventConverter().toJson).toList(),
+      'bundles': instance.bundles.map(const BundleConverter().toJson).toList(),
     };
 
 PostResponse _$PostResponseFromJson(Map<String, dynamic> json) => PostResponse(
       json['last_issued_server_timestamp'] as String,
-      (json['events'] as List<dynamic>)
-          .map(
-              (e) => const EventConverter().fromJson(e as Map<String, dynamic>))
+      (json['inserted_bundle_ids'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      (json['new_bundles'] as List<dynamic>)
+          .map((e) =>
+              const BundleConverter().fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
 Map<String, dynamic> _$PostResponseToJson(PostResponse instance) =>
     <String, dynamic>{
       'last_issued_server_timestamp': instance.lastIssuedServerTimestamp,
-      'events': instance.events.map(const EventConverter().toJson).toList(),
+      'new_bundles':
+          instance.newBundles.map(const BundleConverter().toJson).toList(),
+      'inserted_bundle_ids': instance.insertedBundleIds,
     };
-
-EventConverter _$EventConverterFromJson(Map<String, dynamic> json) =>
-    EventConverter();
-
-Map<String, dynamic> _$EventConverterToJson(EventConverter instance) =>
-    <String, dynamic>{};

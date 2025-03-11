@@ -50,7 +50,7 @@ void main() async {
 
       // Time reduction
       stopwatch.reset();
-      final nodes = await db.clientDrift.sharedAttributesDrift
+      final nodes = await db.clientDrift.sharedDrift.sharedAttributesDrift
           .getAttributes()
           .get()
           .then((attrs) => DocumentNodeObj.fromAllAttributes(attrs));
@@ -58,8 +58,9 @@ void main() async {
 
       // Time clean and reduce from events
       stopwatch.reset();
-      await db.clientDrift.sharedAttributesDrift.cleanAttributesTable();
-      await db.clientDrift.sharedAttributesDrift
+      await db.clientDrift.sharedDrift.sharedAttributesDrift
+          .cleanAttributesTable();
+      await db.clientDrift.sharedDrift.sharedAttributesDrift
           .insertAllEventsIntoAttributes();
       final cleanAndReduceTime = stopwatch.elapsedMilliseconds;
 

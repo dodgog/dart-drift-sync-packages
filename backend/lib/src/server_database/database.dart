@@ -62,13 +62,22 @@ class ServerDatabase extends $ServerDatabase {
 
     HLC().receivePacked(postQuery.clientTimestamp);
 
-    final newEvents = await insertEventsForUserAndGetEventsSinceTimestamp(
-      postQuery.events,
-      postQuery.lastIssuedServerTimestamp,
-      postQuery.userId,
+    final insertedBundleIds = await insertBundles(
+      postQuery.bundles,
     );
 
-    return PostResponse(HLC().sendPacked(), newEvents);
+    // Get new bundles but also should get the ones which were just inserted.
+    // Could be used for confirmation of receipt.
+    final newBundles = await getBundlesSinceTimestamp(
+      postQuery.userId,
+      postQuery.lastIssuedServerTimestamp,
+    );
+
+    return PostResponse(
+      HLC().sendPacked(),
+      insertedBundleIds,
+      newBundles.where((e) => !insertedBundleIds.contains(e.id)).toList(),
+    );
   }
 
   Future<bool> verifyUser(String userId, String token) async {
@@ -80,25 +89,28 @@ class ServerDatabase extends $ServerDatabase {
         .getSingle();
   }
 
-  Future<List<Event>> insertEventsForUserAndGetEventsSinceTimestamp(
-      List<Event> events, String? timestamp, String userId) async {
-    late final List<Event> eventsSinceTimestamp;
-    await transaction(() async {
-      for (final event in events) {
-        await serverDrift.sharedEventsDrift.insertEvent(
-          id: event.id,
-          clientId: event.clientId,
-          entityId: event.entityId,
-          attribute: event.attribute,
-          value: event.value,
-          timestamp: event.timestamp,
-        );
+  Future<List<String>> insertBundles(List<Bundle> bundles) async {
+    // TODO: verify owner user
+    // THINK: what should be the logic of event and bundle ownership?
+    final List<String> insertedIds = [];
+    for (final bundle in bundles) {
+      final status = await serverDrift.bundlesDrift.insertBundle(
+        id: bundle.id,
+        userId: bundle.userId,
+        timestamp: bundle.timestamp,
+        payload: bundle.payload,
+      );
+      if (status != 0) {
+        insertedIds.add(bundle.id);
       }
+    }
+    return insertedIds;
+  }
 
-      eventsSinceTimestamp = await serverDrift.eventsDrift
-          .getUserEventsSinceTimestamp(timestamp: timestamp, userId: userId)
-          .get();
-    });
-    return eventsSinceTimestamp;
+  Future<List<Bundle>> getBundlesSinceTimestamp(
+      String userId, String timestamp) async {
+    return await serverDrift.bundlesDrift
+        .getUserBundlesSinceTimestamp(userId: userId, timestamp: timestamp)
+        .get();
   }
 }

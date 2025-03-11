@@ -1,4 +1,5 @@
 import 'package:backend/server_definitions.dart';
+import 'package:backend/shared_definitions.dart';
 import 'package:json_annotation/json_annotation.dart' as j;
 
 part 'client_server.g.dart';
@@ -8,12 +9,17 @@ class PostQuery {
   String token;
   String userId;
   String clientTimestamp;
-  String? lastIssuedServerTimestamp;
-  @EventConverter()
-  List<Event> events;
+  String lastIssuedServerTimestamp;
+  @BundleConverter()
+  List<Bundle> bundles;
 
-  PostQuery(this.token, this.userId, this.clientTimestamp,
-      this.lastIssuedServerTimestamp, this.events);
+  PostQuery(
+    this.token,
+    this.userId,
+    this.clientTimestamp,
+    this.lastIssuedServerTimestamp,
+    this.bundles,
+  );
 
   factory PostQuery.fromJson(Map<String, dynamic> json) =>
       _$PostQueryFromJson(json);
@@ -24,10 +30,15 @@ class PostQuery {
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
 class PostResponse {
   String lastIssuedServerTimestamp;
-  @EventConverter()
-  List<Event> events;
+  @BundleConverter()
+  List<Bundle> newBundles;
+  List<String> insertedBundleIds;
 
-  PostResponse(this.lastIssuedServerTimestamp, this.events);
+  PostResponse(
+    this.lastIssuedServerTimestamp,
+    this.insertedBundleIds,
+    this.newBundles,
+  );
 
   factory PostResponse.fromJson(Map<String, dynamic> json) =>
       _$PostResponseFromJson(json);
@@ -35,13 +46,4 @@ class PostResponse {
   Map<String, dynamic> toJson() => _$PostResponseToJson(this);
 }
 
-@j.JsonSerializable()
-class EventConverter extends j.JsonConverter<Event, Map<String, dynamic>> {
-  const EventConverter();
 
-  @override
-  Event fromJson(Map<String, dynamic> json) => Event.fromJson(json);
-
-  @override
-  Map<String, dynamic> toJson(Event object) => object.toJson();
-}

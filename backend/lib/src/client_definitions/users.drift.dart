@@ -8,7 +8,7 @@ import 'package:backend/client.drift.dart' as i4;
 
 typedef $ConfigCreateCompanionBuilder = i1.ConfigCompanion Function({
   i0.Value<String?> clientId,
-  i0.Value<String?> lastServerIssuedTimestamp,
+  i0.Value<String> lastServerIssuedTimestamp,
   i0.Value<String?> userId,
   i0.Value<String?> userToken,
   i0.Value<String> hlcAbsoluteZero,
@@ -16,7 +16,7 @@ typedef $ConfigCreateCompanionBuilder = i1.ConfigCompanion Function({
 });
 typedef $ConfigUpdateCompanionBuilder = i1.ConfigCompanion Function({
   i0.Value<String?> clientId,
-  i0.Value<String?> lastServerIssuedTimestamp,
+  i0.Value<String> lastServerIssuedTimestamp,
   i0.Value<String?> userId,
   i0.Value<String?> userToken,
   i0.Value<String> hlcAbsoluteZero,
@@ -213,7 +213,7 @@ class $ConfigTableManager extends i0.RootTableManager<
               i1.$ConfigAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             i0.Value<String?> clientId = const i0.Value.absent(),
-            i0.Value<String?> lastServerIssuedTimestamp =
+            i0.Value<String> lastServerIssuedTimestamp =
                 const i0.Value.absent(),
             i0.Value<String?> userId = const i0.Value.absent(),
             i0.Value<String?> userToken = const i0.Value.absent(),
@@ -230,7 +230,7 @@ class $ConfigTableManager extends i0.RootTableManager<
           ),
           createCompanionCallback: ({
             i0.Value<String?> clientId = const i0.Value.absent(),
-            i0.Value<String?> lastServerIssuedTimestamp =
+            i0.Value<String> lastServerIssuedTimestamp =
                 const i0.Value.absent(),
             i0.Value<String?> userId = const i0.Value.absent(),
             i0.Value<String?> userToken = const i0.Value.absent(),
@@ -314,10 +314,13 @@ class Config extends i0.Table with i0.TableInfo<Config, i1.ConfigData> {
       const i0.VerificationMeta('lastServerIssuedTimestamp');
   late final i0.GeneratedColumn<String> lastServerIssuedTimestamp =
       i0.GeneratedColumn<String>(
-          'last_server_issued_timestamp', aliasedName, true,
+          'last_server_issued_timestamp', aliasedName, false,
           type: i0.DriftSqlType.string,
           requiredDuringInsert: false,
-          $customConstraints: '');
+          $customConstraints:
+              'NOT NULL DEFAULT \'1969-01-01T00:00:01.000Z-0000-00000\'',
+          defaultValue: const i0.CustomExpression(
+              '\'1969-01-01T00:00:01.000Z-0000-00000\''));
   static const i0.VerificationMeta _userIdMeta =
       const i0.VerificationMeta('userId');
   late final i0.GeneratedColumn<String> userId = i0.GeneratedColumn<String>(
@@ -394,7 +397,7 @@ class Config extends i0.Table with i0.TableInfo<Config, i1.ConfigData> {
           .read(i0.DriftSqlType.string, data['${effectivePrefix}client_id']),
       lastServerIssuedTimestamp: attachedDatabase.typeMapping.read(
           i0.DriftSqlType.string,
-          data['${effectivePrefix}last_server_issued_timestamp']),
+          data['${effectivePrefix}last_server_issued_timestamp'])!,
       userId: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}user_id']),
       userToken: attachedDatabase.typeMapping
@@ -417,13 +420,13 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
   final String? clientId;
 
   /// unique per device
-  final String? lastServerIssuedTimestamp;
+  final String lastServerIssuedTimestamp;
   final String? userId;
   final String? userToken;
   final String hlcAbsoluteZero;
   const ConfigData(
       {this.clientId,
-      this.lastServerIssuedTimestamp,
+      required this.lastServerIssuedTimestamp,
       this.userId,
       this.userToken,
       required this.hlcAbsoluteZero});
@@ -433,10 +436,8 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
     if (!nullToAbsent || clientId != null) {
       map['client_id'] = i0.Variable<String>(clientId);
     }
-    if (!nullToAbsent || lastServerIssuedTimestamp != null) {
-      map['last_server_issued_timestamp'] =
-          i0.Variable<String>(lastServerIssuedTimestamp);
-    }
+    map['last_server_issued_timestamp'] =
+        i0.Variable<String>(lastServerIssuedTimestamp);
     if (!nullToAbsent || userId != null) {
       map['user_id'] = i0.Variable<String>(userId);
     }
@@ -452,10 +453,7 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
       clientId: clientId == null && nullToAbsent
           ? const i0.Value.absent()
           : i0.Value(clientId),
-      lastServerIssuedTimestamp:
-          lastServerIssuedTimestamp == null && nullToAbsent
-              ? const i0.Value.absent()
-              : i0.Value(lastServerIssuedTimestamp),
+      lastServerIssuedTimestamp: i0.Value(lastServerIssuedTimestamp),
       userId: userId == null && nullToAbsent
           ? const i0.Value.absent()
           : i0.Value(userId),
@@ -472,7 +470,7 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
     return ConfigData(
       clientId: serializer.fromJson<String?>(json['client_id']),
       lastServerIssuedTimestamp:
-          serializer.fromJson<String?>(json['last_server_issued_timestamp']),
+          serializer.fromJson<String>(json['last_server_issued_timestamp']),
       userId: serializer.fromJson<String?>(json['user_id']),
       userToken: serializer.fromJson<String?>(json['user_token']),
       hlcAbsoluteZero: serializer.fromJson<String>(json['hlc_absolute_zero']),
@@ -484,7 +482,7 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
     return <String, dynamic>{
       'client_id': serializer.toJson<String?>(clientId),
       'last_server_issued_timestamp':
-          serializer.toJson<String?>(lastServerIssuedTimestamp),
+          serializer.toJson<String>(lastServerIssuedTimestamp),
       'user_id': serializer.toJson<String?>(userId),
       'user_token': serializer.toJson<String?>(userToken),
       'hlc_absolute_zero': serializer.toJson<String>(hlcAbsoluteZero),
@@ -493,15 +491,14 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
 
   i1.ConfigData copyWith(
           {i0.Value<String?> clientId = const i0.Value.absent(),
-          i0.Value<String?> lastServerIssuedTimestamp = const i0.Value.absent(),
+          String? lastServerIssuedTimestamp,
           i0.Value<String?> userId = const i0.Value.absent(),
           i0.Value<String?> userToken = const i0.Value.absent(),
           String? hlcAbsoluteZero}) =>
       i1.ConfigData(
         clientId: clientId.present ? clientId.value : this.clientId,
-        lastServerIssuedTimestamp: lastServerIssuedTimestamp.present
-            ? lastServerIssuedTimestamp.value
-            : this.lastServerIssuedTimestamp,
+        lastServerIssuedTimestamp:
+            lastServerIssuedTimestamp ?? this.lastServerIssuedTimestamp,
         userId: userId.present ? userId.value : this.userId,
         userToken: userToken.present ? userToken.value : this.userToken,
         hlcAbsoluteZero: hlcAbsoluteZero ?? this.hlcAbsoluteZero,
@@ -548,7 +545,7 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
 
 class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
   final i0.Value<String?> clientId;
-  final i0.Value<String?> lastServerIssuedTimestamp;
+  final i0.Value<String> lastServerIssuedTimestamp;
   final i0.Value<String?> userId;
   final i0.Value<String?> userToken;
   final i0.Value<String> hlcAbsoluteZero;
@@ -590,7 +587,7 @@ class ConfigCompanion extends i0.UpdateCompanion<i1.ConfigData> {
 
   i1.ConfigCompanion copyWith(
       {i0.Value<String?>? clientId,
-      i0.Value<String?>? lastServerIssuedTimestamp,
+      i0.Value<String>? lastServerIssuedTimestamp,
       i0.Value<String?>? userId,
       i0.Value<String?>? userToken,
       i0.Value<String>? hlcAbsoluteZero,
@@ -659,7 +656,7 @@ class UsersDrift extends i2.ModularAccessor {
 
   Future<int> initializeConfig() {
     return customInsert(
-      'INSERT INTO config (client_id, last_server_issued_timestamp, user_id, user_token) VALUES (NULL, NULL, NULL, NULL)',
+      'INSERT INTO config (client_id, user_id, user_token) VALUES (NULL, NULL, NULL)',
       variables: [],
       updates: {config},
     );
@@ -677,7 +674,7 @@ class UsersDrift extends i2.ModularAccessor {
     );
   }
 
-  Future<int> setLastSyncTime({required String? newLastSyncTime}) {
+  Future<int> setLastSyncTime({required String newLastSyncTime}) {
     return customUpdate(
       switch (executor.dialect) {
         i0.SqlDialect.sqlite =>

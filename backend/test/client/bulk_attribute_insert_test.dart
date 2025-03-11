@@ -56,7 +56,8 @@ void main() {
     );
 
     // Insert initial state directly
-    await db.clientDrift.sharedAttributesDrift.insertEventIntoAttributes(
+    await db.clientDrift.sharedDrift.sharedAttributesDrift
+        .insertEventIntoAttributes(
       entityId: 'node1',
       attribute: 'title',
       value: 'Initial Title',
@@ -64,11 +65,13 @@ void main() {
     );
 
     // Act - First bulk insert using helper
-    await db.clientDrift.sharedAttributesDrift.cleanAndReduceAttributeTable();
+    await db.clientDrift.sharedDrift.sharedAttributesDrift
+        .cleanAndReduceAttributeTable();
 
     // Assert - Should have newest value
-    final newAttribute =
-        await db.clientDrift.sharedAttributesDrift.getAttributes().getSingle();
+    final newAttribute = await db.clientDrift.sharedDrift.sharedAttributesDrift
+        .getAttributes()
+        .getSingle();
     _assertAttribute(
       attribute: newAttribute,
       expectedValue: 'New Title',
@@ -87,9 +90,11 @@ void main() {
       ],
     );
 
-    await db.clientDrift.sharedAttributesDrift.cleanAndReduceAttributeTable();
-    final attribute =
-        await db.clientDrift.sharedAttributesDrift.getAttributes().getSingle();
+    await db.clientDrift.sharedDrift.sharedAttributesDrift
+        .cleanAndReduceAttributeTable();
+    final attribute = await db.clientDrift.sharedDrift.sharedAttributesDrift
+        .getAttributes()
+        .getSingle();
     _assertAttribute(
       attribute: attribute,
       expectedValue: 'New Title',

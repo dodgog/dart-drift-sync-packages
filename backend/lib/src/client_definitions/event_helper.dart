@@ -3,7 +3,7 @@ import 'package:backend/client_definitions.dart';
 extension ClientEventHelper on ClientDrift {
   Future<int> insertLocalEventWithClientId(Event event) async {
     final client = await usersDrift.getCurrentClient().getSingle();
-    return sharedEventsDrift.insertEvent(
+    return sharedDrift.sharedEventsDrift.insertEvent(
       id: event.id,
       clientId: client.id,
       entityId: event.entityId,
@@ -14,7 +14,7 @@ extension ClientEventHelper on ClientDrift {
   }
 
   Future<int> insertLocalEventIntoAttributes(Event event) async {
-    return sharedAttributesDrift.insertEventIntoAttributes(
+    return sharedDrift.sharedAttributesDrift.insertEventIntoAttributes(
       entityId: event.entityId,
       attribute: event.attribute,
       value: event.value,

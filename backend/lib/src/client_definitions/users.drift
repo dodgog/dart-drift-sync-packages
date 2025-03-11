@@ -2,10 +2,11 @@ import 'package:backend/client.drift';
 
 CREATE TABLE config (
    client_id TEXT, -- unique per device
-   last_server_issued_timestamp TEXT,
+   -- TODO set this in a smarter way
+   last_server_issued_timestamp TEXT NOT NULL DEFAULT '1970-01-01T00:00:01.000Z-0000-serverId',
    user_id TEXT REFERENCES users (id),
    user_token TEXT,
-   hlc_absolute_zero TEXT NOT NULL DEFAULT '1969-01-01T00:00:01.000Z-0000-00000'
+   hlc_absolute_zero TEXT NOT NULL DEFAULT '1970-01-01T00:00:01.000Z-00001'
    -- TODO add hlc absolute zero time to use in lookups
 );
 
@@ -15,8 +16,8 @@ FROM clients c
 INNER JOIN config conf ON conf.client_id = c.id;
 
 initializeConfig:
-INSERT INTO config (client_id, last_server_issued_timestamp, user_id, user_token)
-VALUES (NULL, NULL, NULL, NULL);
+INSERT INTO config (client_id, user_id, user_token)
+VALUES (NULL, NULL, NULL);
 
 setClientId:
 UPDATE config

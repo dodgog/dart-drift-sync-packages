@@ -1,0 +1,27 @@
+import 'package:backend/server.drift';
+import 'users.drift';
+
+insertBundle:
+INSERT INTO bundles (id, user_id, timestamp,
+payload) VALUES(:id, :user_id, :timestamp, :payload);
+
+getBundleIdsForUser:
+SELECT id
+FROM bundles
+WHERE user_id = :user_id;
+
+getBundlePayloadById:
+SELECT payload
+FROM bundles
+WHERE id = :id;
+
+getUserBundlesSinceTimestamp:
+SELECT *
+FROM bundles
+WHERE user_id = :user_id 
+  AND timestamp > :timestamp;
+
+getAllUserBundles:
+SELECT *
+FROM bundles
+WHERE user_id = :user_id;

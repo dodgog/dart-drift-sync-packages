@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:backend/client_definitions.dart';
 import 'package:backend/messaging.dart';
 import 'package:backend/server_database.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:test/test.dart';
+import 'package:uuidv7/uuidv7.dart';
 
 import '../server_test_executor.dart';
 
@@ -28,7 +31,7 @@ void runAllServerTests(ServerTestExecutor executor) {
       userId: userId,
       token: "${userId}token",
     );
-    await db.serverDrift.sharedUsersDrift.createClient(
+    await db.serverDrift.sharedDrift.sharedUsersDrift.createClient(
       userId: userId,
       clientId: "client1",
     );
@@ -43,18 +46,15 @@ void runAllServerTests(ServerTestExecutor executor) {
         title: "title1",
       );
 
-      final query = PostQuery(
-        "user1token",
-        "user1",
-        "${DateTime.now().toUtc().toIso8601String()}-0000-clientId",
-        null,
-        createEvents,
-      );
+      final query = formQueryFromEvents(createEvents);
 
       await db.interpretIncomingPostQueryAndRespond(query);
 
-      final storedEvents =
-          await db.serverDrift.sharedEventsDrift.getEvents().get();
+      final bundles = await db.serverDrift.bundlesDrift
+          .getAllUserBundles(userId: "user1")
+          .get();
+      final storedEvents = bundles
+          .expand((e) => EventPayload.fromJson(jsonDecode(e.payload!)).events);
       expect(storedEvents.length, equals(createEvents.length));
     });
 
@@ -73,18 +73,16 @@ void runAllServerTests(ServerTestExecutor executor) {
       );
 
       final allEvents = [...createEvents, ...modifyEvents];
-      final query = PostQuery(
-        "user1token",
-        "user1",
-        "${DateTime.now().toUtc().toIso8601String()}-0000-clientId",
-        null,
-        allEvents,
-      );
+      final query = formQueryFromEvents(allEvents);
 
       await db.interpretIncomingPostQueryAndRespond(query);
 
-      final storedEvents =
-          await db.serverDrift.sharedEventsDrift.getEvents().get();
+      final bundles = await db.serverDrift.bundlesDrift
+          .getAllUserBundles(userId: "user1")
+          .get();
+      final storedEvents = bundles
+          .expand((e) => EventPayload.fromJson(jsonDecode(e.payload!)).events);
+
       expect(storedEvents.length, equals(allEvents.length));
 
       final modificationEvents = storedEvents
@@ -124,18 +122,17 @@ void runAllServerTests(ServerTestExecutor executor) {
       // Create a shuffled copy of the events
       final shuffledEvents = List<Event>.from(allEvents)..shuffle();
 
-      final query = PostQuery(
-        "user1token",
-        "user1",
-        "${DateTime.now().toUtc().toIso8601String()}-0000-clientId",
-        null,
-        shuffledEvents,
-      );
-
+      final query = formQueryFromEvents(shuffledEvents);
       await db.interpretIncomingPostQueryAndRespond(query);
 
-      final storedEvents =
-          await db.serverDrift.sharedEventsDrift.getEvents().get();
+      final bundles = await db.serverDrift.bundlesDrift
+          .getAllUserBundles(userId: "user1")
+          .get();
+      final storedEvents = bundles
+          .expand((e) => EventPayload.fromJson(jsonDecode(e.payload!)).events);
+
+      // final storedEvents =
+      //     await db.serverDrift.sharedDrift.sharedEventsDrift.getEvents().get();
       expect(storedEvents.length, equals(allEvents.length));
 
       // Verify final state is the same regardless of event order
@@ -160,18 +157,14 @@ void runAllServerTests(ServerTestExecutor executor) {
     test('empty events list in query', () async {
       await setupTestUser();
 
-      final query = PostQuery(
-        "user1token",
-        "user1",
-        "${DateTime.now().toUtc().toIso8601String()}-0000-clientId",
-        null,
-        [], // Empty events list
-      );
+      final query = formQueryFromEvents([]);
 
       final response = await db.interpretIncomingPostQueryAndRespond(query);
 
       // Verify response
-      expect(response.events, isEmpty);
+      expect(response.insertedBundleIds.length, 1);
+      expect(response.insertedBundleIds.first, query.bundles.first.id);
+      expect(response.newBundles, isEmpty);
       expect(response.lastIssuedServerTimestamp, isNotNull);
     });
 
@@ -180,21 +173,37 @@ void runAllServerTests(ServerTestExecutor executor) {
 
       final timestamp =
           "${DateTime.now().toUtc().toIso8601String()}-0000-clientId";
-      final query = PostQuery(
-        "user1token",
-        "user1",
-        timestamp,
-        null,
-        [], // Empty events list
-      );
+      final query =
+          formQueryFromEvents([], lastServerIssuedTimeStamp: timestamp);
 
       final response = await db.interpretIncomingPostQueryAndRespond(query);
 
       // Verify response
-      expect(response.events, isEmpty);
+      expect(response.newBundles, isEmpty);
+      expect(response.insertedBundleIds.length, 1);
+      expect(response.insertedBundleIds.first, query.bundles.first.id);
       expect(response.lastIssuedServerTimestamp, isNotNull);
       expect(response.lastIssuedServerTimestamp.compareTo(timestamp),
           greaterThan(0));
     });
   });
+}
+
+PostQuery formQueryFromEvents(List<Event> events,
+    {String? lastServerIssuedTimeStamp}) {
+  return PostQuery(
+    "user1token",
+    "user1",
+    "${DateTime.now().toUtc().toIso8601String()}-0000-clientId",
+    lastServerIssuedTimeStamp ??
+        "${DateTime.fromMillisecondsSinceEpoch(0).toUtc().toIso8601String()}-0000-serverId",
+    [
+      Bundle(
+        id: generateUuidV7String(),
+        userId: "user1",
+        timestamp: "${DateTime.now().toUtc().toIso8601String()}-0000-clientId",
+        payload: jsonEncode(EventPayload(events: events)),
+      )
+    ],
+  );
 }
