@@ -22,13 +22,14 @@ class DataSyncService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final postResponse = PostBundlesResponse.fromJson(jsonDecode(response.body));
+        final postResponse = PostBundlesResponse.fromJson(
+          jsonDecode(response.body),
+        );
         await db.pullEvents(postResponse);
         notifyListeners();
       } else {
         throw Exception('Failed to sync data: ${response.statusCode}');
       }
-
     } catch (e) {
       print('Error syncing data: $e');
       rethrow;

@@ -159,7 +159,8 @@ void runAllServerTests(ServerTestExecutor executor) {
 
       final query = formQueryFromEvents([]);
 
-      final response = await db.interpretIncomingPostBundlesQueryAndRespond(query);
+      final response =
+          await db.interpretIncomingPostBundlesQueryAndRespond(query);
 
       // Verify response
       expect(response.insertedBundleIds.length, 1);
@@ -176,7 +177,8 @@ void runAllServerTests(ServerTestExecutor executor) {
       final query =
           formQueryFromEvents([], lastServerIssuedTimeStamp: timestamp);
 
-      final response = await db.interpretIncomingPostBundlesQueryAndRespond(query);
+      final response =
+          await db.interpretIncomingPostBundlesQueryAndRespond(query);
 
       // Verify response
       expect(response.newBundles, isEmpty);

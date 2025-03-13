@@ -11,7 +11,8 @@ class EventPayload {
 
   EventPayload({required this.events});
 
-  factory EventPayload.fromJson(Map<String, dynamic> json) => _$EventPayloadFromJson(json);
+  factory EventPayload.fromJson(Map<String, dynamic> json) =>
+      _$EventPayloadFromJson(json);
 
   Map<String, dynamic> toJson() => _$EventPayloadToJson(this);
 }

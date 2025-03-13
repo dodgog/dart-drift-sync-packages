@@ -22,7 +22,6 @@ void main() {
           NativeDatabase.memory(),
           closeStreamsSynchronously: true,
         ));
-
   });
 
   tearDown(() async {

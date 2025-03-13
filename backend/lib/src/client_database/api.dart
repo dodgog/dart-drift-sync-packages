@@ -10,12 +10,7 @@ import 'database.dart';
 extension Api on ClientDatabase {
   Future<PostBundlesQuery> pushEvents() async {
     final events = await clientDrift.eventsDrift.getLocalEventsToPush().get();
-    final config = await clientDrift.usersDrift.getConfig().getSingleOrNull() ??
-        (throw InvalidConfigException("Not exactly one row in the user config table"));
-
-    if (config.userToken == null || config.userId == null || config.clientId == null) {
-      throw InvalidConfigException("Config contains uninitialized values");
-    }
+    final config = await getVerifiedConfig();
 
     final bundle = Bundle(
       // THINK: at which point should we create this id? maybe the server
@@ -35,14 +30,20 @@ extension Api on ClientDatabase {
     );
 
     final query = PostBundlesQuery(
-        config.userToken!, config.userId!, HLC().sendPacked(), config.lastServerIssuedTimestamp, [bundle]);
+      config.userToken!,
+      config.userId!,
+      HLC().sendPacked(),
+      config.lastServerIssuedTimestamp,
+      [bundle],
+    );
     return query;
   }
 
   Future<void> pullEvents(PostBundlesResponse response) async {
     await transaction(() async {
       await insertNewEventsFromNewBundles(response.newBundles);
-      await clientDrift.usersDrift.setLastSyncTime(newLastSyncTime: response.lastIssuedServerTimestamp);
+      await clientDrift.usersDrift
+          .setLastSyncTime(newLastSyncTime: response.lastIssuedServerTimestamp);
     });
   }
 
@@ -51,7 +52,8 @@ extension Api on ClientDatabase {
   Future<void> insertNewEventsFromNewBundles(List<Bundle> bundles) async {
     final List<String> bundleIdsToIgnore = [];
     for (final bundle in bundles) {
-      final status = await clientDrift.sharedDrift.sharedBundlesDrift.insertBundle(
+      final status =
+          await clientDrift.sharedDrift.sharedBundlesDrift.insertBundle(
         id: bundle.id,
         userId: bundle.userId,
         timestamp: bundle.timestamp,
@@ -75,12 +77,7 @@ extension Api on ClientDatabase {
   }
 
   Future<GetBundleIdsQuery> requestAllServerBundleIds() async {
-    final config = await clientDrift.usersDrift.getConfig().getSingleOrNull() ??
-        (throw InvalidConfigException("Not exactly one row in the user config table"));
-
-    if (config.userToken == null || config.userId == null) {
-      throw InvalidConfigException("Config contains uninitialized values");
-    }
+    final config = await getVerifiedConfig();
 
     return GetBundleIdsQuery(
       config.userToken!,
@@ -91,23 +88,22 @@ extension Api on ClientDatabase {
 
   // AIUSE: helped fill out the signatures
 
-  Future<List<String>> getMissingBundleIds(GetBundleIdsResponse response) async {
+  Future<List<String>> getMissingBundleIds(
+      GetBundleIdsResponse response) async {
     final localBundleIds = (await clientDrift.sharedDrift.sharedBundlesDrift
-        .getAllBundlesIds().get()).toSet();
+            .getAllBundlesIds()
+            .get())
+        .toSet();
 
     final serverBundleIds = response.bundleIds.toSet();
-    final missingBundleIds = serverBundleIds.difference(localBundleIds).toList();
+    final missingBundleIds =
+        serverBundleIds.difference(localBundleIds).toList();
 
     return missingBundleIds;
   }
 
   Future<GetBundlesQuery> requestBundles(List<String> bundleIds) async {
-    final config = await clientDrift.usersDrift.getConfig().getSingleOrNull() ??
-        (throw InvalidConfigException("Not exactly one row in the user config table"));
-
-    if (config.userToken == null || config.userId == null) {
-      throw InvalidConfigException("Config contains uninitialized values");
-    }
+    final config = await getVerifiedConfig();
 
     return GetBundlesQuery(
       config.userToken!,
@@ -119,7 +115,8 @@ extension Api on ClientDatabase {
   Future<void> interpretRequestedBundles(GetBundlesResponse response) async {
     await transaction(() async {
       await insertNewEventsFromNewBundles(response.bundles);
-      // TODO: also update timestamp?
+      await clientDrift.usersDrift
+          .setLastSyncTime(newLastSyncTime: response.lastIssuedServerTimestamp);
     });
   }
 }

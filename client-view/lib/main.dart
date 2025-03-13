@@ -29,7 +29,8 @@ void main() async {
   );
 
   final syncService = DataSyncService(
-    serverUrl: 'https://1078-2601-645-c683-3c60-3de5-6e85-cabb-b55e.ngrok-free.app/data',
+    serverUrl:
+        'https://1078-2601-645-c683-3c60-3de5-6e85-cabb-b55e.ngrok-free.app/data',
     db: db,
   );
 
@@ -46,7 +47,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Document Library',
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue), useMaterial3: true),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+      ),
       home: MyHomePage(db: db, syncService: syncService),
     );
   }
@@ -112,12 +116,26 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Documents'),
-        actions: [IconButton(icon: const Icon(Icons.synagogue), onPressed: _sync, tooltip: 'Sync from server')],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.synagogue),
+            onPressed: _sync,
+            tooltip: 'Sync from server',
+          ),
+        ],
       ),
       body: ListView.builder(
-        itemCount: nodes.where((e) => e.isDeleted == 0).where((e) => e.type == NodeTypes.document).length,
+        itemCount:
+            nodes
+                .where((e) => e.isDeleted == 0)
+                .where((e) => e.type == NodeTypes.document)
+                .length,
         itemBuilder: (context, index) {
-          final node = nodes.where((e) => e.isDeleted == 0).where((e) => e.type == NodeTypes.document).toList()[index];
+          final node =
+              nodes
+                  .where((e) => e.isDeleted == 0)
+                  .where((e) => e.type == NodeTypes.document)
+                  .toList()[index];
           return ListTile(
             title: Text(node.content.title! + node.id),
             subtitle: Text(node.content.author!),
@@ -131,7 +149,14 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _addNode(NodeContent(NodeTypes.document, "author", "title", ["list", "of", "strings"])),
+        onPressed:
+            () => _addNode(
+              NodeContent(NodeTypes.document, "author", "title", [
+                "list",
+                "of",
+                "strings",
+              ]),
+            ),
         tooltip: 'Add Document',
         child: const Icon(Icons.add),
       ),

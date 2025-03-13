@@ -94,9 +94,11 @@ GetBundlesResponse _$GetBundlesResponseFromJson(Map<String, dynamic> json) =>
           .map((e) =>
               const BundleConverter().fromJson(e as Map<String, dynamic>))
           .toList(),
+      json['last_issued_server_timestamp'] as String,
     );
 
 Map<String, dynamic> _$GetBundlesResponseToJson(GetBundlesResponse instance) =>
     <String, dynamic>{
       'bundles': instance.bundles.map(const BundleConverter().toJson).toList(),
+      'last_issued_server_timestamp': instance.lastIssuedServerTimestamp,
     };

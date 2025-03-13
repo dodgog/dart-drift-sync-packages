@@ -23,6 +23,7 @@ class PostBundlesQuery {
 
   factory PostBundlesQuery.fromJson(Map<String, dynamic> json) =>
       _$PostBundlesQueryFromJson(json);
+
   Map<String, dynamic> toJson() => _$PostBundlesQueryToJson(this);
 }
 
@@ -41,6 +42,7 @@ class PostBundlesResponse {
 
   factory PostBundlesResponse.fromJson(Map<String, dynamic> json) =>
       _$PostBundlesResponseFromJson(json);
+
   Map<String, dynamic> toJson() => _$PostBundlesResponseToJson(this);
 }
 
@@ -54,12 +56,14 @@ class GetBundleIdsQuery {
 
   factory GetBundleIdsQuery.fromJson(Map<String, dynamic> json) =>
       _$GetBundleIdsQueryFromJson(json);
+
   Map<String, dynamic> toJson() => _$GetBundleIdsQueryToJson(this);
 }
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
 class GetBundleIdsResponse {
   List<String> bundleIds;
+
   // TODO: this probably should also have a timestamp since it is equivalent to
   // a regular pull
 
@@ -67,6 +71,7 @@ class GetBundleIdsResponse {
 
   factory GetBundleIdsResponse.fromJson(Map<String, dynamic> json) =>
       _$GetBundleIdsResponseFromJson(json);
+
   Map<String, dynamic> toJson() => _$GetBundleIdsResponseToJson(this);
 }
 
@@ -80,6 +85,7 @@ class GetBundlesQuery {
 
   factory GetBundlesQuery.fromJson(Map<String, dynamic> json) =>
       _$GetBundlesQueryFromJson(json);
+
   Map<String, dynamic> toJson() => _$GetBundlesQueryToJson(this);
 }
 
@@ -87,11 +93,12 @@ class GetBundlesQuery {
 class GetBundlesResponse {
   @BundleConverter()
   List<Bundle> bundles;
+  String lastIssuedServerTimestamp;
 
-  GetBundlesResponse(this.bundles);
+  GetBundlesResponse(this.bundles, this.lastIssuedServerTimestamp);
 
   factory GetBundlesResponse.fromJson(Map<String, dynamic> json) =>
       _$GetBundlesResponseFromJson(json);
+
   Map<String, dynamic> toJson() => _$GetBundlesResponseToJson(this);
 }
-

@@ -21,7 +21,8 @@ Middleware logAllRequests() {
 
       final response = await innerHandler(request);
 
-      print('➡️ ${response.statusCode} ${request.method} ${request.requestedUri}');
+      print(
+          '➡️ ${response.statusCode} ${request.method} ${request.requestedUri}');
       if (response.statusCode >= 400) {
         print('❌ Error response body: ${await response.readAsString()}');
       }
@@ -42,7 +43,8 @@ Future<Response> _putDataHandler(Request request) async {
     final body = await request.readAsString();
     final postQuery = PostBundlesQuery.fromJson(jsonDecode(body));
 
-    final postResponse = await store.interpretIncomingPostBundlesQueryAndRespond(postQuery);
+    final postResponse =
+        await store.interpretIncomingPostBundlesQueryAndRespond(postQuery);
 
     return Response.ok(
       jsonEncode(postResponse.toJson()),
@@ -74,12 +76,15 @@ void main(List<String> args) async {
   // Initialize the test user that matches the client
   await store.serverDrift.usersDrift.createUser(userId: "user1", name: "user1");
 
-  await store.serverDrift.usersDrift.authUser(userId: "user1", token: "user1token");
+  await store.serverDrift.usersDrift
+      .authUser(userId: "user1", token: "user1token");
 
-  await store.serverDrift.sharedUsersDrift.createClient(userId: "user1", clientId: "client1");
+  await store.serverDrift.sharedUsersDrift
+      .createClient(userId: "user1", clientId: "client1");
 
   final ip = InternetAddress.anyIPv4;
-  final handler = Pipeline().addMiddleware(logAllRequests()).addHandler(_router.call);
+  final handler =
+      Pipeline().addMiddleware(logAllRequests()).addHandler(_router.call);
 
   final port = int.parse(Platform.environment['PORT'] ?? '8080');
   final server = await serve(handler, ip, port);
