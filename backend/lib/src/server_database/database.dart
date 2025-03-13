@@ -53,8 +53,8 @@ class ServerDatabase extends $ServerDatabase {
     );
   }
 
-  Future<PostResponse> interpretIncomingPostQueryAndRespond(
-      PostQuery postQuery) async {
+  Future<PostBundlesResponse> interpretIncomingPostBundlesQueryAndRespond(
+      PostBundlesQuery postQuery) async {
     final isAuthorized = await verifyUser(postQuery.userId, postQuery.token);
     if (!isAuthorized) {
       throw UnauthorizedException('Invalid user credentials');
@@ -73,7 +73,7 @@ class ServerDatabase extends $ServerDatabase {
       postQuery.lastIssuedServerTimestamp,
     );
 
-    return PostResponse(
+    return PostBundlesResponse(
       HLC().sendPacked(),
       insertedBundleIds,
       newBundles.where((e) => !insertedBundleIds.contains(e.id)).toList(),
@@ -94,7 +94,8 @@ class ServerDatabase extends $ServerDatabase {
     // THINK: what should be the logic of event and bundle ownership?
     final List<String> insertedIds = [];
     for (final bundle in bundles) {
-      final status = await serverDrift.bundlesDrift.insertBundle(
+      final status =
+          await serverDrift.sharedDrift.sharedBundlesDrift.insertBundle(
         id: bundle.id,
         userId: bundle.userId,
         timestamp: bundle.timestamp,

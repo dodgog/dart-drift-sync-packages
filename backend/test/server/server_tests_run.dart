@@ -48,7 +48,7 @@ void runAllServerTests(ServerTestExecutor executor) {
 
       final query = formQueryFromEvents(createEvents);
 
-      await db.interpretIncomingPostQueryAndRespond(query);
+      await db.interpretIncomingPostBundlesQueryAndRespond(query);
 
       final bundles = await db.serverDrift.bundlesDrift
           .getAllUserBundles(userId: "user1")
@@ -75,7 +75,7 @@ void runAllServerTests(ServerTestExecutor executor) {
       final allEvents = [...createEvents, ...modifyEvents];
       final query = formQueryFromEvents(allEvents);
 
-      await db.interpretIncomingPostQueryAndRespond(query);
+      await db.interpretIncomingPostBundlesQueryAndRespond(query);
 
       final bundles = await db.serverDrift.bundlesDrift
           .getAllUserBundles(userId: "user1")
@@ -123,7 +123,7 @@ void runAllServerTests(ServerTestExecutor executor) {
       final shuffledEvents = List<Event>.from(allEvents)..shuffle();
 
       final query = formQueryFromEvents(shuffledEvents);
-      await db.interpretIncomingPostQueryAndRespond(query);
+      await db.interpretIncomingPostBundlesQueryAndRespond(query);
 
       final bundles = await db.serverDrift.bundlesDrift
           .getAllUserBundles(userId: "user1")
@@ -159,7 +159,7 @@ void runAllServerTests(ServerTestExecutor executor) {
 
       final query = formQueryFromEvents([]);
 
-      final response = await db.interpretIncomingPostQueryAndRespond(query);
+      final response = await db.interpretIncomingPostBundlesQueryAndRespond(query);
 
       // Verify response
       expect(response.insertedBundleIds.length, 1);
@@ -176,7 +176,7 @@ void runAllServerTests(ServerTestExecutor executor) {
       final query =
           formQueryFromEvents([], lastServerIssuedTimeStamp: timestamp);
 
-      final response = await db.interpretIncomingPostQueryAndRespond(query);
+      final response = await db.interpretIncomingPostBundlesQueryAndRespond(query);
 
       // Verify response
       expect(response.newBundles, isEmpty);
@@ -189,9 +189,9 @@ void runAllServerTests(ServerTestExecutor executor) {
   });
 }
 
-PostQuery formQueryFromEvents(List<Event> events,
+PostBundlesQuery formQueryFromEvents(List<Event> events,
     {String? lastServerIssuedTimeStamp}) {
-  return PostQuery(
+  return PostBundlesQuery(
     "user1token",
     "user1",
     "${DateTime.now().toUtc().toIso8601String()}-0000-clientId",

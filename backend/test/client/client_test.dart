@@ -52,7 +52,7 @@ void main() {
     final postQuery = await db.pushEvents();
 
     // Create expected query
-    final expectedQuery = PostQuery(
+    final expectedQuery = PostBundlesQuery(
         "user1token",
         "user1",
         HLC().sendPacked(),

@@ -22,7 +22,7 @@ class DataSyncService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final postResponse = PostResponse.fromJson(jsonDecode(response.body));
+        final postResponse = PostBundlesResponse.fromJson(jsonDecode(response.body));
         await db.pullEvents(postResponse);
         notifyListeners();
       } else {

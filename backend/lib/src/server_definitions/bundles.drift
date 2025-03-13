@@ -1,9 +1,6 @@
 import 'package:backend/server.drift';
 import 'users.drift';
 
-insertBundle:
-INSERT INTO bundles (id, user_id, timestamp,
-payload) VALUES(:id, :user_id, :timestamp, :payload);
 
 getBundleIdsForUser:
 SELECT id

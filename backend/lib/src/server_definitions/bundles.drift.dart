@@ -8,29 +8,6 @@ import 'package:backend/src/server_definitions/users.drift.dart' as i4;
 
 class BundlesDrift extends i1.ModularAccessor {
   BundlesDrift(i0.GeneratedDatabase db) : super(db);
-  Future<int> insertBundle(
-      {required String id,
-      required String userId,
-      required String timestamp,
-      required String? payload}) {
-    return customInsert(
-      switch (executor.dialect) {
-        i0.SqlDialect.sqlite =>
-          'INSERT INTO bundles (id, user_id, timestamp, payload) VALUES (?1, ?2, ?3, ?4)',
-        i0.SqlDialect.postgres ||
-        _ =>
-          'INSERT INTO bundles (id, user_id, timestamp, payload) VALUES (\$1, \$2, \$3, \$4)',
-      },
-      variables: [
-        i0.Variable<String>(id),
-        i0.Variable<String>(userId),
-        i0.Variable<String>(timestamp),
-        i0.Variable<String>(payload)
-      ],
-      updates: {bundles},
-    );
-  }
-
   i0.Selectable<String> getBundleIdsForUser({required String userId}) {
     return customSelect(
         switch (executor.dialect) {

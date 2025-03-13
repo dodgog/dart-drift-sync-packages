@@ -553,6 +553,37 @@ class BundlesCompanion extends i0.UpdateCompanion<i1.Bundle> {
 
 class SharedBundlesDrift extends i2.ModularAccessor {
   SharedBundlesDrift(i0.GeneratedDatabase db) : super(db);
+  Future<int> insertBundle(
+      {required String id,
+      required String userId,
+      required String timestamp,
+      required String? payload}) {
+    return customInsert(
+      switch (executor.dialect) {
+        i0.SqlDialect.sqlite =>
+          'INSERT INTO bundles (id, user_id, timestamp, payload) VALUES (?1, ?2, ?3, ?4) ON CONFLICT (id) DO NOTHING',
+        i0.SqlDialect.postgres ||
+        _ =>
+          'INSERT INTO bundles (id, user_id, timestamp, payload) VALUES (\$1, \$2, \$3, \$4) ON CONFLICT (id) DO NOTHING',
+      },
+      variables: [
+        i0.Variable<String>(id),
+        i0.Variable<String>(userId),
+        i0.Variable<String>(timestamp),
+        i0.Variable<String>(payload)
+      ],
+      updates: {bundles},
+    );
+  }
+
+  i0.Selectable<String> getAllBundlesIds() {
+    return customSelect('SELECT id FROM bundles', variables: [], readsFrom: {
+      bundles,
+    }).map((i0.QueryRow row) => row.read<String>('id'));
+  }
+
+  i1.Bundles get bundles => i2.ReadDatabaseContainer(attachedDatabase)
+      .resultSet<i1.Bundles>('bundles');
   i3.SharedUsersDrift get sharedUsersDrift =>
       this.accessor(i3.SharedUsersDrift.new);
 }

@@ -318,9 +318,9 @@ class Config extends i0.Table with i0.TableInfo<Config, i1.ConfigData> {
           type: i0.DriftSqlType.string,
           requiredDuringInsert: false,
           $customConstraints:
-              'NOT NULL DEFAULT \'1969-01-01T00:00:01.000Z-0000-00000\'',
+              'NOT NULL DEFAULT \'1970-01-01T00:00:01.000Z-0000-serverId\'',
           defaultValue: const i0.CustomExpression(
-              '\'1969-01-01T00:00:01.000Z-0000-00000\''));
+              '\'1970-01-01T00:00:01.000Z-0000-serverId\''));
   static const i0.VerificationMeta _userIdMeta =
       const i0.VerificationMeta('userId');
   late final i0.GeneratedColumn<String> userId = i0.GeneratedColumn<String>(
@@ -342,9 +342,9 @@ class Config extends i0.Table with i0.TableInfo<Config, i1.ConfigData> {
           type: i0.DriftSqlType.string,
           requiredDuringInsert: false,
           $customConstraints:
-              'NOT NULL DEFAULT \'1969-01-01T00:00:01.000Z-0000-00000\'',
-          defaultValue: const i0.CustomExpression(
-              '\'1969-01-01T00:00:01.000Z-0000-00000\''));
+              'NOT NULL DEFAULT \'1970-01-01T00:00:01.000Z-00001\'',
+          defaultValue:
+              const i0.CustomExpression('\'1970-01-01T00:00:01.000Z-00001\''));
   @override
   List<i0.GeneratedColumn> get $columns =>
       [clientId, lastServerIssuedTimestamp, userId, userToken, hlcAbsoluteZero];
@@ -420,6 +420,7 @@ class ConfigData extends i0.DataClass implements i0.Insertable<i1.ConfigData> {
   final String? clientId;
 
   /// unique per device
+  /// TODO set this in a smarter way
   final String lastServerIssuedTimestamp;
   final String? userId;
   final String? userToken;

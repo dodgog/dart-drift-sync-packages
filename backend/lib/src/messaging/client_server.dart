@@ -5,7 +5,7 @@ import 'package:json_annotation/json_annotation.dart' as j;
 part 'client_server.g.dart';
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
-class PostQuery {
+class PostBundlesQuery {
   String token;
   String userId;
   String clientTimestamp;
@@ -13,7 +13,7 @@ class PostQuery {
   @BundleConverter()
   List<Bundle> bundles;
 
-  PostQuery(
+  PostBundlesQuery(
     this.token,
     this.userId,
     this.clientTimestamp,
@@ -21,29 +21,75 @@ class PostQuery {
     this.bundles,
   );
 
-  factory PostQuery.fromJson(Map<String, dynamic> json) =>
-      _$PostQueryFromJson(json);
-
-  Map<String, dynamic> toJson() => _$PostQueryToJson(this);
+  factory PostBundlesQuery.fromJson(Map<String, dynamic> json) =>
+      _$PostBundlesQueryFromJson(json);
+  Map<String, dynamic> toJson() => _$PostBundlesQueryToJson(this);
 }
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
-class PostResponse {
+class PostBundlesResponse {
   String lastIssuedServerTimestamp;
   @BundleConverter()
   List<Bundle> newBundles;
   List<String> insertedBundleIds;
 
-  PostResponse(
+  PostBundlesResponse(
     this.lastIssuedServerTimestamp,
     this.insertedBundleIds,
     this.newBundles,
   );
 
-  factory PostResponse.fromJson(Map<String, dynamic> json) =>
-      _$PostResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$PostResponseToJson(this);
+  factory PostBundlesResponse.fromJson(Map<String, dynamic> json) =>
+      _$PostBundlesResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$PostBundlesResponseToJson(this);
 }
 
+@j.JsonSerializable(fieldRename: j.FieldRename.snake)
+class GetBundleIdsQuery {
+  String userId;
+  String token;
+  String? sinceTimestamp;
+
+  GetBundleIdsQuery(this.userId, this.token, {this.sinceTimestamp});
+
+  factory GetBundleIdsQuery.fromJson(Map<String, dynamic> json) =>
+      _$GetBundleIdsQueryFromJson(json);
+  Map<String, dynamic> toJson() => _$GetBundleIdsQueryToJson(this);
+}
+
+@j.JsonSerializable(fieldRename: j.FieldRename.snake)
+class GetBundleIdsResponse {
+  List<String> bundleIds;
+
+  GetBundleIdsResponse(this.bundleIds);
+
+  factory GetBundleIdsResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetBundleIdsResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$GetBundleIdsResponseToJson(this);
+}
+
+@j.JsonSerializable(fieldRename: j.FieldRename.snake)
+class GetBundlesQuery {
+  String userId;
+  String token;
+  List<String> bundleIds;
+
+  GetBundlesQuery(this.userId, this.token, this.bundleIds);
+
+  factory GetBundlesQuery.fromJson(Map<String, dynamic> json) =>
+      _$GetBundlesQueryFromJson(json);
+  Map<String, dynamic> toJson() => _$GetBundlesQueryToJson(this);
+}
+
+@j.JsonSerializable(fieldRename: j.FieldRename.snake)
+class GetBundlesResponse {
+  @BundleConverter()
+  List<Bundle> bundles;
+
+  GetBundlesResponse(this.bundles);
+
+  factory GetBundlesResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetBundlesResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$GetBundlesResponseToJson(this);
+}
 

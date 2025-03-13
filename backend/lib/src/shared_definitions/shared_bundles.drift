@@ -6,3 +6,11 @@ CREATE TABLE bundles (
     timestamp TEXT NOT NULL,
     payload TEXT
 );
+
+insertBundle:
+INSERT INTO bundles (id, user_id, timestamp, payload)
+VALUES(:id, :user_id, :timestamp, :payload)
+ON CONFLICT(id) DO NOTHING;
+
+getAllBundlesIds:
+SELECT id FROM bundles;

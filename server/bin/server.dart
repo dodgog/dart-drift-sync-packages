@@ -40,9 +40,9 @@ final _router = Router()
 Future<Response> _putDataHandler(Request request) async {
   try {
     final body = await request.readAsString();
-    final postQuery = PostQuery.fromJson(jsonDecode(body));
+    final postQuery = PostBundlesQuery.fromJson(jsonDecode(body));
 
-    final postResponse = await store.interpretIncomingPostQueryAndRespond(postQuery);
+    final postResponse = await store.interpretIncomingPostBundlesQueryAndRespond(postQuery);
 
     return Response.ok(
       jsonEncode(postResponse.toJson()),

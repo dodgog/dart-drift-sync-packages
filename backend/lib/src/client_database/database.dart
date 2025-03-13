@@ -1,12 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:backend/client_definitions.dart';
-import 'package:backend/messaging.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
-import 'package:uuidv7/uuidv7.dart';
 
 import 'database.drift.dart';
 
@@ -24,7 +21,7 @@ class ClientDatabase extends $ClientDatabase {
     this.initialConfig,
     QueryExecutor? executor,
     File? file,
-  }) : super(executor ?? _openConnection(file: file))  {
+  }) : super(executor ?? _openConnection(file: file)) {
     // TODO ideally it should be initialized with the id value from config
   }
 
@@ -78,54 +75,8 @@ class ClientDatabase extends $ClientDatabase {
   /// THINK: run the migration, but using HLC is conditional on the db being
   /// THINK: initialized
   /// TODO: move to HLC not being a singleton but rather a database attribute
-  Future<void> ensureInitialized()async{
+  Future<void> ensureInitialized() async {
     // final config = await clientDrift.usersDrift.getConfig().getSingleOrNull();
     await clientDrift.usersDrift.getCurrentClient().get();
-
-  }
-
-  Future<PostQuery> pushEvents() async {
-    final events = await clientDrift.eventsDrift.getLocalEventsToPush().get();
-    final config = await clientDrift.usersDrift.getConfig().getSingleOrNull() ??
-        (throw InvalidConfigException(
-            "Not exactly one row in the user config table"));
-
-    if (config.userToken == null ||
-        config.userId == null ||
-        config.clientId == null) {
-      throw InvalidConfigException("Config contains uninitialized values");
-    }
-    final query = PostQuery(config.userToken!, config.userId!,
-        HLC().sendPacked(), config.lastServerIssuedTimestamp, [
-      Bundle(
-        // THINK: at which point should we create this id? maybe the server
-        //  should assign it
-        id: generateUuidV7String(),
-        userId: config.userId!,
-        timestamp: HLC().sendPacked(),
-        payload: jsonEncode(EventPayload(events: events).toJson()),
-      )
-    ]);
-    return query;
-  }
-
-  Future<void> pullEvents(PostResponse response) async {
-    // THINK: Managing bundles on device here
-    // perhaps reference the local bundles table and check if it already exists
-    // local bundles can store empty payloads
-    final events = response.newBundles.expand((e) {
-      if (e.payload == null) return [];
-      return EventPayload.fromJson(jsonDecode(e.payload!)).events;
-    });
-
-    await transaction(() async {
-      for (final event in events) {
-        // for (final event in response.events) {
-        clientDrift.insertLocalEventWithClientId(event);
-        clientDrift.insertLocalEventIntoAttributes(event);
-      }
-      await clientDrift.usersDrift
-          .setLastSyncTime(newLastSyncTime: response.lastIssuedServerTimestamp);
-    });
   }
 }
