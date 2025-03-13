@@ -60,6 +60,8 @@ class GetBundleIdsQuery {
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
 class GetBundleIdsResponse {
   List<String> bundleIds;
+  // TODO: this probably should also have a timestamp since it is equivalent to
+  // a regular pull
 
   GetBundleIdsResponse(this.bundleIds);
 

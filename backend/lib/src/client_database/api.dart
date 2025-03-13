@@ -11,12 +11,9 @@ extension Api on ClientDatabase {
   Future<PostBundlesQuery> pushEvents() async {
     final events = await clientDrift.eventsDrift.getLocalEventsToPush().get();
     final config = await clientDrift.usersDrift.getConfig().getSingleOrNull() ??
-        (throw InvalidConfigException(
-            "Not exactly one row in the user config table"));
+        (throw InvalidConfigException("Not exactly one row in the user config table"));
 
-    if (config.userToken == null ||
-        config.userId == null ||
-        config.clientId == null) {
+    if (config.userToken == null || config.userId == null || config.clientId == null) {
       throw InvalidConfigException("Config contains uninitialized values");
     }
 
@@ -37,16 +34,15 @@ extension Api on ClientDatabase {
       payload: null,
     );
 
-    final query = PostBundlesQuery(config.userToken!, config.userId!,
-        HLC().sendPacked(), config.lastServerIssuedTimestamp, [bundle]);
+    final query = PostBundlesQuery(
+        config.userToken!, config.userId!, HLC().sendPacked(), config.lastServerIssuedTimestamp, [bundle]);
     return query;
   }
 
   Future<void> pullEvents(PostBundlesResponse response) async {
     await transaction(() async {
       await insertNewEventsFromNewBundles(response.newBundles);
-      await clientDrift.usersDrift
-          .setLastSyncTime(newLastSyncTime: response.lastIssuedServerTimestamp);
+      await clientDrift.usersDrift.setLastSyncTime(newLastSyncTime: response.lastIssuedServerTimestamp);
     });
   }
 
@@ -55,8 +51,7 @@ extension Api on ClientDatabase {
   Future<void> insertNewEventsFromNewBundles(List<Bundle> bundles) async {
     final List<String> bundleIdsToIgnore = [];
     for (final bundle in bundles) {
-      final status =
-          await clientDrift.sharedDrift.sharedBundlesDrift.insertBundle(
+      final status = await clientDrift.sharedDrift.sharedBundlesDrift.insertBundle(
         id: bundle.id,
         userId: bundle.userId,
         timestamp: bundle.timestamp,
@@ -80,21 +75,51 @@ extension Api on ClientDatabase {
   }
 
   Future<GetBundleIdsQuery> requestAllServerBundleIds() async {
-    // query which would get all bundleids
+    final config = await clientDrift.usersDrift.getConfig().getSingleOrNull() ??
+        (throw InvalidConfigException("Not exactly one row in the user config table"));
+
+    if (config.userToken == null || config.userId == null) {
+      throw InvalidConfigException("Config contains uninitialized values");
+    }
+
+    return GetBundleIdsQuery(
+      config.userToken!,
+      config.userId!,
+      sinceTimestamp: null,
+    );
   }
 
-  Future<List<String>> getMissingBundleIds(GetBundleIdsResponse response)
-  async {
-    // get local bundle ids, and figure out which ones the client needs to
-    // pull from the server
+  // AIUSE: helped fill out the signatures
+
+  Future<List<String>> getMissingBundleIds(GetBundleIdsResponse response) async {
+    final localBundleIds = (await clientDrift.sharedDrift.sharedBundlesDrift
+        .getAllBundlesIds().get()).toSet();
+
+    final serverBundleIds = response.bundleIds.toSet();
+    final missingBundleIds = serverBundleIds.difference(localBundleIds).toList();
+
+    return missingBundleIds;
   }
 
   Future<GetBundlesQuery> requestBundles(List<String> bundleIds) async {
-    // form a query to get bundles
+    final config = await clientDrift.usersDrift.getConfig().getSingleOrNull() ??
+        (throw InvalidConfigException("Not exactly one row in the user config table"));
+
+    if (config.userToken == null || config.userId == null) {
+      throw InvalidConfigException("Config contains uninitialized values");
+    }
+
+    return GetBundlesQuery(
+      config.userToken!,
+      config.userId!,
+      bundleIds,
+    );
   }
 
   Future<void> interpretRequestedBundles(GetBundlesResponse response) async {
-    // insert new events from new bundles
+    await transaction(() async {
+      await insertNewEventsFromNewBundles(response.bundles);
+      // TODO: also update timestamp?
+    });
   }
-
 }
