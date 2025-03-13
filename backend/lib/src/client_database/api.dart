@@ -21,14 +21,6 @@ extension Api on ClientDatabase {
       payload: jsonEncode(EventPayload(events: events).toJson()),
     );
 
-    await clientDrift.sharedDrift.sharedBundlesDrift.insertBundle(
-      id: bundle.id,
-      userId: bundle.userId,
-      timestamp: bundle.timestamp,
-      // THINK: maybe store events which the client thinks are in this bundle
-      payload: null,
-    );
-
     final query = PostBundlesQuery(
       config.userToken!,
       config.userId!,
@@ -39,8 +31,26 @@ extension Api on ClientDatabase {
     return query;
   }
 
-  Future<void> pullEvents(PostBundlesResponse response) async {
+  Future<void> pullEvents(PostBundlesResponse response,
+      {List<Bundle>? postedBundles}) async {
+    final insertedBundleIds = response.insertedBundleIds.toSet();
+    final bundlesPersistedToServer =
+        postedBundles?.where((e) => insertedBundleIds.contains(e));
+
     await transaction(() async {
+      if (bundlesPersistedToServer != null) {
+        for (final bundle in bundlesPersistedToServer) {
+          await clientDrift.sharedDrift.sharedBundlesDrift.insertBundle(
+            id: bundle.id,
+            userId: bundle.userId,
+            timestamp: bundle.timestamp,
+            // THINK: maybe store events which the client thinks are in this bundle
+            // THINK: maybe a table which would relate events to bundles
+            payload: null,
+          );
+        }
+      }
+
       await insertNewEventsFromNewBundles(response.newBundles);
       await clientDrift.usersDrift
           .setLastSyncTime(newLastSyncTime: response.lastIssuedServerTimestamp);
