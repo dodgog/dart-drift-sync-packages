@@ -1,0 +1,33 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'getBundleIds.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+GetBundleIdsQuery _$GetBundleIdsQueryFromJson(Map<String, dynamic> json) =>
+    GetBundleIdsQuery(
+      json['user_id'] as String,
+      json['token'] as String,
+      sinceTimestamp: json['since_timestamp'] as String?,
+    );
+
+Map<String, dynamic> _$GetBundleIdsQueryToJson(GetBundleIdsQuery instance) =>
+    <String, dynamic>{
+      'user_id': instance.userId,
+      'token': instance.token,
+      'since_timestamp': instance.sinceTimestamp,
+    };
+
+GetBundleIdsResponse _$GetBundleIdsResponseFromJson(
+        Map<String, dynamic> json) =>
+    GetBundleIdsResponse(
+      (json['bundle_ids'] as List<dynamic>).map((e) => e as String).toList(),
+    );
+
+Map<String, dynamic> _$GetBundleIdsResponseToJson(
+        GetBundleIdsResponse instance) =>
+    <String, dynamic>{
+      'bundle_ids': instance.bundleIds,
+    };

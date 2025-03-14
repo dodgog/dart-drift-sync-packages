@@ -71,17 +71,4 @@ class ClientDatabase extends $ClientDatabase {
     await clientDrift.usersDrift.getCurrentClient().get();
   }
 
-  Future<ConfigData> getVerifiedConfig() async {
-    final config = await clientDrift.usersDrift.getConfig().getSingleOrNull() ??
-        (throw InvalidConfigException(
-            "Not exactly one row in the user config table"));
-
-    if (config.userToken == null ||
-        config.userId == null ||
-        config.clientId == null) {
-      throw InvalidConfigException("Config contains uninitialized values");
-    }
-
-    return config;
-  }
 }

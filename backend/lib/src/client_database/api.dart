@@ -7,6 +7,7 @@ import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:uuidv7/uuidv7.dart';
 
 import 'database.dart';
+import 'config.dart';
 
 /// Handles formation of queries and interprets responses
 ///
