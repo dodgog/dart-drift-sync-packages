@@ -2,11 +2,15 @@ import 'dart:convert';
 
 import 'package:backend/client_definitions.dart';
 import 'package:backend/messaging.dart';
+import 'package:backend/src/client_database/crud.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:uuidv7/uuidv7.dart';
 
 import 'database.dart';
 
+/// Handles formation of queries and interprets responses
+///
+/// Does not write anything directly, for that relies on the CRUD extension
 extension Api on ClientDatabase {
   Future<PostBundlesQuery> pushEvents() async {
     final events = await clientDrift.eventsDrift.getLocalEventsToPush().get();
@@ -39,51 +43,13 @@ extension Api on ClientDatabase {
 
     await transaction(() async {
       if (bundlesPersistedToServer != null) {
-        for (final bundle in bundlesPersistedToServer) {
-          await clientDrift.sharedDrift.sharedBundlesDrift.insertBundle(
-            id: bundle.id,
-            userId: bundle.userId,
-            timestamp: bundle.timestamp,
-            // THINK: maybe store events which the client thinks are in this bundle
-            // THINK: maybe a table which would relate events to bundles
-            payload: null,
-          );
-        }
+        registerBundlesPersistedToServerWithoutPayload(
+            bundlesPersistedToServer.toList());
       }
 
       await insertNewEventsFromNewBundles(response.newBundles);
-      await clientDrift.usersDrift
-          .setLastSyncTime(newLastSyncTime: response.lastIssuedServerTimestamp);
+      await interpretIssuedServerTimestamp(response.lastIssuedServerTimestamp);
     });
-  }
-
-  /// Inserts events not already present from bundles not already
-  /// present
-  Future<void> insertNewEventsFromNewBundles(List<Bundle> bundles) async {
-    final List<String> bundleIdsToIgnore = [];
-    for (final bundle in bundles) {
-      final status =
-          await clientDrift.sharedDrift.sharedBundlesDrift.insertBundle(
-        id: bundle.id,
-        userId: bundle.userId,
-        timestamp: bundle.timestamp,
-        // NOTE: we only store events once in the events table
-        payload: null,
-      );
-
-      if (status == 0) bundleIdsToIgnore.add(bundle.id);
-    }
-
-    final newEvents = bundles.expand((e) {
-      if (bundleIdsToIgnore.contains(e.id)) return [];
-      if (e.payload == null) return [];
-      return EventPayload.fromJson(jsonDecode(e.payload!)).events;
-    });
-
-    for (final event in newEvents) {
-      await clientDrift.insertLocalEventWithClientId(event);
-      await clientDrift.insertLocalEventIntoAttributes(event);
-    }
   }
 
   Future<GetBundleIdsQuery> requestAllServerBundleIds() async {
@@ -125,8 +91,7 @@ extension Api on ClientDatabase {
   Future<void> interpretRequestedBundles(GetBundlesResponse response) async {
     await transaction(() async {
       await insertNewEventsFromNewBundles(response.bundles);
-      await clientDrift.usersDrift
-          .setLastSyncTime(newLastSyncTime: response.lastIssuedServerTimestamp);
+      await interpretIssuedServerTimestamp(response.lastIssuedServerTimestamp);
     });
   }
 }

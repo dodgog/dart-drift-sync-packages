@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 
+import 'config.dart';
 import 'database.drift.dart';
 
 class InvalidConfigException implements Exception {
@@ -44,20 +45,10 @@ class ClientDatabase extends $ClientDatabase {
       beforeOpen: (details) async {
         if (details.wasCreated) {
           if (initialConfig == null) {
+            initializeClient();
             throw InvalidDatabaseConfigException(
                 "Upon initialization no initial Config provided");
           }
-
-          await clientDrift.usersDrift.initializeConfig();
-          await clientDrift.usersDrift
-              .setUserToken(newUserToken: initialConfig!.userToken);
-          await clientDrift.usersDrift
-              .setClientId(newClientId: initialConfig!.clientId);
-          await clientDrift.usersDrift
-              .setUserId(newUserId: initialConfig!.userId);
-
-          await clientDrift.sharedDrift.sharedUsersDrift.createClient(
-              clientId: initialConfig!.clientId, userId: initialConfig!.userId);
         }
         final currentClient =
             await clientDrift.usersDrift.getCurrentClient().getSingle();
