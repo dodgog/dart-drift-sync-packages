@@ -7,6 +7,7 @@ import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 
 import 'database.drift.dart';
+import 'auth.dart';
 
 class UnauthorizedException implements Exception {
   final String message;
@@ -80,14 +81,6 @@ class ServerDatabase extends $ServerDatabase {
     );
   }
 
-  Future<bool> verifyUser(String userId, String token) async {
-    return await serverDrift.usersDrift
-        .userExistsAndAuthed(
-          userId: userId,
-          token: token,
-        )
-        .getSingle();
-  }
 
   Future<List<String>> insertBundles(List<Bundle> bundles) async {
     // TODO: verify owner user
