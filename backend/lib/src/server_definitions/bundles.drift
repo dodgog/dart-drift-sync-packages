@@ -2,10 +2,16 @@ import 'package:backend/server.drift';
 import 'users.drift';
 
 
-getBundleIdsForUser:
+getAllBundleIdsForUser:
 SELECT id
 FROM bundles
 WHERE user_id = :user_id;
+
+getBundleIdsForUserSinceTimestamp:
+SELECT id
+FROM bundles
+WHERE user_id = :user_id
+  AND timestamp > :timestamp;
 
 getBundlePayloadById:
 SELECT payload

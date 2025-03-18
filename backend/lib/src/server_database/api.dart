@@ -8,23 +8,23 @@ import 'read.dart';
 
 extension Api on ServerDatabase {
   Future<PostBundlesResponse> interpretIncomingPostBundlesQueryAndRespond(
-      PostBundlesQuery postQuery) async {
-    final isAuthorized = await verifyUser(postQuery.userId, postQuery.token);
+      PostBundlesQuery query) async {
+    final isAuthorized = await verifyUser(query.userId, query.token);
     if (!isAuthorized) {
       throw UnauthorizedException('Invalid user credentials');
     }
 
-    HLC().receivePacked(postQuery.clientTimestamp);
+    HLC().receivePacked(query.clientTimestamp);
 
     final insertedBundleIds = await insertBundles(
-      postQuery.bundles,
+      query.bundles,
     );
 
     // Get new bundles but also should get the ones which were just inserted.
     // Could be used for confirmation of receipt.
-    final newBundles = await getBundlesSinceTimestamp(
-      postQuery.userId,
-      postQuery.lastIssuedServerTimestamp,
+    final newBundles = await getUserBundlesSinceOptionalTimestamp(
+      query.userId,
+      query.lastIssuedServerTimestamp,
     );
 
     return PostBundlesResponse(
@@ -32,5 +32,33 @@ extension Api on ServerDatabase {
       insertedBundleIds,
       newBundles.where((e) => !insertedBundleIds.contains(e.id)).toList(),
     );
+  }
+
+  // TODO: test
+  Future<GetBundleIdsResponse> interpretIncomingGetBundleIdsAndRespond(
+      GetBundleIdsQuery query) async {
+    final isAuthorized = await verifyUser(query.userId, query.token);
+    if (!isAuthorized) {
+      throw UnauthorizedException('Invalid user credentials');
+    }
+
+    final ids = await getUserBundleIdsSinceOptionalTimestamp(
+        query.userId, query.sinceTimestamp);
+
+    return GetBundleIdsResponse(ids);
+  }
+
+  // TODO: test
+  Future<GetBundlesResponse> interpretIncomingGetBundlesAndRespond(
+      GetBundleIdsQuery query) async {
+    final isAuthorized = await verifyUser(query.userId, query.token);
+    if (!isAuthorized) {
+      throw UnauthorizedException('Invalid user credentials');
+    }
+
+    final bundles = await getUserBundlesSinceOptionalTimestamp(
+        query.userId, query.sinceTimestamp);
+
+    return GetBundlesResponse(bundles, HLC().sendPacked());
   }
 }

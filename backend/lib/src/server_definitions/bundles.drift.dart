@@ -8,7 +8,7 @@ import 'package:backend/src/server_definitions/users.drift.dart' as i4;
 
 class BundlesDrift extends i1.ModularAccessor {
   BundlesDrift(i0.GeneratedDatabase db) : super(db);
-  i0.Selectable<String> getBundleIdsForUser({required String userId}) {
+  i0.Selectable<String> getAllBundleIdsForUser({required String userId}) {
     return customSelect(
         switch (executor.dialect) {
           i0.SqlDialect.sqlite => 'SELECT id FROM bundles WHERE user_id = ?1',
@@ -18,6 +18,25 @@ class BundlesDrift extends i1.ModularAccessor {
         },
         variables: [
           i0.Variable<String>(userId)
+        ],
+        readsFrom: {
+          bundles,
+        }).map((i0.QueryRow row) => row.read<String>('id'));
+  }
+
+  i0.Selectable<String> getBundleIdsForUserSinceTimestamp(
+      {required String userId, required String timestamp}) {
+    return customSelect(
+        switch (executor.dialect) {
+          i0.SqlDialect.sqlite =>
+            'SELECT id FROM bundles WHERE user_id = ?1 AND timestamp > ?2',
+          i0.SqlDialect.postgres ||
+          _ =>
+            'SELECT id FROM bundles WHERE user_id = \$1 AND timestamp > \$2',
+        },
+        variables: [
+          i0.Variable<String>(userId),
+          i0.Variable<String>(timestamp)
         ],
         readsFrom: {
           bundles,
