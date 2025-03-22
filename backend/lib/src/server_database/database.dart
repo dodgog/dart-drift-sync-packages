@@ -1,10 +1,11 @@
 import 'dart:io';
 
-import 'package:backend/server_definitions.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 
+import 'package:backend/shared_database.dart';
+import 'config.dart';
 import 'database.drift.dart';
 
 class UnauthorizedException implements Exception {

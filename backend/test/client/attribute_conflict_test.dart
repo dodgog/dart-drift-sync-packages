@@ -1,5 +1,4 @@
 import 'package:backend/client_database.dart';
-import 'package:backend/client_definitions.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:test/test.dart';
@@ -22,7 +21,7 @@ void main() {
       ),
     );
 
-    await db.clientDrift.usersDrift.getCurrentClient().getSingle();
+    await db.ensureInitialized();
   });
 
   tearDown(() async {
@@ -36,8 +35,7 @@ void main() {
     final newerTimestamp = DateTime.now().toIso8601String();
 
     // Insert older event first
-    await db.clientDrift.sharedDrift.sharedAttributesDrift
-        .insertEventIntoAttributes(
+    await db.clientDrift.attributesDrift.insertEventIntoAttributes(
       entityId: 'node1',
       attribute: 'title',
       value: 'Old Title',
@@ -45,8 +43,7 @@ void main() {
     );
 
     // Insert newer event
-    await db.clientDrift.sharedDrift.sharedAttributesDrift
-        .insertEventIntoAttributes(
+    await db.clientDrift.attributesDrift.insertEventIntoAttributes(
       entityId: 'node1',
       attribute: 'title',
       value: 'New Title',
@@ -54,27 +51,23 @@ void main() {
     );
 
     // Get the attribute and verify it has the newer value
-    final attributes = await db.clientDrift.sharedDrift.sharedAttributesDrift
-        .getAttributes()
-        .get();
+    final attributes =
+        await db.clientDrift.attributesDrift.getAttributes().get();
 
     expect(attributes.length, equals(1));
     expect(attributes.first.value, equals('New Title'));
     expect(attributes.first.timestamp, equals(newerTimestamp));
 
     // Try inserting older event again - should not override newer value
-    await db.clientDrift.sharedDrift.sharedAttributesDrift
-        .insertEventIntoAttributes(
+    await db.clientDrift.attributesDrift.insertEventIntoAttributes(
       entityId: 'node1',
       attribute: 'title',
       value: 'Old Title',
       timestamp: olderTimestamp,
     );
 
-    final attributesAfterOldInsert = await db
-        .clientDrift.sharedDrift.sharedAttributesDrift
-        .getAttributes()
-        .get();
+    final attributesAfterOldInsert =
+        await db.clientDrift.attributesDrift.getAttributes().get();
 
     expect(attributesAfterOldInsert.length, equals(1));
     expect(attributesAfterOldInsert.first.value, equals('New Title'));

@@ -2,6 +2,10 @@ import 'package:backend/shared_definitions.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:uuidv7/uuidv7.dart';
 
+import 'package:backend/client_definitions.dart';
+
+import '../nodes/types.dart';
+
 /// todo make these executable in the context of client
 
 /// Creates a base event with missing client ID that will be populated during insertion

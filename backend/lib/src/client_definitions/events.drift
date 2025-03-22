@@ -1,6 +1,47 @@
 import 'package:backend/client.drift';
 --import 'users.drift';
 
+
+--import 'event_types.dart';
+--import 'event_content.dart';
+
+CREATE TABLE events (
+    id TEXT NOT NULL PRIMARY KEY,
+    client_id TEXT NOT NULL REFERENCES clients(id),
+    -- todo: potentially also add the user_id list to specify user groups in the future
+
+    -- part of the event which exactly matches the attributes table
+    entity_id TEXT NOT NULL, -- doesn't always reference an existing node, so references is omitted
+    attribute TEXT NOT NULL,
+    value TEXT NOT NULL,
+    timestamp TEXT NOT NULL
+);
+
+CREATE INDEX event_client_id_index ON events(client_id);
+
+getEvents:
+SELECT * FROM events;
+
+insertEvent:
+INSERT INTO events (
+    id,
+    client_id,
+    entity_id,
+    attribute,
+    value,
+    timestamp
+)
+VALUES (
+    :id,
+    :client_id,
+    :entity_id,
+    :attribute,
+    :value,
+    :timestamp
+)
+ON CONFLICT (id) DO NOTHING;
+
+
 getLocalEventsToPush:
 SELECT e.*
 FROM events e

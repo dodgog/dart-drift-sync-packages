@@ -1,4 +1,3 @@
-import 'src/server_definitions/events.drift';
 import 'src/server_definitions/users.drift';
 import 'src/server_definitions/bundles.drift';
 import 'shared.drift';

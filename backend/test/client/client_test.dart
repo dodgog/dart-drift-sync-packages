@@ -28,8 +28,10 @@ void main() {
       ),
     );
 
+
     // TODO: read ensureInitialized todo!!!!!
-    await db.ensureInitialized();
+    // await db.ensureInitialized();
+    await db.isInitialized;
   });
 
   tearDown(() async {

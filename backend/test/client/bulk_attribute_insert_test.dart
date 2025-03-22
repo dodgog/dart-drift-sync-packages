@@ -56,7 +56,7 @@ void main() {
     );
 
     // Insert initial state directly
-    await db.clientDrift.sharedDrift.sharedAttributesDrift
+    await db.clientDrift.attributesDrift
         .insertEventIntoAttributes(
       entityId: 'node1',
       attribute: 'title',
@@ -65,11 +65,11 @@ void main() {
     );
 
     // Act - First bulk insert using helper
-    await db.clientDrift.sharedDrift.sharedAttributesDrift
+    await db.clientDrift.attributesDrift
         .cleanAndReduceAttributeTable();
 
     // Assert - Should have newest value
-    final newAttribute = await db.clientDrift.sharedDrift.sharedAttributesDrift
+    final newAttribute = await db.clientDrift.attributesDrift
         .getAttributes()
         .getSingle();
     _assertAttribute(
@@ -90,9 +90,9 @@ void main() {
       ],
     );
 
-    await db.clientDrift.sharedDrift.sharedAttributesDrift
+    await db.clientDrift.attributesDrift
         .cleanAndReduceAttributeTable();
-    final attribute = await db.clientDrift.sharedDrift.sharedAttributesDrift
+    final attribute = await db.clientDrift.attributesDrift
         .getAttributes()
         .getSingle();
     _assertAttribute(

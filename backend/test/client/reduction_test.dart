@@ -59,7 +59,7 @@ void main() {
 
     // Get final state
     final nodes =
-        await db.clientDrift.sharedDrift.sharedAttributesDrift.getDocuments();
+        await db.clientDrift.attributesDrift.getDocuments();
 
     expect(nodes.first.author, equals("newAuthor"));
     expect(nodes.first.title, equals("newTitle"));
@@ -79,11 +79,11 @@ void main() {
     }
 
     // Clean and reduce to ensure consistent state
-    await db.clientDrift.sharedDrift.sharedAttributesDrift
+    await db.clientDrift.attributesDrift
         .cleanAndReduceAttributeTable();
 
     final nodes =
-        await db.clientDrift.sharedDrift.sharedAttributesDrift.getDocuments();
+        await db.clientDrift.attributesDrift.getDocuments();
 
     expect(nodes.first.author, equals("author"));
     expect(nodes.first.title, equals("title"));
@@ -102,7 +102,7 @@ void main() {
     }
 
     final nodes =
-        await db.clientDrift.sharedDrift.sharedAttributesDrift.getDocuments();
+        await db.clientDrift.attributesDrift.getDocuments();
 
     expect(nodes.length, equals(1));
     expect(nodes.first.author, equals("author"));
@@ -135,7 +135,7 @@ void main() {
     }
 
     final nodesAfterEdit =
-        await db.clientDrift.sharedDrift.sharedAttributesDrift.getDocuments();
+        await db.clientDrift.attributesDrift.getDocuments();
     expect(nodesAfterEdit.first.author, equals("new author"));
     expect(nodesAfterEdit.first.title, equals("new title"));
 
@@ -145,7 +145,7 @@ void main() {
     await db.clientDrift.insertLocalEventIntoAttributes(deleteEvent);
 
     final nodesAfterDelete =
-        await db.clientDrift.sharedDrift.sharedAttributesDrift.getDocuments();
+        await db.clientDrift.attributesDrift.getDocuments();
     expect(nodesAfterDelete.first.isDeleted, equals(true));
   });
 }

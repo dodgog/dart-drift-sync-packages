@@ -1,12 +1,13 @@
 import 'dart:io';
 
-import 'package:backend/client_definitions.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 
+import 'package:backend/shared_database.dart';
 import 'config.dart';
 import 'database.drift.dart';
+import 'setup.dart';
 
 class InvalidConfigException implements Exception {
   final String message;
@@ -25,6 +26,8 @@ class ClientDatabase extends $ClientDatabase {
   }) : super(executor ?? _openConnection(file: file)) {
     // TODO ideally it should be initialized with the id value from config
   }
+
+  Future<void> get isInitialized => executor.ensureOpen(this);
 
   final ClientDatabaseConfig? initialConfig;
 
@@ -50,6 +53,7 @@ class ClientDatabase extends $ClientDatabase {
                 "Upon initialization no initial Config provided");
           }
         }
+
         final currentClient =
             await clientDrift.usersDrift.getCurrentClient().getSingle();
         // TODO: also initialize previous locally issued time!
@@ -68,7 +72,6 @@ class ClientDatabase extends $ClientDatabase {
   /// TODO: move to HLC not being a singleton but rather a database attribute
   Future<void> ensureInitialized() async {
     // final config = await clientDrift.usersDrift.getConfig().getSingleOrNull();
-    await clientDrift.usersDrift.getCurrentClient().get();
+    // await clientDrift.usersDrift.getCurrentClient().get();
   }
-
 }
