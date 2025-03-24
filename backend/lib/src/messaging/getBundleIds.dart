@@ -31,4 +31,3 @@ class GetBundleIdsResponse {
 
   Map<String, dynamic> toJson() => _$GetBundleIdsResponseToJson(this);
 }
-

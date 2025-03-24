@@ -6,10 +6,10 @@ import 'package:drift/native.dart';
 // AI GENERATED
 
 void main() async {
-  final maxEvents = 300;
+  final maxEvents = 3000;
   final interval = 100;
 
-  print('N,InsertTime,ReductionTime,CleanAndReduceTime');
+  print('N,InsertTime,ReductionTime,CleanAndInsertTime,ReductionFromClean');
 
   final databaseConfig = ClientDatabaseConfig(
     clientId: "client1",
@@ -24,10 +24,7 @@ void main() async {
       closeStreamsSynchronously: true,
     ),
   );
-  print("b");
-
-  final client = await db.clientDrift.usersDrift.getCurrentClient().getSingle();
-  print("a");
+  await db.ensureInitialized();
 
   final stopwatch = Stopwatch()..start();
 
@@ -61,9 +58,17 @@ void main() async {
       stopwatch.reset();
       await db.clientDrift.attributesDrift.cleanAttributesTable();
       await db.clientDrift.attributesDrift.insertAllEventsIntoAttributes();
-      final cleanAndReduceTime = stopwatch.elapsedMilliseconds;
+      final cleanAndInsert = stopwatch.elapsedMilliseconds;
 
-      print('$i,$insertTime,$reduceTime,$cleanAndReduceTime');
+      stopwatch.reset();
+      final nodesFromClean = await db.clientDrift.attributesDrift
+          .getAttributes()
+          .get()
+          .then((attrs) => DocumentNodeObj.fromAllAttributes(attrs));
+      final reduceFromCleanTime = stopwatch.elapsedMilliseconds;
+
+      print('$i, $insertTime, $reduceTime, $cleanAndInsert,'
+          ' $reduceFromCleanTime');
     } else {
       // Just insert without timing
       for (final event in events) {

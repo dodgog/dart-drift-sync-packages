@@ -13,6 +13,8 @@ void main() {
       userToken: "user1token",
     );
 
+    ClientDatabase.cleanSlateForTesting();
+
     db = ClientDatabase(
       initialConfig: databaseConfig,
       executor: DatabaseConnection(

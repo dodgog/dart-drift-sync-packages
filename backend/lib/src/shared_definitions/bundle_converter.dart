@@ -4,7 +4,6 @@ import 'package:backend/client_definitions.dart';
 
 part 'bundle_converter.g.dart';
 
-
 @j.JsonSerializable()
 class BundleConverter extends j.JsonConverter<Bundle, Map<String, dynamic>> {
   const BundleConverter();

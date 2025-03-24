@@ -9,16 +9,17 @@ import 'package:uuidv7/uuidv7.dart';
 
 import '../server_test_executor.dart';
 
-void runAllServerTests(ServerTestExecutor executor) {
+void runAllServerTests(ServerTestExecutor serverTestExecutor) {
   late ServerDatabase db;
 
   setUp(() async {
     HLC.reset();
-    db = executor.createDatabase(initialConfig: ServerDatabaseConfig());
+    db = serverTestExecutor.createDatabase(
+        initialConfig: ServerDatabaseConfig());
   });
 
   tearDown(() async {
-    await executor.clearDatabaseAndClose(db);
+    await serverTestExecutor.clearDatabaseAndClose(db);
   });
 
   Future<void> setupTestUser() async {

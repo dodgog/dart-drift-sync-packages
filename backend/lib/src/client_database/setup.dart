@@ -4,7 +4,7 @@ import 'package:backend/client_definitions.dart';
 import 'database.dart';
 
 extension Setup on ClientDatabase {
-  Future<int> initializeClient() async {
+  Future<int> initializeClientWithInitialConfig() async {
     await clientDrift.usersDrift.initializeConfig();
     await clientDrift.usersDrift
         .setUserToken(newUserToken: initialConfig!.userToken);
@@ -12,10 +12,9 @@ extension Setup on ClientDatabase {
         .setClientId(newClientId: initialConfig!.clientId);
     await clientDrift.usersDrift.setUserId(newUserId: initialConfig!.userId);
 
-    print("config init");
-
-    return await clientDrift.sharedDrift.sharedUsersDrift.createClient(
+    final result = await clientDrift.sharedDrift.sharedUsersDrift.createClient(
         clientId: initialConfig!.clientId, userId: initialConfig!.userId);
+    return result;
   }
 
   Future<ConfigData> getVerifiedConfig() async {

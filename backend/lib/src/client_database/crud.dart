@@ -43,15 +43,15 @@ extension Crud on ClientDatabase {
 
   Future<void> registerBundlesPersistedToServerWithoutPayload(
       List<Bundle> bundlesPersistedToServer) async {
-      for (final bundle in bundlesPersistedToServer) {
-        await clientDrift.sharedDrift.sharedBundlesDrift.insertBundle(
-          id: bundle.id,
-          userId: bundle.userId,
-          timestamp: bundle.timestamp,
-          // THINK: maybe store events which the client thinks are in this bundle
-          // THINK: maybe a table which would relate events to bundles
-          payload: null,
-        );
-      }
+    for (final bundle in bundlesPersistedToServer) {
+      await clientDrift.sharedDrift.sharedBundlesDrift.insertBundle(
+        id: bundle.id,
+        userId: bundle.userId,
+        timestamp: bundle.timestamp,
+        // THINK: maybe store events which the client thinks are in this bundle
+        // THINK: maybe a table which would relate events to bundles
+        payload: null,
+      );
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
@@ -27,9 +28,9 @@ class ClientDatabase extends $ClientDatabase {
     // TODO ideally it should be initialized with the id value from config
   }
 
-  Future<void> get isInitialized => executor.ensureOpen(this);
-
   final ClientDatabaseConfig? initialConfig;
+
+  Future<void> get _didExecutorOpen => executor.ensureOpen(this);
 
   static QueryExecutor _openConnection({File? file}) {
     if (file != null) {
@@ -47,8 +48,8 @@ class ClientDatabase extends $ClientDatabase {
     return MigrationStrategy(
       beforeOpen: (details) async {
         if (details.wasCreated) {
+          await initializeClientWithInitialConfig();
           if (initialConfig == null) {
-            initializeClient();
             throw InvalidDatabaseConfigException(
                 "Upon initialization no initial Config provided");
           }
@@ -56,6 +57,7 @@ class ClientDatabase extends $ClientDatabase {
 
         final currentClient =
             await clientDrift.usersDrift.getCurrentClient().getSingle();
+
         // TODO: also initialize previous locally issued time!
         // For now initialize to physical time
         // hoping that it will always be larger on the same device than the
@@ -66,12 +68,14 @@ class ClientDatabase extends $ClientDatabase {
     );
   }
 
-  /// THINK: silly filler function: unless you call some db.operation it won't
-  /// THINK: run the migration, but using HLC is conditional on the db being
-  /// THINK: initialized
-  /// TODO: move to HLC not being a singleton but rather a database attribute
+  /// TODO: perhaps move to HLC not being a singleton but rather a database
+  /// attribute
   Future<void> ensureInitialized() async {
-    // final config = await clientDrift.usersDrift.getConfig().getSingleOrNull();
-    // await clientDrift.usersDrift.getCurrentClient().get();
+    await _didExecutorOpen;
+  }
+
+  @visibleForTesting
+  static void cleanSlateForTesting() {
+    HLC.reset();
   }
 }

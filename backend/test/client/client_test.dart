@@ -18,8 +18,8 @@ void main() {
   );
 
   setUp(() async {
-    HLC.reset();
-    // HLC.initialize(clientNode: ClientNode("clientId"));
+    ClientDatabase.cleanSlateForTesting();
+
     db = ClientDatabase(
       initialConfig: databaseConfig,
       executor: DatabaseConnection(
@@ -28,10 +28,7 @@ void main() {
       ),
     );
 
-
-    // TODO: read ensureInitialized todo!!!!!
-    // await db.ensureInitialized();
-    await db.isInitialized;
+    await db.ensureInitialized();
   });
 
   tearDown(() async {

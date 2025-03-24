@@ -13,12 +13,12 @@ class PostBundlesQuery {
   List<Bundle> bundles;
 
   PostBundlesQuery(
-      this.token,
-      this.userId,
-      this.clientTimestamp,
-      this.lastIssuedServerTimestamp,
-      this.bundles,
-      );
+    this.token,
+    this.userId,
+    this.clientTimestamp,
+    this.lastIssuedServerTimestamp,
+    this.bundles,
+  );
 
   factory PostBundlesQuery.fromJson(Map<String, dynamic> json) =>
       _$PostBundlesQueryFromJson(json);
@@ -34,14 +34,13 @@ class PostBundlesResponse {
   List<String> insertedBundleIds;
 
   PostBundlesResponse(
-      this.lastIssuedServerTimestamp,
-      this.insertedBundleIds,
-      this.newBundles,
-      );
+    this.lastIssuedServerTimestamp,
+    this.insertedBundleIds,
+    this.newBundles,
+  );
 
   factory PostBundlesResponse.fromJson(Map<String, dynamic> json) =>
       _$PostBundlesResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$PostBundlesResponseToJson(this);
 }
-

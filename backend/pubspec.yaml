@@ -11,6 +11,7 @@ dependencies:
   drift_dev: ^2.24.0
   hybrid_logical_clocks: ^1.0.1
   json_annotation: ^4.9.0
+  meta: ^1.16.0
   uuidv7: ^1.0.0
 
 dev_dependencies:

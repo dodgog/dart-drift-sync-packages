@@ -25,7 +25,7 @@ void main() {
       ),
     );
 
-    await db.clientDrift.usersDrift.getCurrentClient().getSingle();
+    await db.ensureInitialized();
   });
 
   tearDown(() async {
@@ -56,8 +56,7 @@ void main() {
     );
 
     // Insert initial state directly
-    await db.clientDrift.attributesDrift
-        .insertEventIntoAttributes(
+    await db.clientDrift.attributesDrift.insertEventIntoAttributes(
       entityId: 'node1',
       attribute: 'title',
       value: 'Initial Title',
@@ -65,13 +64,11 @@ void main() {
     );
 
     // Act - First bulk insert using helper
-    await db.clientDrift.attributesDrift
-        .cleanAndReduceAttributeTable();
+    await db.clientDrift.attributesDrift.cleanAndReduceAttributeTable();
 
     // Assert - Should have newest value
-    final newAttribute = await db.clientDrift.attributesDrift
-        .getAttributes()
-        .getSingle();
+    final newAttribute =
+        await db.clientDrift.attributesDrift.getAttributes().getSingle();
     _assertAttribute(
       attribute: newAttribute,
       expectedValue: 'New Title',
@@ -90,11 +87,9 @@ void main() {
       ],
     );
 
-    await db.clientDrift.attributesDrift
-        .cleanAndReduceAttributeTable();
-    final attribute = await db.clientDrift.attributesDrift
-        .getAttributes()
-        .getSingle();
+    await db.clientDrift.attributesDrift.cleanAndReduceAttributeTable();
+    final attribute =
+        await db.clientDrift.attributesDrift.getAttributes().getSingle();
     _assertAttribute(
       attribute: attribute,
       expectedValue: 'New Title',
