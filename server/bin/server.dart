@@ -79,7 +79,7 @@ void main(List<String> args) async {
   await store.serverDrift.usersDrift
       .authUser(userId: "user1", token: "user1token");
 
-  await store.serverDrift.sharedUsersDrift
+  await store.serverDrift.sharedDrift.sharedUsersDrift
       .createClient(userId: "user1", clientId: "client1");
 
   final ip = InternetAddress.anyIPv4;

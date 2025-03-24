@@ -5,14 +5,10 @@ import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 
 import 'package:backend/shared_database.dart';
-import 'config.dart';
+import 'internal/config.dart';
 import 'database.drift.dart';
 
-class UnauthorizedException implements Exception {
-  final String message;
 
-  UnauthorizedException(this.message);
-}
 
 @DriftDatabase(
   include: {'package:backend/server.drift'},
@@ -53,3 +49,4 @@ class ServerDatabase extends $ServerDatabase {
     );
   }
 }
+

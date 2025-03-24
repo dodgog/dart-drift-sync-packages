@@ -3,8 +3,8 @@ import 'package:backend/server_database.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 
 import 'auth.dart';
-import 'crud.dart';
-import 'read.dart';
+import 'internal/crud.dart';
+import 'internal/read.dart';
 
 extension Api on ServerDatabase {
   Future<PostBundlesResponse> interpretIncomingPostBundlesQueryAndRespond(
