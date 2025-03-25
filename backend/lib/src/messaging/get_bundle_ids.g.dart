@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'getBundleIds.dart';
+part of 'get_bundle_ids.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

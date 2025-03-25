@@ -1,20 +1,14 @@
 import 'dart:io';
 
-import 'package:meta/meta.dart';
+import 'package:backend/shared_database.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
+import 'package:meta/meta.dart';
 
-import 'package:backend/shared_database.dart';
 import 'config.dart';
 import 'database.drift.dart';
 import 'setup.dart';
-
-class InvalidConfigException implements Exception {
-  final String message;
-
-  InvalidConfigException(this.message);
-}
 
 @DriftDatabase(
   include: {'package:backend/client.drift'},
@@ -30,7 +24,7 @@ class ClientDatabase extends $ClientDatabase {
 
   final ClientDatabaseConfig? initialConfig;
 
-  Future<void> get _didExecutorOpen => executor.ensureOpen(this);
+  Future<bool> get _didExecutorOpen => executor.ensureOpen(this);
 
   static QueryExecutor _openConnection({File? file}) {
     if (file != null) {
@@ -71,7 +65,9 @@ class ClientDatabase extends $ClientDatabase {
   /// TODO: perhaps move to HLC not being a singleton but rather a database
   /// attribute
   Future<void> ensureInitialized() async {
-    await _didExecutorOpen;
+    if ((await _didExecutorOpen) != true) {
+      throw DatabaseInitException('Failed to open database executor');
+    }
   }
 
   @visibleForTesting

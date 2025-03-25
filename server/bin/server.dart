@@ -2,16 +2,17 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:backend/server_database.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:drift_postgres/drift_postgres.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:backend/server_database.dart';
+import 'package:backend/server_interface.dart';
 import 'package:backend/messaging.dart';
-import 'package:backend/client_definitions.dart';
 
-late final ServerDatabase store;
+late final ServerDatabaseInterface store;
 
 // Enhanced logging middleware
 Middleware logAllRequests() {
@@ -44,7 +45,7 @@ Future<Response> _putDataHandler(Request request) async {
     final postQuery = PostBundlesQuery.fromJson(jsonDecode(body));
 
     final postResponse =
-        await store.interpretIncomingPostBundlesQueryAndRespond(postQuery);
+        await store.interpretQueryAndRespond(postQuery) as PostBundlesResponse;
 
     return Response.ok(
       jsonEncode(postResponse.toJson()),
@@ -60,7 +61,7 @@ Future<Response> _putDataHandler(Request request) async {
 
 void main(List<String> args) async {
   // Initialize PostgreSQL database
-  store = ServerDatabase(
+  store = ServerDatabase.create(
     initialConfig: ServerDatabaseConfig(),
     executor: PgDatabase(
       endpoint: pg.Endpoint(

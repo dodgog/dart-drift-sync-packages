@@ -59,6 +59,20 @@ class BundlesDrift extends i1.ModularAccessor {
         }).map((i0.QueryRow row) => row.readNullable<String>('payload'));
   }
 
+  i0.Selectable<i2.Bundle> getBundleById({required String id}) {
+    return customSelect(
+        switch (executor.dialect) {
+          i0.SqlDialect.sqlite => 'SELECT * FROM bundles WHERE id = ?1',
+          i0.SqlDialect.postgres || _ => 'SELECT * FROM bundles WHERE id = \$1',
+        },
+        variables: [
+          i0.Variable<String>(id)
+        ],
+        readsFrom: {
+          bundles,
+        }).asyncMap(bundles.mapFromRow);
+  }
+
   i0.Selectable<i2.Bundle> getUserBundlesSinceTimestamp(
       {required String userId, required String timestamp}) {
     return customSelect(

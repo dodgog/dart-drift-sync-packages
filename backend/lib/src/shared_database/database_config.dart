@@ -12,3 +12,9 @@ class InvalidDatabaseConfigException implements Exception {
 
   InvalidDatabaseConfigException(this.message);
 }
+
+class DatabaseInitException implements Exception {
+  final String message;
+
+  DatabaseInitException(this.message);
+}

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'postBundles.dart';
+part of 'post_bundles.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

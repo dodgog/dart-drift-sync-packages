@@ -28,4 +28,14 @@ extension Read on ServerDatabase {
           .get();
     }
   }
+
+  Future<List<Bundle>> getBundlesWhereIdInList(List<String> ids) async {
+    final bundles = <Bundle>[];
+    for (final id in ids) {
+      bundles.add(
+          await serverDrift.bundlesDrift.getBundleById(id: id).getSingle());
+    }
+
+    return bundles.toList(growable: false);
+  }
 }

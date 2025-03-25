@@ -18,6 +18,11 @@ SELECT payload
 FROM bundles
 WHERE id = :id;
 
+getBundleById:
+SELECT *
+FROM bundles
+WHERE id = :id;
+
 getUserBundlesSinceTimestamp:
 SELECT *
 FROM bundles

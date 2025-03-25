@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'getBundles.dart';
+part of 'get_bundles.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
@@ -27,12 +27,10 @@ GetBundlesResponse _$GetBundlesResponseFromJson(Map<String, dynamic> json) =>
           .map((e) =>
               const BundleConverter().fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['last_issued_server_timestamp'] as String,
     )..type = json['type'] as String;
 
 Map<String, dynamic> _$GetBundlesResponseToJson(GetBundlesResponse instance) =>
     <String, dynamic>{
       'type': instance.type,
       'bundles': instance.bundles.map(const BundleConverter().toJson).toList(),
-      'last_issued_server_timestamp': instance.lastIssuedServerTimestamp,
     };

@@ -2,10 +2,10 @@ import 'package:backend/messaging.dart';
 import 'package:backend/server_definitions.dart';
 import 'package:backend/shared_definitions.dart';
 import 'package:json_annotation/json_annotation.dart' as j;
-part 'postBundles.g.dart';
+part 'post_bundles.g.dart';
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
-class PostBundlesQuery extends Query {
+class PostBundlesQuery extends BaseQuery {
   String clientTimestamp;
   String lastIssuedServerTimestamp;
   @BundleConverter()
@@ -26,7 +26,7 @@ class PostBundlesQuery extends Query {
 }
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
-class PostBundlesResponse extends QueryResponse {
+class PostBundlesResponse extends QueryResponse<PostBundlesQuery> {
   String lastIssuedServerTimestamp;
   @BundleConverter()
   List<Bundle> newBundles;

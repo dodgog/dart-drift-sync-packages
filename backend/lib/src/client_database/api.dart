@@ -90,7 +90,6 @@ extension Api on ClientDatabase {
   Future<void> interpretRequestedBundles(GetBundlesResponse response) async {
     await transaction(() async {
       await insertNewEventsFromNewBundles(response.bundles);
-      await interpretIssuedServerTimestamp(response.lastIssuedServerTimestamp);
     });
   }
 }

@@ -2,10 +2,10 @@ import 'package:backend/messaging.dart';
 import 'package:backend/server_definitions.dart';
 import 'package:backend/shared_definitions.dart';
 import 'package:json_annotation/json_annotation.dart' as j;
-part 'getBundles.g.dart';
+part 'get_bundles.g.dart';
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
-class GetBundlesQuery extends Query {
+class GetBundlesQuery extends BaseQuery {
   List<String> bundleIds;
 
   GetBundlesQuery(String userId, String token, this.bundleIds)
@@ -18,12 +18,11 @@ class GetBundlesQuery extends Query {
 }
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
-class GetBundlesResponse extends QueryResponse {
+class GetBundlesResponse extends QueryResponse<GetBundlesQuery> {
   @BundleConverter()
   List<Bundle> bundles;
-  String lastIssuedServerTimestamp;
 
-  GetBundlesResponse(this.bundles, this.lastIssuedServerTimestamp)
+  GetBundlesResponse(this.bundles)
       : super("get_bundles_response");
 
   factory GetBundlesResponse.fromJson(Map<String, dynamic> json) =>

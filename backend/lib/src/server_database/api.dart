@@ -6,6 +6,12 @@ import 'auth.dart';
 import 'internal/crud.dart';
 import 'internal/read.dart';
 
+class UnrecognizedQueryException implements Exception {
+  final String message;
+
+  UnrecognizedQueryException(this.message);
+}
+
 extension Api on ServerDatabase {
   Future<PostBundlesResponse> interpretIncomingPostBundlesQueryAndRespond(
       PostBundlesQuery query) async {
@@ -50,15 +56,14 @@ extension Api on ServerDatabase {
 
   // TODO: test
   Future<GetBundlesResponse> interpretIncomingGetBundlesAndRespond(
-      GetBundleIdsQuery query) async {
+      GetBundlesQuery query) async {
     final isAuthorized = await verifyUser(query.userId, query.token);
     if (!isAuthorized) {
       throw UnauthorizedException('Invalid user credentials');
     }
 
-    final bundles = await getUserBundlesSinceOptionalTimestamp(
-        query.userId, query.sinceTimestamp);
+    final bundles = await getBundlesWhereIdInList(query.bundleIds);
 
-    return GetBundlesResponse(bundles, HLC().sendPacked());
+    return GetBundlesResponse(bundles);
   }
 }

@@ -15,4 +15,14 @@ extension Auth on ServerDatabase {
         )
         .getSingle();
   }
+
+  Future<void> createUserClientAndAuth(
+      String userId, String userName, String clientId, String token) async {
+    await serverDrift.usersDrift.createUser(userId: userId, name: userName);
+
+    await serverDrift.usersDrift.authUser(userId: userId, token: token);
+
+    await serverDrift.sharedDrift.sharedUsersDrift
+        .createClient(userId: userId, clientId: clientId);
+  }
 }

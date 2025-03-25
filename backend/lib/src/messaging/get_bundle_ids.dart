@@ -1,10 +1,10 @@
 import 'package:backend/messaging.dart';
 import 'package:json_annotation/json_annotation.dart' as j;
 
-part 'getBundleIds.g.dart';
+part 'get_bundle_ids.g.dart';
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
-class GetBundleIdsQuery extends Query {
+class GetBundleIdsQuery extends BaseQuery {
   String? sinceTimestamp;
 
   GetBundleIdsQuery(String userId, String token, {this.sinceTimestamp})
@@ -17,7 +17,7 @@ class GetBundleIdsQuery extends Query {
 }
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
-class GetBundleIdsResponse extends QueryResponse {
+class GetBundleIdsResponse extends QueryResponse<GetBundleIdsQuery> {
   List<String> bundleIds;
 
   // TODO: this probably should also have a timestamp since it is equivalent to
