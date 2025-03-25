@@ -13,12 +13,9 @@ class UnrecognizedQueryException implements Exception {
 }
 
 extension Api on ServerDatabase {
-  Future<PostBundlesResponse> interpretIncomingPostBundlesQueryAndRespond(
+  Future<PostBundlesResponse> interpretIncomingAuthedPostBundlesQueryAndRespond(
       PostBundlesQuery query) async {
-    final isAuthorized = await verifyUser(query.userId, query.token);
-    if (!isAuthorized) {
-      throw UnauthorizedException('Invalid user credentials');
-    }
+    // NOTE: auth is done before this
 
     HLC().receivePacked(query.clientTimestamp);
 
@@ -41,12 +38,9 @@ extension Api on ServerDatabase {
   }
 
   // TODO: test
-  Future<GetBundleIdsResponse> interpretIncomingGetBundleIdsAndRespond(
+  Future<GetBundleIdsResponse> interpretIncomingAuthedGetBundleIdsAndRespond(
       GetBundleIdsQuery query) async {
-    final isAuthorized = await verifyUser(query.userId, query.token);
-    if (!isAuthorized) {
-      throw UnauthorizedException('Invalid user credentials');
-    }
+    // NOTE: auth is done before this
 
     final ids = await getUserBundleIdsSinceOptionalTimestamp(
         query.userId, query.sinceTimestamp);
@@ -55,12 +49,9 @@ extension Api on ServerDatabase {
   }
 
   // TODO: test
-  Future<GetBundlesResponse> interpretIncomingGetBundlesAndRespond(
+  Future<GetBundlesResponse> interpretIncomingAuthedGetBundlesAndRespond(
       GetBundlesQuery query) async {
-    final isAuthorized = await verifyUser(query.userId, query.token);
-    if (!isAuthorized) {
-      throw UnauthorizedException('Invalid user credentials');
-    }
+    // NOTE: auth is done before this
 
     final bundles = await getBundlesWhereIdInList(query.bundleIds);
 

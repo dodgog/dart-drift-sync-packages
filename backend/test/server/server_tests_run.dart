@@ -49,7 +49,7 @@ void runAllServerTests(ServerTestExecutor serverTestExecutor) {
 
       final query = formQueryFromEvents(createEvents);
 
-      await db.interpretIncomingPostBundlesQueryAndRespond(query);
+      await db.interpretIncomingAuthedPostBundlesQueryAndRespond(query);
 
       final bundles = await db.serverDrift.bundlesDrift
           .getAllUserBundles(userId: "user1")
@@ -76,7 +76,7 @@ void runAllServerTests(ServerTestExecutor serverTestExecutor) {
       final allEvents = [...createEvents, ...modifyEvents];
       final query = formQueryFromEvents(allEvents);
 
-      await db.interpretIncomingPostBundlesQueryAndRespond(query);
+      await db.interpretIncomingAuthedPostBundlesQueryAndRespond(query);
 
       final bundles = await db.serverDrift.bundlesDrift
           .getAllUserBundles(userId: "user1")
@@ -124,7 +124,7 @@ void runAllServerTests(ServerTestExecutor serverTestExecutor) {
       final shuffledEvents = List<Event>.from(allEvents)..shuffle();
 
       final query = formQueryFromEvents(shuffledEvents);
-      await db.interpretIncomingPostBundlesQueryAndRespond(query);
+      await db.interpretIncomingAuthedPostBundlesQueryAndRespond(query);
 
       final bundles = await db.serverDrift.bundlesDrift
           .getAllUserBundles(userId: "user1")
@@ -161,7 +161,7 @@ void runAllServerTests(ServerTestExecutor serverTestExecutor) {
       final query = formQueryFromEvents([]);
 
       final response =
-          await db.interpretIncomingPostBundlesQueryAndRespond(query);
+          await db.interpretIncomingAuthedPostBundlesQueryAndRespond(query);
 
       // Verify response
       expect(response.insertedBundleIds.length, 1);
@@ -179,7 +179,7 @@ void runAllServerTests(ServerTestExecutor serverTestExecutor) {
           formQueryFromEvents([], lastServerIssuedTimeStamp: timestamp);
 
       final response =
-          await db.interpretIncomingPostBundlesQueryAndRespond(query);
+          await db.interpretIncomingAuthedPostBundlesQueryAndRespond(query);
 
       // Verify response
       expect(response.newBundles, isEmpty);

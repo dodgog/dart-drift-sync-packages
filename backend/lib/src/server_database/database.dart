@@ -28,6 +28,7 @@ class ServerDatabase extends $ServerDatabase
     File? file,
   }) : super(executor ?? _openConnection(file: file));
 
+  // TODO: make this constructor the only thing available to the consumer
   static ServerDatabaseInterface create({
     ServerDatabaseConfig? initialConfig,
     QueryExecutor? executor,
@@ -77,31 +78,32 @@ class ServerDatabase extends $ServerDatabase
   }
 
   @override
-  Future<QueryResponse<T>> interpretQueryAndRespond<T extends BaseQuery>(
-      T query) async {
-    switch (query.type) {
-      case "post_bundles_query":
-        if (query is PostBundlesQuery) {
-          return (await interpretIncomingPostBundlesQueryAndRespond
-            (query)) as QueryResponse<T>;
-        }
-        break;
-      case "get_bundle_ids_query":
-        if (query is GetBundleIdsQuery) {
-          return (await interpretIncomingGetBundleIdsAndRespond(query)) as
-          QueryResponse<T>;
-        }
-        break;
-      case "get_bundles_query":
-        if (query is GetBundlesQuery) {
-          return await interpretIncomingGetBundlesAndRespond(query) as
-          QueryResponse<T>;
-        }
-        break;
+  Future<Map<String, dynamic>> interpretQueryAndRespond(
+      Map<String, dynamic> parsedJsonMap) async {
+    final baseQuery = BaseQuery.fromJson(parsedJsonMap);
+    final isAuthorized = await verifyUser(baseQuery.userId, baseQuery.token);
+    if (!isAuthorized) {
+      throw UnauthorizedException('Invalid user credentials');
     }
 
-    throw UnrecognizedQueryException(
-        'Unrecognized query type: ${query.type} or invalid implementation type');
+    switch (baseQuery.type) {
+      case "post_bundles_query":
+        return (await interpretIncomingAuthedPostBundlesQueryAndRespond(
+                baseQuery as PostBundlesQuery))
+            .toJson();
+      case "get_bundle_ids_query":
+        return (await interpretIncomingAuthedGetBundleIdsAndRespond(
+                baseQuery as GetBundleIdsQuery))
+            .toJson();
+      case "get_bundles_query":
+        return (await interpretIncomingAuthedGetBundlesAndRespond(
+                baseQuery as GetBundlesQuery))
+            .toJson();
+      default:
+        throw UnrecognizedQueryException(
+            'Unrecognized query type: ${baseQuery.type} or invalid implementation '
+            'type');
+    }
   }
 
   @override

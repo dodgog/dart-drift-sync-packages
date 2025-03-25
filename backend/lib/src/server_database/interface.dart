@@ -1,11 +1,8 @@
-import 'package:backend/messaging.dart';
-
 abstract interface class ServerDatabaseInterface {
-
   Future<void> initialize();
 
-  Future<QueryResponse<T>> interpretQueryAndRespond<T extends BaseQuery>(
-      T query);
+  Future<Map<String, dynamic>> interpretQueryAndRespond(
+      Map<String, dynamic> query);
 
   Future<void> createAuthedUserAndClient(
       String userId, String userName, String clientId, String token);

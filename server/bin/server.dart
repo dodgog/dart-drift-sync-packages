@@ -1,16 +1,13 @@
-import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:backend/server_database.dart';
+import 'package:backend/server_interface.dart';
+import 'package:drift_postgres/drift_postgres.dart';
+import 'package:postgres/postgres.dart' as pg;
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
-import 'package:drift_postgres/drift_postgres.dart';
-import 'package:postgres/postgres.dart' as pg;
-import 'package:backend/server_database.dart';
-import 'package:backend/server_interface.dart';
-import 'package:backend/messaging.dart';
 
 late final ServerDatabaseInterface store;
 
@@ -42,13 +39,11 @@ final _router = Router()
 Future<Response> _putDataHandler(Request request) async {
   try {
     final body = await request.readAsString();
-    final postQuery = PostBundlesQuery.fromJson(jsonDecode(body));
 
-    final postResponse =
-        await store.interpretQueryAndRespond(postQuery) as PostBundlesResponse;
+    final response = await store.interpretQueryAndRespond(jsonDecode(body));
 
     return Response.ok(
-      jsonEncode(postResponse.toJson()),
+      jsonEncode(response),
       headers: {'content-type': 'application/json'},
     );
   } catch (e) {
@@ -74,14 +69,12 @@ void main(List<String> args) async {
     ),
   );
 
-  // Initialize the test user that matches the client
-  await store.serverDrift.usersDrift.createUser(userId: "user1", name: "user1");
-
-  await store.serverDrift.usersDrift
-      .authUser(userId: "user1", token: "user1token");
-
-  await store.serverDrift.sharedDrift.sharedUsersDrift
-      .createClient(userId: "user1", clientId: "client1");
+  store.createAuthedUserAndClient(
+    "user1",
+    "user1name",
+    "client1",
+    "user1token",
+  );
 
   final ip = InternetAddress.anyIPv4;
   final handler =
