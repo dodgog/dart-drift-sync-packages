@@ -11,12 +11,13 @@ GetBundlesQuery _$GetBundlesQueryFromJson(Map<String, dynamic> json) =>
       json['user_id'] as String,
       json['token'] as String,
       (json['bundle_ids'] as List<dynamic>).map((e) => e as String).toList(),
-    );
+    )..type = json['type'] as String;
 
 Map<String, dynamic> _$GetBundlesQueryToJson(GetBundlesQuery instance) =>
     <String, dynamic>{
       'user_id': instance.userId,
       'token': instance.token,
+      'type': instance.type,
       'bundle_ids': instance.bundleIds,
     };
 
@@ -27,10 +28,11 @@ GetBundlesResponse _$GetBundlesResponseFromJson(Map<String, dynamic> json) =>
               const BundleConverter().fromJson(e as Map<String, dynamic>))
           .toList(),
       json['last_issued_server_timestamp'] as String,
-    );
+    )..type = json['type'] as String;
 
 Map<String, dynamic> _$GetBundlesResponseToJson(GetBundlesResponse instance) =>
     <String, dynamic>{
+      'type': instance.type,
       'bundles': instance.bundles.map(const BundleConverter().toJson).toList(),
       'last_issued_server_timestamp': instance.lastIssuedServerTimestamp,
     };

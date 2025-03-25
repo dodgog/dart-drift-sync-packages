@@ -8,8 +8,6 @@ import 'package:backend/shared_database.dart';
 import 'internal/config.dart';
 import 'database.drift.dart';
 
-
-
 @DriftDatabase(
   include: {'package:backend/server.drift'},
 )
@@ -49,4 +47,3 @@ class ServerDatabase extends $ServerDatabase {
     );
   }
 }
-
