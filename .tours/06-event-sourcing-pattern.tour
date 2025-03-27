@@ -1,0 +1,188 @@
+{
+  "title": "06 - Event Sourcing Pattern",
+  "description": "Explore how the Event Sourcing pattern is implemented in the dart-drift-sync-packages system",
+  "steps": [
+    {
+      "title": "Event Sourcing Concept",
+      "description": "# Fundamental Architectural Pattern\n\nEvent Sourcing represents a paradigm shift in how we think about data persistence. Instead of storing just the current state, it captures a complete history of all changes.\n\nAt its core, Event Sourcing means:\n\n1. **Events as Facts** - All changes are recorded as immutable events\n2. **Complete History** - The event log contains the full history of the system\n3. **Derived State** - Current state is calculated by replaying events\n4. **Source of Truth** - Events, not current state, are authoritative\n\nThis approach provides several powerful capabilities:\n- Ability to determine exact system state at any point in time\n- Complete audit trail for compliance and debugging\n- Natural support for distributed systems and concurrency\n- Separation of write models (events) from read models (derived state)\n\nIn this system, Event Sourcing forms the theoretical foundation for all data operations, enabling the robust synchronization capabilities between clients and server.",
+      "file": "docs/architecture/06-event-sourcing-pattern.md",
+      "line": 3
+    },
+    {
+      "title": "Events Table Structure",
+      "description": "# Primary Event Storage\n\nThe events table is the heart of the Event Sourcing implementation. It stores every single change that occurs in the system as an immutable record.\n\nEach row in this table represents an atomic change to a single property of an entity, capturing:\n\n1. **Identification** - The unique ID of the event and the client that created it\n2. **Target** - The entity and specific attribute being modified\n3. **Value** - The new value being assigned to the attribute\n4. **Timing** - When the change occurred (via HLC timestamp)\n\nNotably, the fine-grained structure (one event per attribute change) enables precise conflict resolution and efficient synchronization. If events were larger (e.g., entire entity updates), conflict detection and resolution would be more complex.\n\nBecause events are immutable, this table only supports insertions, never updates or deletions. This append-only structure ensures the integrity of the historical record and simplifies database operations.",
+      "file": "backend/lib/src/client_definitions/events.drift",
+      "line": 1,
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 1
+        },
+        "end": {
+          "line": 8,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Attributes Table - Materialized View",
+      "description": "# Current State Representation\n\nWhile events are the source of truth, querying them directly for current state would be inefficient. The attributes table solves this by maintaining a materialized view of the latest state.\n\nThis table stores:\n\n1. **Entity Identification** - Which entity this attribute belongs to\n2. **Attribute Name** - The property name within the entity\n3. **Current Value** - The most recent value of this attribute\n4. **Timestamp** - When this value was last updated (for conflict resolution)\n\nThe unique index on entity_id and attribute ensures that only one row exists for each entity's attribute. This structure enables efficient queries against current state without needing to process the entire event history.\n\nThis represents a classic CQRS (Command Query Responsibility Segregation) pattern: events handle writes (commands), while the attributes table optimizes reads (queries). This separation allows each side to be optimized for its specific purpose.",
+      "file": "backend/lib/src/client_definitions/attributes.drift",
+      "line": 1,
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 1
+        },
+        "end": {
+          "line": 9,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Event Generation",
+      "description": "# Creating Change Records\n\nThe insertLocalEvent method demonstrates how new events are created when application state changes. This method is central to the write side of the system.\n\nThe event creation process follows these steps:\n\n1. A new event object is created with unique identifier, entity target, and new value\n2. The event is inserted into the events table, becoming part of the immutable log\n3. The event is also applied to the attributes table to update the current state view\n\nThe system uses DoNothing conflict strategy when inserting events to ensure idempotency - the same event can be inserted multiple times without causing errors or duplicates. This is crucial for resilience during synchronization.\n\nNotably, the method returns the result of the events table insertion, but it actually performs two database operations. This dual-write pattern (to both events and attributes) is critical to maintaining the integrity of both the historical log and the current state view.",
+      "file": "backend/lib/src/client_database/crud.dart",
+      "line": 9,
+      "selection": {
+        "start": {
+          "line": 9,
+          "character": 1
+        },
+        "end": {
+          "line": 18,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Event Processing - Incremental Updates",
+      "description": "# Applying Individual Events\n\nThe insertEventIntoAttributes query shows how events are incrementally applied to update the current state. This represents the most common path for updating the materialized view.\n\nWhat makes this query special is its conflict resolution strategy:\n\n1. It attempts to insert the event data as a new attribute record\n2. If a conflict occurs (attribute already exists for the entity):\n   - It compares the timestamps of the existing value and the new event\n   - Updates only if the new event is newer (higher timestamp)\n   - Silently ignores the update if the existing value is newer\n\nThis timestamp-based conflict resolution implements a \"last-write-wins\" strategy that's deterministic across all clients. When two clients modify the same attribute concurrently, they'll both eventually arrive at the same final state after synchronization.\n\nThis query is used both when local events are created and when events from other clients are received during synchronization, ensuring consistent behavior regardless of event origin.",
+      "file": "backend/lib/src/client_definitions/attributes.drift",
+      "line": 12,
+      "selection": {
+        "start": {
+          "line": 12,
+          "character": 1
+        },
+        "end": {
+          "line": 22,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Event Processing - Full Reconstruction",
+      "description": "# Rebuilding State from History\n\nOne of the most powerful aspects of Event Sourcing is the ability to reconstruct state from the event log. The insertAllEventsIntoAttributes query demonstrates this capability.\n\nThis sophisticated query:\n\n1. Selects events from the events table\n2. Uses a LEFT OUTER JOIN to find any newer events for the same entity/attribute\n3. Filters to include only the latest event for each entity/attribute pair\n4. Inserts these latest events into the attributes table\n5. Avoids overwriting attributes that already have newer values\n\nThis query would be used in several scenarios:\n- Initial database population\n- Recovery after data loss or corruption\n- Rebuilding after schema migration\n- Creating new materialized views with different structures\n\nThe ability to reconstruct state from events is what makes Event Sourcing so resilient - as long as the event log is intact, any derived state can be recreated. This query embodies that fundamental principle.",
+      "file": "backend/lib/src/client_definitions/attributes.drift",
+      "line": 24,
+      "selection": {
+        "start": {
+          "line": 24,
+          "character": 1
+        },
+        "end": {
+          "line": 39,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Event Bundling for Synchronization",
+      "description": "# Packaging Events for Transfer\n\nThe pushEvents method demonstrates how events are packaged into bundles for efficient synchronization. This represents the bridge between the local event store and the network transport layer.\n\nThe bundling process follows these steps:\n\n1. Retrieve all local events that haven't been sent to the server yet\n2. Create a new bundle with a unique ID and current timestamp\n3. Serialize the events into a JSON payload within the bundle\n4. Store a record of the bundle locally for tracking\n5. Prepare a network message containing the bundle\n\nBundles serve as the transaction unit for synchronization - they group related events together to ensure atomic processing. If a synchronization is interrupted, it can be resumed at the bundle level rather than the individual event level.\n\nInterestingly, the client stores bundles without their payloads after creating them. This optimization saves storage space, as the events are already stored individually in the events table.",
+      "file": "backend/lib/src/client_database/api.dart",
+      "line": 10,
+      "selection": {
+        "start": {
+          "line": 10,
+          "character": 1
+        },
+        "end": {
+          "line": 30,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Event Payload Serialization",
+      "description": "# Network Transport Encoding\n\nThe EventPayload class handles the serialization of events for network transmission. It acts as a container that wraps a collection of events for inclusion in a bundle payload.\n\nThe serialization process uses several techniques to ensure reliable data transfer:\n\n1. **JSON Serialization** - Events are converted to JSON format for transmission\n2. **Type Annotation** - The @EventConverter annotation ensures proper conversion\n3. **Field Renaming** - The FieldRename.snake ensures consistent JSON field naming\n4. **Collection Structure** - Events are grouped in a list for atomic processing\n\nBy encapsulating events in this structured payload format, the system ensures that all necessary metadata is preserved during transmission. The generated methods (_$EventPayloadFromJson and _$EventPayloadToJson) handle the complex details of conversion between Dart objects and JSON structures.\n\nThis serialization layer is critical for maintaining the integrity of events as they move between different systems with potentially different internal representations.",
+      "file": "backend/lib/src/client_definitions/event_payload_encoder.dart",
+      "line": 8,
+      "selection": {
+        "start": {
+          "line": 8,
+          "character": 1
+        },
+        "end": {
+          "line": 18,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Event Extraction from Bundles",
+      "description": "# Processing Received Events\n\nThe insertNewEventsFromNewBundles method shows how events are extracted from received bundles and integrated into the local database. This represents the inbound side of synchronization.\n\nThe processing sequence includes several important steps:\n\n1. Extracting events from each bundle's JSON payload\n2. Storing a record of the bundle in the local database (without payload)\n3. Processing each event in the bundle individually\n4. Updating the local state based on the events\n\nAll these operations occur in a single transaction to ensure atomicity - either all events from a bundle are processed or none are. This prevents partial updates that could leave the database in an inconsistent state.\n\nThe comments in the code indicate potential future enhancements for tracking relationships between events and bundles. Currently, once events are extracted, their association with specific bundles is not explicitly maintained, which could be useful for more granular synchronization tracking.",
+      "file": "backend/lib/src/client_database/crud.dart",
+      "line": 42,
+      "selection": {
+        "start": {
+          "line": 42,
+          "character": 1
+        },
+        "end": {
+          "line": 64,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Time Ordering with HLC",
+      "description": "# Distributed Clock Mechanism\n\nHybrid Logical Clocks (HLC) are a critical component of the Event Sourcing implementation, providing a reliable ordering mechanism for events across distributed clients.\n\nHLC provides several essential properties for a distributed event sourcing system:\n\n1. **Causality Preservation** - If event A causes event B, A's timestamp is always less than B's\n2. **Close to Physical Time** - Timestamps remain roughly aligned with wall clock time\n3. **Convergence** - All clients will eventually agree on event ordering\n4. **Clock Skew Tolerance** - The system works even when device clocks differ\n\nThe configuration shows how HLC is initialized during database setup, using the client's unique ID to identify it in the timestamp. This ensures that even if two clients generate events at exactly the same physical time, they'll still have unique timestamps based on their node identifier.\n\nThe hybrid approach (combining physical clock with logical counter) balances the need for timestamps that reflect real time with the strict ordering requirements of a distributed system.",
+      "file": "backend/lib/src/client_database/config.dart",
+      "line": 20,
+      "selection": {
+        "start": {
+          "line": 20,
+          "character": 1
+        },
+        "end": {
+          "line": 31,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Conflict Resolution",
+      "description": "# Deterministic Update Resolution\n\nThis section of the insertEventIntoAttributes query shows the core of the conflict resolution strategy - the WHERE clause that determines whether an attribute should be updated when a conflict occurs.\n\nThe logic is elegantly simple:\n\n- Update the attribute only if the incoming event's timestamp is greater than the existing one\n- Otherwise, silently ignore the update (keeping the existing value)\n\nThis timestamp-based \"last-write-wins\" approach has several advantages:\n\n1. **Deterministic** - Given the same events, all clients will reach the same final state\n2. **Simple** - Easy to understand and implement\n3. **Efficient** - No complex merging algorithms required\n4. **Distributed** - Works without central coordination\n\nThe use of HLC timestamps ensures this strategy correctly handles causality - events that were caused by other events will always have higher timestamps than their causes, ensuring they win in conflicts.\n\nThis approach is particularly well-suited to the attribute-level granularity of events in this system. Because each event affects only one attribute, conflicts are limited to direct value overwrites rather than complex structural merges.",
+      "file": "backend/lib/src/client_definitions/attributes.drift",
+      "line": 19,
+      "selection": {
+        "start": {
+          "line": 19,
+          "character": 1
+        },
+        "end": {
+          "line": 21,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Querying Current State",
+      "description": "# Application Data Access\n\nThe getAttributesForEntity method demonstrates how applications interact with the system to retrieve current state. This exemplifies the read side of the CQRS pattern.\n\nThe method performs a simple query against the attributes table rather than the events table, which provides several benefits:\n\n1. **Performance** - Reading from a single row per attribute rather than processing potentially many events\n2. **Simplicity** - A straightforward query rather than complex event processing logic\n3. **Consistency** - All attributes reflect their latest values according to conflict resolution\n\nThis approach shields application code from the complexities of the event sourcing implementation. From the application's perspective, it's simply reading from a normal database - the event history and materialization details are hidden behind this abstraction.\n\nThe method uses Drift's type-safe query builder to filter attributes by entity ID, ensuring only the relevant attributes are returned. This pattern provides a clean, domain-focused API that applications can use without needing to understand the underlying event sourcing infrastructure.",
+      "file": "backend/lib/src/client_database/read.dart",
+      "line": 14,
+      "selection": {
+        "start": {
+          "line": 14,
+          "character": 1
+        },
+        "end": {
+          "line": 20,
+          "character": 1
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+{
+  "title": "04 - Server Architecture",
+  "description": "Explore the server-side architecture of the dart-drift-sync-packages system",
+  "steps": [
+    {
+      "title": "Server Database Interface",
+      "description": "# Core Server API Contract\n\nThe ServerDatabaseInterface defines the key abstraction that all server implementations must fulfill. This interface establishes a clean separation between the server's external API and its internal implementation details.\n\nThe interface includes three essential methods:\n\n1. **initialize()** - Sets up the database schema and prepares it for operation\n2. **interpretQueryAndRespond()** - The central method for handling all client requests\n3. **createAuthedUserAndClient()** - Creates new user accounts with authentication\n\nThis abstraction enables multiple potential implementations (SQLite for development, PostgreSQL for production) while maintaining a consistent API surface. By designing the server around this interface, the system achieves better testability through mocking and greater flexibility for future database backends.",
+      "file": "backend/lib/server_interface.dart",
+      "line": 5,
+      "selection": {
+        "start": {
+          "line": 5,
+          "character": 1
+        },
+        "end": {
+          "line": 16,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Server Database Implementation",
+      "description": "# Concrete Server Implementation\n\nThe ServerDatabase class provides a concrete implementation of the ServerDatabaseInterface. This class exemplifies the factory pattern - it exposes a static create() method that returns the interface type rather than the concrete class.\n\nThis design provides several advantages:\n\n1. **Encapsulation** - Internal implementation details remain hidden\n2. **Testability** - The visibleForTesting constructor enables unit testing\n3. **Flexibility** - The same class can work with different database backends\n4. **Configuration** - Takes initialConfig for server setup parameters\n\nThe fact that create() returns the interface rather than the concrete class enforces the separation between the public API and the implementation details, making the system more maintainable and extensible in the long run.",
+      "file": "backend/lib/src/server_database/database.dart",
+      "line": 19,
+      "selection": {
+        "start": {
+          "line": 19,
+          "character": 1
+        },
+        "end": {
+          "line": 42,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Server Initialization",
+      "description": "# Database Setup Process\n\nThe initialize() method handles the crucial process of setting up the server database. It follows a two-phase initialization approach:\n\n1. **Super Initialization** - First delegates to the Drift-generated parent class to set up tables\n2. **Server-Specific Setup** - Then performs server-specific configuration\n\nKey initialization tasks include:\n- Setting up the Hybrid Logical Clock (HLC) with the \"server\" node identifier\n- Creating necessary database tables through the Drift migration system\n- Ensuring required initial records exist (like system users)\n\nThe initialization process leverages Drift's migration strategy pattern, which provides hooks for custom initialization logic. This approach ensures the database is properly set up before it begins handling client requests, preventing data corruption or inconsistent states.",
+      "file": "backend/lib/src/server_database/database.dart",
+      "line": 44,
+      "selection": {
+        "start": {
+          "line": 44,
+          "character": 1
+        },
+        "end": {
+          "line": 60,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Database Configuration",
+      "description": "# Server Configuration Parameters\n\nThe ServerDatabaseConfig class defines the configuration parameters specific to the server database. Though minimal in its current implementation, it provides a clear structure for future extensions.\n\nThe only current parameter is:\n- **isServer** - A boolean flag that enables server-specific behavior\n\nThe simplicity of this configuration reflects the focused nature of the server implementation. Rather than trying to support every possible configuration option, the system prioritizes the essentials for a functioning sync server.\n\nAs the server functionality expands, this configuration class would be the natural place to add parameters like:\n- Connection pooling settings\n- Logging configuration\n- Sync frequency limits\n- Authorization policies",
+      "file": "backend/lib/src/server_database/internal/config.dart",
+      "line": 1,
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 1
+        },
+        "end": {
+          "line": 6,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Authentication",
+      "description": "# User Validation System\n\nThe Auth extension provides the critical security layer for the server. The verifyUser method implements a straightforward token-based authentication mechanism.\n\nThe authentication flow works as follows:\n1. Each client request includes a userId and token\n2. The server queries the auth table for a matching record\n3. If a match is found, the user is authenticated; otherwise, access is denied\n\nWhile this implementation is straightforward, it provides the foundation for a secure system. The authentication is performed at the database level rather than in the HTTP layer, which unifies the security model regardless of how the server is accessed.\n\nIn a production environment, this would likely be enhanced with features like:\n- Token expiration and rotation\n- Rate limiting to prevent brute force attacks\n- More sophisticated encryption for the tokens\n- Role-based access control",
+      "file": "backend/lib/src/server_database/auth.dart",
+      "line": 3,
+      "selection": {
+        "start": {
+          "line": 3,
+          "character": 1
+        },
+        "end": {
+          "line": 12,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Query Routing",
+      "description": "# Message Handling Framework\n\nThe interpretQueryAndRespond method forms the heart of the server's message handling system. It implements a command pattern where the incoming message type determines which handler method is invoked.\n\nThe handling process follows these steps:\n1. Parse the JSON message into a BaseQuery object\n2. Verify user authentication using the Auth extension\n3. Switch on the query type to route to the appropriate handler\n4. Handle exceptions gracefully with specific error types\n5. Return a properly formatted response\n\nThis central routing mechanism provides several advantages:\n- Single entry point for all client requests\n- Consistent authentication and error handling\n- Easy extensibility for new query types\n- Clear separation between routing and business logic\n\nThe system's use of specialized exception types (UnauthorizedException, UnrecognizedQueryException) allows for precise error reporting to clients while maintaining security boundaries.",
+      "file": "backend/lib/src/server_database/database.dart",
+      "line": 62,
+      "selection": {
+        "start": {
+          "line": 62,
+          "character": 1
+        },
+        "end": {
+          "line": 95,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Processing Post Bundles Query",
+      "description": "# Primary Sync Operation Handler\n\nThe interpretIncomingAuthedPostBundlesQueryAndRespond method handles the most frequent and important operation: clients synchronizing their local events with the server.\n\nThis method orchestrates several critical operations:\n\n1. **HLC Synchronization** - Updates the server's clock with the client's timestamp\n2. **Bundle Processing** - Stores incoming bundles from the client\n3. **Event Integration** - Processes events contained in those bundles\n4. **Update Collection** - Gathers new events the client hasn't seen yet\n5. **Response Preparation** - Creates a response with server timestamp and new bundles\n\nNotably, the logic ensures that the server doesn't send back the same bundles the client just submitted (using the where((e) => !insertedBundleIds.contains(e.id)) filter).\n\nThe focus on maintaining proper HLC synchronization is critical to the distributed nature of the system. By updating the server's HLC with the client timestamp, the system ensures proper causality across the network, even when clients have been offline for extended periods.",
+      "file": "backend/lib/src/server_database/api.dart",
+      "line": 12,
+      "selection": {
+        "start": {
+          "line": 12,
+          "character": 1
+        },
+        "end": {
+          "line": 41,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Processing Get Bundle IDs Query",
+      "description": "# Bundle Discovery Handler\n\nThe interpretIncomingAuthedGetBundleIdsAndRespond method supports an alternative synchronization path where clients first discover what bundles are available before requesting their contents.\n\nThis query is particularly useful in two scenarios:\n\n1. **Initial Sync** - When a client first connects and needs all available data\n2. **Recovery** - After an extended offline period or data loss\n\nThe method accepts an optional sinceTimestamp parameter, allowing for incremental discovery. This enables efficient resumption of synchronization after network interruptions or client restarts.\n\nBy separating bundle discovery from bundle retrieval, the system allows clients to implement sophisticated synchronization strategies based on their specific needs and network conditions. Clients can first check what's available, determine what they're missing locally, and then selectively request only the needed bundles.",
+      "file": "backend/lib/src/server_database/api.dart",
+      "line": 43,
+      "selection": {
+        "start": {
+          "line": 43,
+          "character": 1
+        },
+        "end": {
+          "line": 54,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Processing Get Bundles Query",
+      "description": "# Bundle Retrieval Handler\n\nThe interpretIncomingAuthedGetBundlesAndRespond method completes the alternative sync path by allowing clients to request specific bundles by ID.\n\nThis handler follows a simple process:\n1. Extract the requested bundle IDs from the query\n2. Validate the user has access to these bundles\n3. Retrieve the complete bundle objects with their payloads\n4. Return them to the client\n\nThis pattern of first discovering IDs and then retrieving bundles offers several advantages:\n- Reduces bandwidth usage by retrieving only needed bundles\n- Enables more granular error handling for specific bundles\n- Allows for prioritized or selective synchronization\n- Provides better resilience for poor network conditions\n\nThe server ensures security by only returning bundles for the authenticated user, preventing unauthorized access to other users' data.",
+      "file": "backend/lib/src/server_database/api.dart",
+      "line": 56,
+      "selection": {
+        "start": {
+          "line": 56,
+          "character": 1
+        },
+        "end": {
+          "line": 67,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "CRUD Operations - Insert Bundles",
+      "description": "# Server-Side Bundle Processing\n\nThe insertBundles method handles the crucial task of integrating client-sent bundles into the server database. This operation is more complex than it might appear at first glance.\n\nThe method performs the following steps:\n1. Stores the bundle records themselves in the bundles table\n2. Extracts events from each bundle's payload\n3. Processes all events according to the event sourcing pattern\n4. Returns the IDs of successfully processed bundles\n\nNotably, the method includes special handling for potential errors:\n- It returns only the IDs of bundles that were successfully processed\n- It uses transaction support to ensure atomicity\n- It safely handles the case where a bundle has no payload\n\nThis careful, transactional approach ensures the integrity of the server's data even when processing potentially problematic client bundles. By returning only the IDs of successfully processed bundles, it allows clients to retry sending any bundles that weren't properly processed.",
+      "file": "backend/lib/src/server_database/internal/crud.dart",
+      "line": 7,
+      "selection": {
+        "start": {
+          "line": 7,
+          "character": 1
+        },
+        "end": {
+          "line": 32,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Read Operations - Get User Bundles",
+      "description": "# Bundle Query System\n\nThe getUserBundlesSinceOptionalTimestamp method provides the core functionality for retrieving bundles for synchronization. The method is designed to support both complete and incremental synchronization.\n\nKey features of this query:\n1. User-scoped - Only returns bundles for the specified user\n2. Optionally time-filtered - Can return only bundles newer than a timestamp\n3. Order-preserving - Results are sorted by timestamp for proper sequencing\n\nThis query is central to the server's role as the source of truth. It enables the server to efficiently distribute events to clients based on their last-known synchronization state.\n\nThe optional timestamp parameter is particularly important for performance. Without it, each sync would transfer the entire event history. With it, only the new events since the last sync are transferred, making the synchronization process scalable to large datasets and frequent sync operations.",
+      "file": "backend/lib/src/server_database/internal/read.dart",
+      "line": 7,
+      "selection": {
+        "start": {
+          "line": 7,
+          "character": 1
+        },
+        "end": {
+          "line": 18,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "User and Client Management",
+      "description": "# User Account Provisioning\n\nThe createAuthedUserAndClient method handles the creation of new users and clients in the system. In a real-world application, this would be part of the user onboarding process.\n\nThe method performs several related operations in a single transaction:\n1. Creates a user record with the provided ID and name\n2. Creates an authentication record with the user's token\n3. Creates a client record associated with the user\n\nThis method demonstrates the use of Drift's typed insert operations with the Companion pattern. Rather than raw SQL, it uses type-safe builders that ensure all required fields have valid values at compile time.\n\nThe atomic transaction ensures that either all three records are created or none are, preventing inconsistent database states where, for example, a user might exist without proper authentication.\n\nIn a production environment, this would likely be enhanced with password hashing for the token, validation logic for usernames, and integration with an external identity provider.",
+      "file": "backend/lib/src/server_database/database.dart",
+      "line": 97,
+      "selection": {
+        "start": {
+          "line": 97,
+          "character": 1
+        },
+        "end": {
+          "line": 115,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Server Implementation",
+      "description": "# HTTP Server Architecture\n\nThe server implementation uses the Shelf package to create a lightweight HTTP server. This code demonstrates a clean separation between the transport layer (HTTP) and the business logic (database operations).\n\nThe server architecture includes:\n1. A Router that maps HTTP endpoints to handler functions\n2. A generic handler that processes all sync-related requests\n3. Middleware for request logging and error handling\n4. JSON serialization for request and response bodies\n\nThe simplicity of this server is intentional - it acts primarily as a thin wrapper around the ServerDatabase. This design minimizes the amount of business logic in the HTTP layer, reducing the risk of inconsistencies between different server implementations.\n\nThe error handling deserves special attention - it captures exceptions from the database layer and translates them into appropriate HTTP responses, ensuring clients receive meaningful error messages when problems occur.",
+      "file": "server/bin/server.dart",
+      "line": 33,
+      "selection": {
+        "start": {
+          "line": 33,
+          "character": 1
+        },
+        "end": {
+          "line": 54,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Server Initialization",
+      "description": "# Application Bootstrap Process\n\nThe main function demonstrates the server's startup sequence, showing how all the components fit together to create a working system.\n\nThe initialization process follows these steps:\n1. Create a PostgreSQL connection with appropriate credentials\n2. Initialize the server database with that connection\n3. Create a test user for demonstration purposes\n4. Set up the HTTP server with appropriate middleware\n5. Start listening for client connections\n\nThe use of PostgreSQL here highlights the system's ability to work with production-grade databases. The PostgreSQL adapter translates Drift's database operations into compatible SQL for the PostgreSQL server.\n\nThe test user creation (user1/user1token) simplifies testing and demonstrations but would be replaced with proper user management in a production environment.\n\nThe server binds to all network interfaces (0.0.0.0) and uses a configurable port (defaulting to 8080), making it suitable for both local development and cloud deployment.",
+      "file": "server/bin/server.dart",
+      "line": 57,
+      "selection": {
+        "start": {
+          "line": 57,
+          "character": 1
+        },
+        "end": {
+          "line": 77,
+          "character": 1
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "title": "01 - System Overview",
+  "description": "A high-level tour of the dart-drift-sync-packages system, introducing the main components and architectural concepts",
+  "steps": [
+    {
+      "title": "Project Introduction",
+      "description": "# Project Purpose\n\nThe dart-drift-sync-packages is an event-driven client-server database synchronization system built with Dart and the Drift database library (formerly Moor). It provides:\n\n- Event-sourcing architecture for tracking all state changes\n- CRDT (Conflict-free Replicated Data Type) capabilities for conflict resolution\n- Client-server synchronization with offline support\n- Hybrid Logical Clocks for distributed time ordering\n\nThis system addresses a common challenge in mobile/web applications: enabling offline data modification that can be reliably synchronized later, while handling conflicts in a deterministic way.",
+      "file": "README.md"
+    },
+    {
+      "title": "Project Structure",
+      "description": "# Project Organization\n\nThe project is organized into three distinct but interconnected packages:\n\n1. **Backend** - Core library with shared code for both client and server\n   - Database schema definitions using Drift\n   - Event sourcing implementation\n   - Messaging protocol for synchronization\n   - Shared data types and utilities\n\n2. **Server** - API server implementation\n   - REST API endpoints for client synchronization\n   - PostgreSQL or SQLite storage options\n   - Authentication and user management\n\n3. **Client-View** - Flutter demo application\n   - UI for testing and demonstrating synchronization\n   - Local SQLite database with sync capabilities\n\nThis separation allows for clean architecture while sharing critical code between client and server components.",
+      "file": "backend/pubspec.yaml",
+      "line": 1
+    },
+    {
+      "title": "Core Concept: Event Sourcing",
+      "description": "# Event Sourcing Pattern\n\nThe system is built on the event sourcing pattern, which fundamentally changes how we think about data:\n\n- Instead of storing just the current state, **all changes** are stored as immutable events\n- Events are facts about what happened (e.g., \"Attribute X of Entity Y changed to value Z\")\n- Current state is derived by replaying or processing these events\n- The event log becomes the authoritative source of truth\n\nThis approach provides several advantages:\n1. Complete audit history of all changes\n2. Ability to reconstruct state at any point in time\n3. Natural fit for synchronization between systems\n4. Separation of state changes from state queries\n\nIn this file, we can see the CRUD operations that define how events are created and processed in the client database.",
+      "file": "backend/lib/src/client_database/crud.dart",
+      "line": 3
+    },
+    {
+      "title": "Database Interfaces",
+      "description": "# Client Database Interface\n\nThe client database is the foundation of the local storage and synchronization capabilities. This file exports the key components:\n\n- **Database** - The main Drift database class that manages SQLite storage\n- **API** - Methods for communicating with the server (pushEvents, pullEvents)\n- **CRUD** - Operations for creating, reading, updating, and deleting data\n- **Config** - Configuration for sync state, user information, and timestamps\n\nThe client database is responsible for:\n1. Storing local events and derived state\n2. Preparing events for synchronization with the server\n3. Processing incoming events from the server\n4. Resolving conflicts when events overlap\n\nBy using Drift (formerly Moor), the system gets type-safe SQL operations, compile-time error checking, and reactive query capabilities.",
+      "file": "backend/lib/client_database.dart",
+      "line": 1
+    },
+    {
+      "title": "Server Database Interface",
+      "description": "# Server Database Interface\n\nThe server is the central hub for synchronization, and its interface defines how it interacts with clients:\n\n```dart\nabstract class ServerDatabaseInterface {\n  Future<void> initialize();\n  Future<Map<String, dynamic>> interpretQueryAndRespond(Map<String, dynamic> parsedJsonMap);\n  Future<void> createAuthedUserAndClient(String userId, String userName, String clientId, String token);\n}\n```\n\nThe server's responsibilities include:\n\n1. **Authentication** - Verifying client credentials\n2. **Query Processing** - Handling different types of sync requests\n3. **Event Storage** - Maintaining the master event log\n4. **Event Distribution** - Sending relevant events to clients\n\nThis abstraction allows different server implementations (memory, SQLite, PostgreSQL) to share a common interface, making the system more flexible and testable.",
+      "file": "backend/lib/server_interface.dart",
+      "line": 1
+    },
+    {
+      "title": "Drift Database Usage",
+      "description": "# Drift Database Technology\n\nDrift (formerly Moor) is a reactive persistence library for Dart that provides:\n\n- Type-safe SQL queries with compile-time checking\n- Schema definition in SQL syntax with code generation\n- Reactive streams for query results\n- Cross-platform support for mobile and desktop\n\nThe ClientDatabase class demonstrates how Drift is used:\n\n```dart\n@DriftDatabase(include: {'package:backend/client.drift'})\nclass ClientDatabase extends $ClientDatabase {\n  // Implementation\n}\n```\n\nKey features used in this system:\n\n1. SQL schemas defined in `.drift` files\n2. Auto-generated Dart code for database operations\n3. Type-safe query builders\n4. Transaction support for atomic operations\n5. Custom SQL statements for complex queries\n\nDrift provides the foundation for the entire data layer, making SQL operations safe and expressive in Dart.",
+      "file": "backend/lib/src/client_database/database.dart",
+      "line": 1
+    },
+    {
+      "title": "Event Structure",
+      "description": "# Event Data Structure\n\nEvents are the core data structure in the system. Each event represents an atomic change to a single entity attribute:\n\n```sql\nCREATE TABLE events (\n    id TEXT NOT NULL PRIMARY KEY,\n    client_id TEXT NOT NULL REFERENCES clients(id),\n    entity_id TEXT NOT NULL,\n    attribute TEXT NOT NULL,\n    value TEXT NOT NULL,\n    timestamp TEXT NOT NULL\n);\n```\n\nThe event fields capture everything needed to understand a change:\n\n- **id**: Unique identifier for the event (UUIDv7)\n- **client_id**: Which client created this event\n- **entity_id**: Which entity was modified\n- **attribute**: Which property of the entity changed\n- **value**: New value for the attribute\n- **timestamp**: When the change occurred (using Hybrid Logical Clock)\n\nEvents are immutable once created - they represent historical facts that cannot be changed. The current state is derived by processing these events, typically by keeping the most recent value for each entity/attribute pair.",
+      "file": "backend/lib/src/client_definitions/events.drift",
+      "line": 1
+    },
+    {
+      "title": "Hybrid Logical Clocks",
+      "description": "# Distributed Time Synchronization\n\nOne of the most challenging aspects of distributed systems is handling time and event ordering. The system uses Hybrid Logical Clocks (HLC) to solve this problem:\n\n```dart\nFuture<dynamic> initializeClientWithInitialConfig() async {\n  // ...\n  \n  // Initialize HLC - critical for event ordering\n  HLC.initialize(clientNode: ClientNode(currentClient.id));\n  \n  // ...\n}\n```\n\nHybrid Logical Clocks combine physical time with logical counters to provide several key benefits:\n\n1. **Causality Preservation** - If event A causes event B, A's timestamp is always less than B's\n2. **Clock Skew Tolerance** - Works correctly even when device clocks are not perfectly synchronized\n3. **Close to Physical Time** - Timestamps remain close to real-world time, unlike pure logical clocks\n\nWhen clients exchange events with the server, they also synchronize their HLC state, ensuring a consistent ordering of events across the entire distributed system. This is crucial for conflict resolution using the \"last-write-wins\" strategy based on timestamps.",
+      "file": "backend/lib/src/client_database/config.dart",
+      "line": 20
+    },
+    {
+      "title": "Messaging Protocol",
+      "description": "# Synchronization Protocol\n\nClient-server communication is handled through a well-defined messaging protocol using JSON serialization. The base query class forms the foundation of this protocol:\n\n```dart\n@j.JsonSerializable(fieldRename: j.FieldRename.snake)\nclass BaseQuery {\n  final String userId;\n  final String token;\n  final String type;\n\n  BaseQuery(this.userId, this.token, this.type);\n\n  // JSON serialization methods...\n}\n```\n\nAll client requests inherit from BaseQuery, adding:\n\n- **Authentication** - User ID and token for security\n- **Query Type** - Identifier for routing to appropriate handler\n\nThe protocol supports several operations:\n\n1. **Post Bundles** - Clients send new events and receive updates\n2. **Get Bundle IDs** - Clients request available bundle identifiers\n3. **Get Bundles** - Clients request specific bundles by ID\n\nThis flexible protocol allows for both incremental synchronization (common case) and full resynchronization (recovery case), while maintaining security through authentication on every request.",
+      "file": "backend/lib/src/messaging/base_query.dart",
+      "line": 1
+    },
+    {
+      "title": "Synchronization Process",
+      "description": "# Client Sync Implementation\n\nThe DataSyncService class demonstrates the complete client synchronization process:\n\n```dart\nFuture<void> sync() async {\n  // 1. Prepare local events for sending\n  final postQuery = await db.pushEvents();\n  \n  // 2. Send to server via HTTP POST\n  final response = await http.post(\n    Uri.parse(serverUrl),\n    headers: {'Content-Type': 'application/json'},\n    body: jsonEncode(postQuery.toJson()),\n  );\n  \n  // 3. Process server response\n  final postResponse = PostBundlesResponse.fromJson(\n    jsonDecode(response.body),\n  );\n  await db.pullEvents(postResponse);\n  \n  // 4. Notify listeners about data changes\n  notifyListeners();\n}\n```\n\nThis seemingly simple flow encompasses the complete sync cycle:\n\n1. **Collection** - Gather all local events since last sync\n2. **Transmission** - Send events to server in bundles\n3. **Reception** - Process server response with new events\n4. **Integration** - Apply received events to local database\n5. **Notification** - Update UI to reflect changes\n\nBy extending ChangeNotifier, this service can easily integrate with Flutter's state management to update the UI when synchronization completes.",
+      "file": "client-view/lib/sync.dart",
+      "line": 8
+    },
+    {
+      "title": "Server Implementation",
+      "description": "# REST API Server\n\nThe server exposes a simple REST API for clients to connect to, process events, and receive updates:\n\n```dart\n// Configure routes for sync endpoint\nfinal _router = Router()\n  ..put('/data', _putDataHandler)\n  ..post('/data', _putDataHandler);\n\n// Request handler\nFuture<Response> _putDataHandler(Request request) async {\n  final body = await request.readAsString();\n  final response = await store.interpretQueryAndRespond(jsonDecode(body));\n  return Response.ok(\n    jsonEncode(response),\n    headers: {'content-type': 'application/json'},\n  );\n}\n```\n\nThe server architecture is intentionally simple:\n\n1. **Single Endpoint** - All sync operations go through a unified endpoint\n2. **JSON Protocol** - All messages use JSON serialization\n3. **Query Routing** - The `interpretQueryAndRespond` method handles different query types\n4. **Database Abstraction** - The server uses the database interface to process queries\n\nThis design allows the server to be lightweight and stateless, with all complex logic handled by the database implementation. The server can scale horizontally if needed, as sessions are authenticated per-request rather than maintained in server memory.",
+      "file": "server/bin/server.dart",
+      "line": 33
+    }
+  ]
+}

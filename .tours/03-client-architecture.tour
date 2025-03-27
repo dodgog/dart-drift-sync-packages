@@ -1,0 +1,198 @@
+{
+  "title": "03 - Client Architecture",
+  "description": "Explore the client-side architecture of the dart-drift-sync-packages system",
+  "steps": [
+    {
+      "title": "Client Database Structure",
+      "description": "# Client Database Foundation\n\nThe ClientDatabase class forms the backbone of the client-side architecture:\n\n```dart\n@DriftDatabase(\n  include: {'package:backend/client.drift'},\n)\nclass ClientDatabase extends $ClientDatabase {\n  ClientDatabase({\n    this.initialConfig,\n    QueryExecutor? executor,\n    File? file,\n  }) : super(executor ?? _openConnection(file: file));\n  \n  // Database configuration for client setup\n  final ClientDatabaseConfig? initialConfig;\n}\n```\n\nThis class leverages Drift (formerly Moor) to provide:\n\n1. **Type-Safe Queries** - All database operations are checked at compile-time\n2. **Reactive Programming** - Query results can be observed as streams\n3. **Schema Definition** - The schema is defined in the included .drift files\n4. **Code Generation** - The $ClientDatabase parent class is auto-generated from the schema\n\nThe class is designed with flexibility in mind, accepting custom executors for testing or file paths for persistent storage. The initialConfig parameter enables setting up a new client with appropriate authentication and synchronization information.",
+      "file": "backend/lib/src/client_database/database.dart",
+      "line": 15,
+      "selection": {
+        "start": {
+          "line": 15,
+          "character": 1
+        },
+        "end": {
+          "line": 27,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Database Initialization",
+      "description": "# Storage Backend Options\n\nThe client database can connect to different storage backends:\n\n```dart\nstatic QueryExecutor _openConnection({File? file}) {\n  if (file != null) {\n    return NativeDatabase.createInBackground(file);\n  } else {\n    return NativeDatabase.memory();\n  }\n}\n```\n\nThis method creates the appropriate SQLite connection based on the provided parameters:\n\n1. **File-based Storage** (Production)\n   - Persistent across app restarts\n   - Data stored in the provided file path\n   - Uses background thread for I/O operations\n\n2. **In-Memory Database** (Testing)\n   - Ephemeral, cleared when the app closes\n   - Faster performance for tests\n   - Isolates test data from production data\n\nThe NativeDatabase.createInBackground approach runs database operations on a separate background thread, preventing UI freezes on the main thread when performing intensive database operations.",
+      "file": "backend/lib/src/client_database/database.dart",
+      "line": 29,
+      "selection": {
+        "start": {
+          "line": 29,
+          "character": 1
+        },
+        "end": {
+          "line": 35,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Database Migration",
+      "description": "# Schema Setup and Initialization\n\nDrift's migration strategy enables sophisticated database initialization:\n\n```dart\n@override\nint get schemaVersion => 1;\n\n@override\nMigrationStrategy get migration {\n  return MigrationStrategy(\n    beforeOpen: (details) async {\n      if (details.wasCreated) {\n        await initializeClientWithInitialConfig();\n      }\n      \n      // Get the current client to initialize HLC\n      final currentClient = \n          await clientDrift.usersDrift.getCurrentClient().getSingle();\n      \n      // Initialize the Hybrid Logical Clock with this client's ID\n      HLC.initialize(clientNode: ClientNode(currentClient.id));\n    },\n  );\n}\n```\n\nThis migration strategy performs several critical setup tasks:\n\n1. **Schema Version Tracking** - Maintains the current schema version (1)\n2. **First-Time Setup** - Detects if the database was just created (details.wasCreated)\n3. **Client Configuration** - Initializes with provided config if it's a new database\n4. **HLC Initialization** - Sets up the Hybrid Logical Clock with the client's unique ID\n\nInitializing the HLC with the client ID is crucial for the event sourcing system, as it ensures events from this client will have properly formed timestamps that maintain causality across the distributed system.",
+      "file": "backend/lib/src/client_database/database.dart",
+      "line": 37,
+      "selection": {
+        "start": {
+          "line": 37,
+          "character": 1
+        },
+        "end": {
+          "line": 53,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Client Configuration",
+      "description": "# Synchronization Configuration\n\nThe ClientDatabaseConfig class stores critical information for client operation and sync:\n\n```dart\nclass ClientDatabaseConfig {\n  final String? userId;\n  final String? userToken;\n  final bool clearExistingData;\n  final String? serverUrl;\n  final String? userDisplayName;\n\n  ClientDatabaseConfig({\n    this.userId,\n    this.userToken,\n    this.clearExistingData = false,\n    this.serverUrl,\n    this.userDisplayName,\n  });\n}\n```\n\nThis configuration serves several purposes:\n\n1. **Authentication** - Stores user ID and token for server communication\n2. **Server Connection** - Contains the URL for synchronization requests\n3. **User Identity** - Includes display name for user interface display\n4. **Data Management** - Provides option to clear existing data during setup\n\nThe configuration is typically provided during application startup and is used to initialize the client database with the proper authentication credentials and connection information. This approach makes the database flexible and reusable across different applications and users.",
+      "file": "backend/lib/src/client_database/config.dart",
+      "line": 3,
+      "selection": {
+        "start": {
+          "line": 3,
+          "character": 1
+        },
+        "end": {
+          "line": 10,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Client Setup",
+      "description": "# Database Initialization Process\n\nThe setup extension handles the detailed initialization process:\n\n```dart\nextension Setup on ClientDatabase {\n  Future<dynamic> initializeClientWithInitialConfig() async {\n    if (initialConfig == null) return null;\n    \n    // Clear existing data if requested\n    if (initialConfig!.clearExistingData) {\n      await transaction(() async {\n        await delete(eventsTable).go();\n        await delete(attributesTable).go();\n        await delete(clientsTable).go();\n        await delete(configTable).go();\n      });\n    }\n    \n    // Additional setup steps...\n  }\n}\n```\n\nThis setup process is responsible for:\n\n1. **Data Cleaning** - Optionally clearing existing data when requested\n2. **User Creation** - Setting up the user in the database if needed\n3. **Client Registration** - Creating a client entry for this device/instance\n4. **HLC Configuration** - Establishing the baseline for distributed timestamps\n5. **Initial State** - Preparing the database for first use\n\nThe use of transactions ensures that setup operations are atomic - either all steps complete successfully or none do. This guarantees database consistency even if initialization is interrupted.",
+      "file": "backend/lib/src/client_database/setup.dart",
+      "line": 6,
+      "selection": {
+        "start": {
+          "line": 6,
+          "character": 1
+        },
+        "end": {
+          "line": 17,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Client API - Push Events",
+      "description": "# Preparing Events for Server Sync\n\nThe pushEvents method prepares local events for transmission to the server:\n\n```dart\nFuture<PostBundlesQuery> pushEvents() async {\n  // Get all events since last server timestamp\n  final events = await clientDrift.eventsDrift.getLocalEventsToPush().get();\n  \n  if (events.isEmpty) {\n    // No events to push, just create a query to get updates\n    return _createPostBundlesQuery([]);\n  }\n  \n  // Create bundle from events\n  final bundle = Bundle(\n    id: generateUuidV7String(),\n    userId: config.userId!,\n    timestamp: HLC().sendPacked(),\n    payload: jsonEncode(EventPayload(events: events).toJson()),\n  );\n  \n  // Store bundle locally without events (they're already in the events table)\n  await clientDrift.sharedDrift.sharedBundlesDrift.insertBundle(\n    id: bundle.id,\n    userId: bundle.userId,\n    timestamp: bundle.timestamp,\n    payload: null,\n  );\n  \n  // Create query with this bundle\n  return _createPostBundlesQuery([bundle]);\n}\n```\n\nThis method implements the outbound phase of synchronization:\n\n1. **Event Collection** - Retrieves all local events since the last server sync\n2. **Bundle Creation** - Groups events into a bundle with a unique ID and timestamp\n3. **JSON Serialization** - Converts events to JSON for transport\n4. **Local Registration** - Records the bundle in local database for tracking\n5. **Query Preparation** - Builds the query message to send to the server\n\nThe method is intelligent enough to handle the case where no new events exist, still creating a valid query that will request updates from the server. The bundle's unique ID and timestamp ensure proper tracking and ordering in the distributed system.",
+      "file": "backend/lib/src/client_database/api.dart",
+      "line": 10,
+      "selection": {
+        "start": {
+          "line": 10,
+          "character": 1
+        },
+        "end": {
+          "line": 30,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Client API - Pull Events",
+      "description": "# Processing Server Updates\n\nThe pullEvents method handles the response from the server:\n\n```dart\nFuture<void> pullEvents(PostBundlesResponse response) async {\n  await transaction(() async {\n    // Mark our submitted bundles as confirmed by server\n    if (response.insertedBundleIds.isNotEmpty) {\n      await registerBundlesPersistedToServerWithoutPayload(\n          response.insertedBundleIds);\n    }\n\n    // Process any new bundles from the server\n    await insertNewEventsFromNewBundles(response.newBundles);\n    \n    // Update our record of the last server timestamp\n    await interpretIssuedServerTimestamp(response.lastIssuedServerTimestamp);\n  });\n}\n```\n\nThis method completes the synchronization cycle by processing the server's response:\n\n1. **Confirmation** - Records which local bundles were successfully received by server\n2. **New Events** - Processes any new events from other clients via server bundles\n3. **Timestamp Update** - Updates the local high-water mark for server time\n\nAll operations occur in a single transaction to ensure atomicity - either all aspects of the sync complete successfully, or none do. This prevents partial or inconsistent updates to the local database.\n\nBy updating the last server timestamp, the client ensures future sync operations will only request events newer than what it has already processed, making incremental synchronization efficient.",
+      "file": "backend/lib/src/client_database/api.dart",
+      "line": 32,
+      "selection": {
+        "start": {
+          "line": 32,
+          "character": 1
+        },
+        "end": {
+          "line": 45,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "CRUD Operations - Insert Local Event",
+      "description": "# Event Creation Process\n\nThis method handles the creation of new local events:\n\n```dart\nFuture<int> insertLocalEvent(Event event) async {\n  // Insert event into events table\n  final result = await into(eventsTable).insert(\n    EventsCompanion.insert(\n      id: event.id,\n      clientId: event.clientId,\n      entityId: event.entityId,\n      attribute: event.attribute,\n      value: event.value,\n      timestamp: event.timestamp,\n    ),\n    onConflict: DoNothing(),\n  );\n  \n  // Also update the materialized view (attributes table)\n  await insertLocalEventIntoAttributes(event);\n  \n  return result;\n}\n```\n\nThis method performs two critical operations:\n\n1. **Event Storage** - Adds the event to the append-only events table\n   - Uses type-safe EventsCompanion.insert for validation\n   - Includes onConflict: DoNothing() to safely handle duplicates\n   - Returns number of affected rows (typically 1)\n\n2. **State Update** - Updates the derived state in the attributes table\n   - Calls insertLocalEventIntoAttributes to maintain current view\n   - The attributes table implements timestamp-based conflict resolution\n\nThis dual-write approach implements the core of the event sourcing pattern: events are the source of truth, while attributes provide an efficient query interface to the current state. The DoNothing conflict strategy ensures idempotency - the same event can be inserted multiple times without error.",
+      "file": "backend/lib/src/client_database/crud.dart",
+      "line": 9,
+      "selection": {
+        "start": {
+          "line": 9,
+          "character": 1
+        },
+        "end": {
+          "line": 18,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "CRUD Operations - Insert Events from Bundles",
+      "description": "# Processing Remote Events\n\nThis complex method processes events received from the server:\n\n```dart\nFuture<void> insertNewEventsFromNewBundles(List<Bundle> bundles) async {\n  if (bundles.isEmpty) return;\n  \n  // Process each bundle\n  await transaction(() async {\n    for (final bundle in bundles) {\n      if (bundle.payload != null) {\n        // Extract events from the bundle's JSON payload\n        final events = EventPayload.fromJson(\n          jsonDecode(bundle.payload!),\n        ).events;\n        \n        // THINK: maybe store events which the client thinks are in this bundle\n        // THINK: maybe a table which would relate events to bundles\n        \n        // Save bundle in local database\n        await clientDrift.sharedDrift.sharedBundlesDrift.insertBundle(\n          id: bundle.id,\n          userId: bundle.userId,\n          timestamp: bundle.timestamp,\n          payload: null, // Don't need to store the payload again\n        );\n        \n        // Process each event in the bundle\n        for (final event in events) {\n          await insertLocalEventWithClientId(event);\n        }\n      }\n    }\n  });\n}\n```\n\nThis method handles the complex task of integrating remote events from other clients:\n\n1. **Bundle Processing** - Iterates through each received bundle\n2. **Payload Extraction** - Deserializes the JSON payload into Event objects\n3. **Bundle Registration** - Stores the bundle in the local database (without payload)\n4. **Event Application** - Inserts each event into the local database\n\nThe entire operation runs in a transaction to ensure consistency. Note the use of insertLocalEventWithClientId which is similar to insertLocalEvent but accepts events with client IDs from other clients.\n\nThe comments indicate potential future enhancements to track the relationship between events and bundles more explicitly. Currently, once events are extracted from a bundle, their association is not tracked.",
+      "file": "backend/lib/src/client_database/crud.dart",
+      "line": 42,
+      "selection": {
+        "start": {
+          "line": 42,
+          "character": 1
+        },
+        "end": {
+          "line": 64,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "CRUD Operations - Update Server Timestamp",
+      "description": "# Synchronization State Tracking\n\nThis method updates the local record of the server's timestamp:\n\n```dart\nFuture<void> interpretIssuedServerTimestamp(String serverTimestamp) async {\n  // Update HLC with server timestamp\n  HLC().receivePacked(serverTimestamp);\n  \n  // Get or create config record\n  final config = await configTable.select().getSingleOrNull() ??  \n      await into(configTable).insert(\n        ConfigCompanion.insert(\n          hlcAbsoluteZero: HLC().sendPacked(),\n        ),\n      );\n      \n  // Update the last server timestamp in config\n  await update(configTable).write(\n      ConfigCompanion(lastServerIssuedTimestamp: Value(serverTimestamp)));\n}\n```\n\nThis critical method performs several important tasks:\n\n1. **HLC Synchronization** - Updates the local Hybrid Logical Clock with the server's timestamp\n   - This keeps the client's time in sync with the server's time\n   - Ensures proper causality for future events\n\n2. **Config Management** - Ensures a config record exists \n   - Creates one if missing with the current HLC value as absolute zero\n   - Gets existing config otherwise\n\n3. **Timestamp Storage** - Updates the lastServerIssuedTimestamp field\n   - This value serves as a \"high water mark\" for future sync operations\n   - The client will only request events newer than this timestamp\n\nBy storing the server timestamp, the client enables efficient incremental synchronization, avoiding the need to download events it has already processed.",
+      "file": "backend/lib/src/client_database/crud.dart",
+      "line": 66,
+      "selection": {
+        "start": {
+          "line": 66,
+          "character": 1
+        },
+        "end": {
+          "line": 76,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Read Operations",
+      "description": "# Query Capabilities\n\nThe Read extension provides methods for querying the local database:\n\n```dart\nextension Read on ClientDatabase {\n  Future<List<Event>> getEvents() async {\n    // Return all events\n    return await select(eventsTable).get();\n  }\n  \n  Future<List<Event>> getLocalEventsA() async {\n    // Get local events created since last server timestamp\n    final lastServerTimestamp = await getLastServerIssuedTimestamp();\n    return await (select(eventsTable)\n      ..where((t) => t.timestamp.isGreaterThan(lastServerTimestamp)))\n      .get();\n  }\n}\n```\n\nThis extension demonstrates the query capabilities of the client database:\n\n1. **Simple Queries** - getEvents() returns all events without filtering\n2. **Filtered Queries** - getLocalEventsA() uses conditional filtering with .where()\n3. **Related Data** - getLastServerIssuedTimestamp() retrieves config information\n4. **Type Safety** - All queries return strongly-typed Dart objects\n\nDrift's query builder provides a fluent, type-safe API for constructing database queries. The ..where syntax is a cascading method call that modifies the select statement in place. This provides a readable, chainable syntax for building complex queries while maintaining compile-time type checking.",
+      "file": "backend/lib/src/client_database/read.dart",
+      "line": 3,
+      "selection": {
+        "start": {
+          "line": 3,
+          "character": 1
+        },
+        "end": {
+          "line": 12,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Flutter Integration - Sync Service",
+      "description": "# Integration with Flutter UI\n\nThe DataSyncService class demonstrates how to integrate the client database with a Flutter application:\n\n```dart\nclass DataSyncService extends ChangeNotifier {\n  final String serverUrl;\n  final ClientDatabase db;\n\n  DataSyncService({required this.serverUrl, required this.db});\n\n  /// Only does events, does not handle reduction\n  Future<void> sync() async {\n    try {\n      // 1. Prepare local events for sending\n      final postQuery = await db.pushEvents();\n      \n      // 2. Send events to server\n      final response = await http.post(\n        Uri.parse(serverUrl),\n        headers: {'Content-Type': 'application/json'},\n        body: jsonEncode(postQuery.toJson()),\n      );\n\n      // 3. Process server response\n      if (response.statusCode == 200) {\n        final postResponse = PostBundlesResponse.fromJson(\n          jsonDecode(response.body),\n        );\n        await db.pullEvents(postResponse);\n        notifyListeners();\n      } else {\n        throw Exception('Failed to sync data: ${response.statusCode}');\n      }\n    } catch (e) {\n      print('Error syncing data: $e');\n      rethrow;\n    }\n  }\n}\n```\n\nThis service demonstrates how to create a Flutter-friendly wrapper around the synchronization process:\n\n1. **ChangeNotifier** - Extends Flutter's ChangeNotifier for UI updates\n2. **Dependency Injection** - Takes serverUrl and db as constructor parameters\n3. **Sync Process** - Implements the complete sync flow in a simple method\n4. **UI Integration** - Calls notifyListeners() after sync to update UI components\n5. **Error Handling** - Includes try/catch for proper error presentation\n\nBy extending ChangeNotifier, this service can be used with Flutter's Provider pattern or other state management approaches. The notifyListeners() call ensures that UI components rebuild when synchronization completes, reflecting the latest data.",
+      "file": "client-view/lib/sync.dart",
+      "line": 8,
+      "selection": {
+        "start": {
+          "line": 8,
+          "character": 1
+        },
+        "end": {
+          "line": 38,
+          "character": 1
+        }
+      }
+    }
+  ]
+}

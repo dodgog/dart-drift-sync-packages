@@ -1,0 +1,236 @@
+{
+  "title": "07 - Drift Database Usage",
+  "description": "Explore how the Drift database library is used in the dart-drift-sync-packages system",
+  "steps": [
+    {
+      "title": "Drift Overview",
+      "description": "# Type-Safe Database Library\n\nDrift (formerly called Moor) is a modern database library for Dart and Flutter that wraps SQLite to provide compile-time checked database access. This library is foundational to the system's data persistence strategy.\n\nKey advantages of Drift that make it ideal for this project:\n\n1. **Type Safety** - Compile-time validation prevents SQL errors\n2. **Code Generation** - Automatically creates Dart classes from SQL schemas\n3. **Reactive Queries** - Support for Stream-based reactive data access\n4. **SQL Flexibility** - Full access to SQL power while maintaining type safety\n5. **Cross-Platform** - Works on all platforms supported by Flutter\n\nDrift is particularly well-suited for an event sourcing system because it combines the performance and reliability of SQLite with the type safety and expressiveness of Dart. It provides both the low-level SQL capabilities needed for complex event queries and the high-level abstractions that make the system easier to maintain.",
+      "file": "docs/architecture/07-drift-usage.md",
+      "line": 3
+    },
+    {
+      "title": "Schema Definition in .drift Files",
+      "description": "# SQL-Based Schema Definition\n\nOne of Drift's most powerful features is its SQL-based schema definition in dedicated .drift files. This approach combines the clarity of raw SQL with the type safety of generated Dart code.\n\nThis example shows the bundles table definition, which includes:\n\n1. **Primary Key** - A unique identifier for each bundle\n2. **Foreign Key** - A reference to the users table for data ownership\n3. **Timestamp** - When the bundle was created (for ordering)\n4. **Payload** - Optional JSON data containing serialized events\n\nBy defining schemas in dedicated .drift files rather than embedding SQL strings in Dart code, the system achieves better separation of concerns. Database structure is clearly separated from application logic, making both easier to understand and maintain.\n\nThe .drift file format also enables better IDE support, including syntax highlighting, autocomplete, and error checking for SQL syntax, enhancing developer productivity and reducing errors.",
+      "file": "backend/lib/src/shared_definitions/shared_bundles.drift",
+      "line": 1,
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 1
+        },
+        "end": {
+          "line": 6,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Custom Queries in .drift Files",
+      "description": "# Named SQL Queries\n\nBeyond table definitions, .drift files can contain custom SQL queries that are exposed as methods in the generated Dart code. This powerful feature enables complex database operations while maintaining type safety.\n\nThis example shows the insertEventIntoAttributes query, which:\n\n1. Inserts an event's data into the attributes table\n2. Handles conflicts by checking timestamps\n3. Implements the system's last-write-wins conflict resolution\n\nThe named query approach provides several benefits:\n- Centralizes complex SQL logic in one place\n- Makes the SQL directly visible and editable\n- Generates type-safe Dart methods automatically\n- Ensures consistent handling of similar operations\n\nThe use of SQL parameters (prefixed with ':') enables safe parameter binding, preventing SQL injection while maintaining performance. This query is particularly important as it implements the core conflict resolution strategy of the event sourcing system.",
+      "file": "backend/lib/src/client_definitions/attributes.drift",
+      "line": 12,
+      "selection": {
+        "start": {
+          "line": 12,
+          "character": 1
+        },
+        "end": {
+          "line": 22,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Database Class Definition",
+      "description": "# Drift Database Class\n\nThe heart of any Drift application is a database class annotated with @DriftDatabase. This class serves as the entry point for all database operations.\n\nThe key elements of this definition are:\n\n1. **@DriftDatabase Annotation** - Triggers code generation\n2. **include Parameter** - Specifies which .drift files define the schema\n3. **$ClientDatabase Parent** - Generated base class with all the database logic\n4. **Constructor Options** - Flexible initialization with executor or file parameters\n5. **Configuration Storage** - Field for storing initialization parameters\n\nThis approach follows a pattern common in code generation: the developer writes a minimal class with annotations, and the generator produces a much larger and more complex implementation. The developer then extends the generated class to add application-specific logic.\n\nThe flexibility in initialization options is particularly important for this system, as it allows the database to be used in various contexts: in-memory for tests, file-based for production, and with custom executors for special scenarios.",
+      "file": "backend/lib/src/client_database/database.dart",
+      "line": 15,
+      "selection": {
+        "start": {
+          "line": 15,
+          "character": 1
+        },
+        "end": {
+          "line": 27,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Database Connection Setup",
+      "description": "# Storage Backend Configuration\n\nDrift abstracts database storage behind the QueryExecutor interface, allowing for different storage implementations. This method creates the appropriate executor based on the parameters.\n\nThe system supports two primary storage modes:\n\n1. **File-Based Storage**:\n   - Persistent data across application restarts\n   - Uses NativeDatabase.createInBackground for non-blocking I/O\n   - Better for production use with real user data\n\n2. **In-Memory Storage**:\n   - Ephemeral data that exists only during application execution\n   - Typically faster performance for temporary operations\n   - Ideal for testing or demonstration purposes\n\nThe use of NativeDatabase.createInBackground is particularly important for Flutter applications, as it ensures database operations run on a background thread, preventing UI freezes when performing intensive database operations.\n\nThis flexibility in storage backends makes the system highly adaptable to different development and deployment scenarios without changing the database logic.",
+      "file": "backend/lib/src/client_database/database.dart",
+      "line": 29,
+      "selection": {
+        "start": {
+          "line": 29,
+          "character": 1
+        },
+        "end": {
+          "line": 35,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Migration Strategy",
+      "description": "# Schema Evolution and Initialization\n\nDrift's MigrationStrategy class allows for sophisticated handling of database creation, updates, and migrations. This implementation focuses on initialization.\n\nThe migration strategy includes several key components:\n\n1. **Schema Version** - Currently set to 1, but would increment with schema changes\n2. **beforeOpen Hook** - Executes when the database is opened\n3. **Conditional Initialization** - Only runs setup for newly created databases\n4. **HLC Setup** - Initializes the Hybrid Logical Clock with the client's ID\n\nThis approach ensures that database initialization happens exactly once, at the right time, with the proper configuration. The wasCreated flag is particularly important, as it prevents reinitialization of existing databases that might already contain user data.\n\nThe HLC initialization is a critical part of the system's distributed time synchronization mechanism. By placing it in the database initialization flow, the system ensures that time tracking is properly set up before any database operations occur.",
+      "file": "backend/lib/src/client_database/database.dart",
+      "line": 37,
+      "selection": {
+        "start": {
+          "line": 37,
+          "character": 1
+        },
+        "end": {
+          "line": 53,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Extension Pattern for Database Operations",
+      "description": "# Organizational Strategy\n\nRather than placing all database operations in a single class, the system uses Dart extensions to organize them by functionality. This extension declaration begins the API section.\n\nThe system employs several extensions to organize different aspects of database functionality:\n\n1. **Api** - Methods for external communication (shown here)\n2. **Crud** - Basic create, read, update, delete operations\n3. **Read** - Query operations for retrieving data\n4. **Setup** - Initialization and configuration operations\n\nThis extension pattern provides several advantages:\n- Better code organization by functional area\n- Smaller, more focused code files\n- Ability to distribute development across team members\n- Clearer separation of concerns\n\nWhile extensions don't provide true encapsulation (they can't have private members), they still offer a valuable organizational structure. They're particularly well-suited to this kind of database access layer, where the operations are clearly categorized by their purpose.",
+      "file": "backend/lib/src/client_database/api.dart",
+      "line": 8,
+      "selection": {
+        "start": {
+          "line": 8,
+          "character": 1
+        },
+        "end": {
+          "line": 8,
+          "character": 36
+        }
+      }
+    },
+    {
+      "title": "Type-Safe Query Building",
+      "description": "# Fluent Query Construction\n\nDrift provides a powerful, fluent API for building database queries in a type-safe manner. This example shows a query for retrieving attributes by entity ID.\n\nThe query construction demonstrates several key features:\n\n1. **Type-Safe Tables** - The attributesTable reference is strongly typed\n2. **Fluent Filtering** - The where clause uses a lambda for type-safe expressions\n3. **Property Access** - Entity properties are accessed directly as members\n4. **Comparison Operators** - Drift provides methods like equals() for conditions\n5. **Result Retrieval** - The get() method executes the query and returns typed results\n\nThis approach is considerably safer than string-based SQL, as the compiler can catch errors like typos in column names, type mismatches, or invalid operations. It also provides better IDE support with auto-completion and refactoring capabilities.\n\nFor applications, this means fewer runtime errors and easier maintenance, as changes to the database schema will often trigger compile-time errors in affected queries rather than failing at runtime.",
+      "file": "backend/lib/src/client_database/read.dart",
+      "line": 14,
+      "selection": {
+        "start": {
+          "line": 14,
+          "character": 1
+        },
+        "end": {
+          "line": 20,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Type-Safe Insert Operations",
+      "description": "# Structured Data Insertion\n\nDrift provides a type-safe approach to data insertion using companion classes. This method demonstrates inserting an event into the events table.\n\nThe insert operation includes several key components:\n\n1. **Target Specification** - The into() method specifies the target table\n2. **Companion Object** - EventsCompanion.insert wraps the data with type checking\n3. **Field Assignment** - Each database column is explicitly assigned\n4. **Conflict Strategy** - DoNothing() specifies how to handle duplicate keys\n5. **Return Value** - The operation returns the number of affected rows\n\nThe companion class pattern ensures that all required fields are provided and have the correct types. The insert variant specifically requires values for all non-nullable columns, helping prevent null constraint violations at runtime.\n\nThe DoNothing conflict strategy is particularly important for this system's idempotency requirements. It allows the same event to be inserted multiple times without error, which is crucial for resilient synchronization operations that may involve retries.",
+      "file": "backend/lib/src/client_database/crud.dart",
+      "line": 9,
+      "selection": {
+        "start": {
+          "line": 9,
+          "character": 1
+        },
+        "end": {
+          "line": 18,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Transaction Support",
+      "description": "# Atomic Operation Groups\n\nDrift provides transaction support for grouping multiple database operations into atomic units. This example shows processing multiple bundles with their events.\n\nThe transaction encompasses several operations for each bundle:\n\n1. **JSON Deserialization** - Extracting events from the bundle payload\n2. **Bundle Storage** - Saving the bundle record (without payload)\n3. **Event Processing** - Processing each event in the bundle\n4. **State Updates** - Updating the attributes table for each event\n\nAll these operations are wrapped in a single transaction using the transaction() method, which ensures that either all operations succeed or none do. This atomicity is critical for maintaining database consistency, especially when processing bundles that may contain multiple related events.\n\nIf any operation within the transaction fails (throws an exception), Drift automatically rolls back all changes made within the transaction. This prevents partial updates that could leave the database in an inconsistent state, which is particularly important for an event sourcing system where event integrity is paramount.",
+      "file": "backend/lib/src/client_database/crud.dart",
+      "line": 42,
+      "selection": {
+        "start": {
+          "line": 42,
+          "character": 1
+        },
+        "end": {
+          "line": 64,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Generated Code Usage",
+      "description": "# Using Generated Methods\n\nDrift's code generation creates methods from the SQL statements in .drift files. This example shows using the generated insertEventIntoAttributes method.\n\nThe method usage demonstrates several important aspects:\n\n1. **Namespacing** - The method is accessed through clientDrift.eventsDrift\n2. **Named Parameters** - Values are passed with type-safe named parameters\n3. **Direct Execution** - The method handles all SQL generation and execution\n4. **Parameter Mapping** - Event fields map directly to SQL parameters\n\nThis generated code approach creates a clean, type-safe bridge between the SQL definitions in .drift files and the Dart code that uses them. The developer doesn't need to write SQL strings or parameter bindings manually, reducing the risk of errors.\n\nThe clientDrift.eventsDrift path reveals the nested structure of the database accessors. This layered organization helps manage complexity in larger database schemas by grouping related operations together under namespaces that correspond to the .drift files.",
+      "file": "backend/lib/src/client_database/crud.dart",
+      "line": 20,
+      "selection": {
+        "start": {
+          "line": 20,
+          "character": 1
+        },
+        "end": {
+          "line": 28,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Multi-Database Architecture",
+      "description": "# Layered Database Design\n\nThe system employs a sophisticated multi-database architecture. This ServerDatabase class demonstrates this approach with its interface implementation.\n\nThe database architecture includes several key design elements:\n\n1. **Interface Implementation** - ServerDatabase implements ServerDatabaseInterface\n2. **Factory Pattern** - Static create() method returns the interface type\n3. **Internal Constructor** - Actual constructor is marked visibleForTesting\n4. **Configuration Injection** - Takes initialConfig and executor parameters\n5. **Inheritance** - Extends the generated $ServerDatabase class\n\nThis layered approach creates a clean separation between the interface consumers use and the implementation details. The static factory method pattern ensures that clients always interact with the database through its interface, not its concrete implementation.\n\nThis design is particularly valuable for testability, as it enables mocking the server database for client tests. It also facilitates future enhancements, as the implementation can change significantly without affecting code that uses the interface.",
+      "file": "backend/lib/src/server_database/database.dart",
+      "line": 19,
+      "selection": {
+        "start": {
+          "line": 19,
+          "character": 1
+        },
+        "end": {
+          "line": 42,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "PostgreSQL Support",
+      "description": "# Production Database Integration\n\nWhile Drift is primarily designed for SQLite, the server implementation can use PostgreSQL through a compatibility layer. This code shows the PostgreSQL setup.\n\nThe PostgreSQL integration includes several components:\n\n1. **PgDatabase** - A Drift executor that translates to PostgreSQL\n2. **Endpoint Configuration** - Connection details for the PostgreSQL server\n3. **Connection Settings** - Additional options like SSL mode\n4. **Database Initialization** - Passing the executor to the database\n\nThis capability is crucial for production deployments, as PostgreSQL offers advantages over SQLite for server workloads:\n- Better concurrency for multiple simultaneous clients\n- More robust tooling for backups and monitoring\n- Higher performance for large datasets\n- Better scaling across multiple server instances\n\nBy abstracting the database access behind the QueryExecutor interface, Drift allows the same database logic to work with either SQLite or PostgreSQL. This provides a smooth development path from local SQLite testing to production PostgreSQL deployment.",
+      "file": "server/bin/server.dart",
+      "line": 59,
+      "selection": {
+        "start": {
+          "line": 59,
+          "character": 1
+        },
+        "end": {
+          "line": 70,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "JSON Integration",
+      "description": "# Serialization for Network Transfer\n\nDrift integrates well with Dart's JSON serialization infrastructure. This BundleConverter demonstrates how database entities are prepared for network transmission.\n\nThe converter implements several important features:\n\n1. **JsonConverter Interface** - Standardized conversion between types\n2. **FieldRename** - Configures JSON field naming convention (snake_case)\n3. **Bidirectional Conversion** - Both toJson and fromJson methods\n4. **Type Safety** - Strong typing for both input and output\n\nThis integration is essential for the system's synchronization protocol, as it enables seamless conversion between database objects and JSON messages for network transfer. The consistent use of snake_case in JSON fields follows REST API conventions, making the protocol more standard and interoperable.\n\nThe JsonSerializable annotation triggers code generation for the actual serialization logic, reducing boilerplate while maintaining type safety. This generated code handles all the details of converting between Dart objects and JSON structures.",
+      "file": "backend/lib/src/shared_definitions/bundle_converter.dart",
+      "line": 6,
+      "selection": {
+        "start": {
+          "line": 6,
+          "character": 1
+        },
+        "end": {
+          "line": 16,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Flutter Integration",
+      "description": "# UI Reactivity Pattern\n\nDrift integrates seamlessly with Flutter's state management through reactive patterns. The DataSyncService demonstrates this integration.\n\nThis service class combines several important aspects:\n\n1. **ChangeNotifier Base** - Enables Flutter's notification system\n2. **Database Dependency** - Takes the database as a constructor parameter\n3. **Sync Method** - Handles the complete synchronization process\n4. **UI Updates** - Calls notifyListeners() to trigger UI rebuilds\n5. **Error Handling** - Includes try/catch for robust error management\n\nBy extending ChangeNotifier, this service can be used with Flutter's Provider pattern, enabling widget trees to automatically rebuild when synchronization completes. The notifyListeners() call signals to dependent UI components that data has changed and they should update.\n\nThis pattern creates a clean separation between UI components and database operations, with the service acting as a bridge. The UI doesn't need to know about database details, and the database doesn't need to know about UI concerns, enhancing maintainability and testability.",
+      "file": "client-view/lib/sync.dart",
+      "line": 8,
+      "selection": {
+        "start": {
+          "line": 8,
+          "character": 1
+        },
+        "end": {
+          "line": 38,
+          "character": 1
+        }
+      }
+    }
+  ]
+}

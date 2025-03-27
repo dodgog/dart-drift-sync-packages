@@ -1,0 +1,252 @@
+{
+  "title": "05 - Synchronization Protocol",
+  "description": "Explore the synchronization protocol used between clients and the server in the dart-drift-sync-packages system",
+  "steps": [
+    {
+      "title": "Protocol Overview",
+      "description": "# Communication Framework\n\nThe system implements a carefully designed synchronization protocol that enables reliable data transfer between clients and server. This protocol is built on several key design decisions:\n\n1. **HTTP Transport** - Uses standard REST endpoints for compatibility\n2. **JSON Serialization** - All messages use JSON for platform independence\n3. **Authentication Headers** - Every message includes credentials\n4. **Message Types** - Different query/response types for various operations\n5. **Incremental Updates** - Only transfers data that has changed\n\nThe protocol supports three main operations: posting events (standard sync), discovering bundle IDs, and retrieving specific bundles. Each operation is designed to be idempotent, allowing for safe retries in case of network failures.\n\nThis design balances efficiency (minimal data transfer) with resilience (ability to recover from failures) and security (consistent authentication).",
+      "file": "docs/architecture/05-synchronization-protocol.md",
+      "line": 3
+    },
+    {
+      "title": "Base Query Structure",
+      "description": "# Foundational Message Structure\n\nThe BaseQuery class serves as the parent for all client-to-server requests. This class establishes the core authentication and identification pattern used throughout the protocol.\n\nEvery client query must include:\n\n1. **userId** - Who is making the request (identity)\n2. **token** - Proof of authorization (authentication)\n3. **type** - What kind of operation is being requested (routing)\n\nThe use of a type discriminator field enables a single HTTP endpoint to handle multiple operation types, simplifying the server routing logic. This pattern is similar to GraphQL's operation type system but tailored specifically for the synchronization use case.\n\nThe class uses JSON serialization annotations to ensure consistent field naming (snake_case) and proper encoding/decoding. This attention to serialization details helps prevent data corruption during transmission.",
+      "file": "backend/lib/src/messaging/base_query.dart",
+      "line": 8,
+      "selection": {
+        "start": {
+          "line": 8,
+          "character": 1
+        },
+        "end": {
+          "line": 18,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Base Response Structure",
+      "description": "# Server Response Framework\n\nThe QueryResponse class mirrors the BaseQuery pattern but for server-to-client communication. It provides the foundation for all server responses, ensuring consistent structure and typing.\n\nEvery server response includes:\n\n1. **type** - Identifies what kind of response this is (e.g., \"post_bundles_response\")\n\nThe design is intentionally minimalist, containing only what's necessary for message routing. Each specific response type adds its own fields for the operation-specific data.\n\nThe class uses generic typing (QueryResponse<T>) to establish a type relationship between queries and their corresponding responses. This enhances type safety in the Dart code, helping prevent mismatches between request and response handlers.\n\nBy establishing these base classes, the system achieves consistent handling of messages throughout the codebase, reducing duplication and ensuring that all messages follow the same patterns.",
+      "file": "backend/lib/src/messaging/base_query_response.dart",
+      "line": 9,
+      "selection": {
+        "start": {
+          "line": 9,
+          "character": 1
+        },
+        "end": {
+          "line": 16,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Post Bundles Query",
+      "description": "# Primary Sync Request\n\nThe PostBundlesQuery class implements the standard synchronization request from client to server. This is the most frequently used operation in the protocol, handling the bidirectional exchange of events.\n\nIn addition to the standard authentication fields from BaseQuery, it includes:\n\n1. **clientTimestamp** - The client's current HLC time (for clock synchronization)\n2. **lastIssuedServerTimestamp** - Last timestamp received from server (for incremental sync)\n3. **bundles** - Collection of event bundles to send to the server\n\nThis query represents the heart of the synchronization process, enabling clients to:\n- Send their local changes to the server\n- Request any changes they haven't seen yet\n- Synchronize their logical clock with the server\n\nThe inclusion of the lastIssuedServerTimestamp is particularly important as it establishes the high-water mark for incremental synchronization. The server uses this to determine which events the client has already seen, avoiding redundant data transfer.",
+      "file": "backend/lib/src/messaging/post_bundles.dart",
+      "line": 11,
+      "selection": {
+        "start": {
+          "line": 11,
+          "character": 1
+        },
+        "end": {
+          "line": 31,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Post Bundles Response",
+      "description": "# Primary Sync Response\n\nThe PostBundlesResponse class defines the server's reply to a standard synchronization request. It completes the bidirectional sync by providing new data to the client.\n\nThe response includes three key elements:\n\n1. **lastIssuedServerTimestamp** - The server's current HLC time\n2. **insertedBundleIds** - IDs of client bundles that were successfully processed\n3. **newBundles** - New bundles from other clients that this client hasn't seen\n\nThis structure elegantly handles several crucial aspects of synchronization:\n\n- **Acknowledgment** - The insertedBundleIds confirms which bundles were received\n- **Clock Synchronization** - The timestamp updates the client's notion of server time\n- **Data Transfer** - The newBundles deliver events from other clients\n\nBy including only the bundle IDs rather than the full bundles for acknowledgment, the protocol reduces network traffic. The client already has these bundles locally and only needs confirmation that the server received them.",
+      "file": "backend/lib/src/messaging/post_bundles.dart",
+      "line": 33,
+      "selection": {
+        "start": {
+          "line": 33,
+          "character": 1
+        },
+        "end": {
+          "line": 53,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Get Bundle IDs Query",
+      "description": "# Discovery Request\n\nThe GetBundleIdsQuery represents an alternative synchronization approach focused on discovery. This query allows clients to learn what bundles exist without retrieving their contents.\n\nBeyond the standard authentication fields, it includes:\n\n1. **sinceTimestamp** - Optional filter to limit results to newer bundles\n\nThis query serves several important use cases:\n\n- **Initial Sync** - New clients discovering all available data\n- **Recovery** - After data loss, determining what needs to be retrieved\n- **Resuming Sync** - After network interruption, finding what was missed\n- **Quota Management** - Allowing clients to assess data volume before downloading\n\nThe optional sinceTimestamp parameter makes this query flexible enough to support both full and incremental discovery. This flexibility is particularly valuable for mobile applications, where network conditions and local storage constraints may vary widely.",
+      "file": "backend/lib/src/messaging/get_bundle_ids.dart",
+      "line": 10,
+      "selection": {
+        "start": {
+          "line": 10,
+          "character": 1
+        },
+        "end": {
+          "line": 23,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Get Bundle IDs Response",
+      "description": "# Discovery Response\n\nThe GetBundleIdsResponse provides the server's answer to a bundle discovery request. It contains a simple but crucial piece of information: the list of bundle IDs that match the client's criteria.\n\nThe response contains:\n\n1. **bundleIds** - List of string identifiers for available bundles\n\nThis minimal response structure reflects the focused purpose of the discovery operation. By returning only IDs rather than complete bundles, the response minimizes bandwidth usage while giving the client enough information to make decisions about what data to request.\n\nThe client can use this response to:\n- Compare with its local bundle inventory\n- Identify which bundles it's missing\n- Prioritize which bundles to request first\n- Estimate the volume of data that would need to be transferred\n\nThis two-phase approach to synchronization (discover then fetch) is particularly valuable for clients with limited bandwidth or storage constraints.",
+      "file": "backend/lib/src/messaging/get_bundle_ids.dart",
+      "line": 25,
+      "selection": {
+        "start": {
+          "line": 25,
+          "character": 1
+        },
+        "end": {
+          "line": 35,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Get Bundles Query",
+      "description": "# Targeted Data Request\n\nThe GetBundlesQuery completes the alternative synchronization path by allowing clients to request specific bundles. This operation gives clients precise control over which data they retrieve.\n\nIn addition to standard authentication, it includes:\n\n1. **bundleIds** - List of specific bundle identifiers to retrieve\n\nThis query is typically used after a GetBundleIdsQuery to selectively retrieve only the bundles a client needs. This targeted approach offers several advantages:\n\n- **Bandwidth Efficiency** - Only transfers required data\n- **Storage Control** - Clients can manage local storage constraints\n- **Prioritization** - Critical data can be synced before less important data\n- **Resumability** - Failed transfers can be retried precisely\n\nThe ability to request specific bundles makes the system more resilient to network interruptions and more adaptable to varying device capabilities. A powerful device with good connectivity might request all bundles at once, while a constrained device might retrieve them in smaller batches.",
+      "file": "backend/lib/src/messaging/get_bundles.dart",
+      "line": 10,
+      "selection": {
+        "start": {
+          "line": 10,
+          "character": 1
+        },
+        "end": {
+          "line": 23,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Get Bundles Response",
+      "description": "# Targeted Data Response\n\nThe GetBundlesResponse delivers the specific bundles requested by the client. This response completes the selective synchronization process initiated by a GetBundlesQuery.\n\nThe response contains:\n\n1. **bundles** - The complete bundle objects requested by the client\n\nEach bundle in this response includes its full payload, containing the serialized events that make up the bundle. This allows the client to process these events and update its local state accordingly.\n\nUnlike the standard synchronization flow, this response doesn't include a server timestamp or confirmation IDs, as it's not part of the bidirectional sync process. It's a simpler, unidirectional data transfer focused solely on delivering the requested bundles.\n\nThe server ensures security by only returning bundles that belong to the authenticated user, even if the client requests bundles it shouldn't have access to.",
+      "file": "backend/lib/src/messaging/get_bundles.dart",
+      "line": 25,
+      "selection": {
+        "start": {
+          "line": 25,
+          "character": 1
+        },
+        "end": {
+          "line": 35,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Bundle Structure",
+      "description": "# Core Data Transfer Unit\n\nBundles are the fundamental packaging unit for transferring events between clients and server. The bundle table schema reveals the essential structure of these transfer units.\n\nA bundle contains:\n\n1. **id** - Unique identifier for tracking and deduplication\n2. **user_id** - Owner of the bundle (security boundary)\n3. **timestamp** - When the bundle was created (HLC timestamp)\n4. **payload** - JSON-serialized events (may be null on client if already processed)\n\nBundles serve several critical functions in the protocol:\n\n- **Atomicity** - Events in a bundle are processed together\n- **Tracking** - Bundles can be acknowledged as a unit\n- **Batching** - Multiple events are transferred efficiently\n- **Security** - User association prevents data leakage\n\nThe fact that bundles reference users (rather than clients) reflects an important design decision: data belongs to users, not devices. This allows a user's data to synchronize across all their devices while maintaining security boundaries between different users.",
+      "file": "backend/lib/src/shared_definitions/shared_bundles.drift",
+      "line": 1,
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 1
+        },
+        "end": {
+          "line": 6,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Client Sync Flow - Prepare Query",
+      "description": "# Outbound Synchronization\n\nThe pushEvents method implements the client side of the standard synchronization process. This method handles the outbound phase of synchronization, preparing local events for transmission to the server.\n\nThe method performs several important steps:\n\n1. Retrieves all local events since the last server timestamp\n2. Creates a bundle with these events and the current client timestamp\n3. Stores a record of the bundle locally (without the payload to save space)\n4. Prepares a query object with authentication and the bundle\n\nInterestingly, the method handles the case where no new events exist by creating an empty query. This ensures regular synchronization occurs even when the client has no changes, allowing it to receive updates from the server.\n\nThe assignment of a unique ID and timestamp to the bundle is crucial for tracking and conflict resolution. The timestamp, generated using HLC, ensures proper ordering of events in the distributed system.",
+      "file": "backend/lib/src/client_database/api.dart",
+      "line": 10,
+      "selection": {
+        "start": {
+          "line": 10,
+          "character": 1
+        },
+        "end": {
+          "line": 30,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Client Sync Flow - Send and Receive",
+      "description": "# Complete Synchronization Cycle\n\nThe sync method in DataSyncService demonstrates the complete client synchronization cycle, from preparing the query to processing the response. This method orchestrates the entire process from a client application's perspective.\n\nThe synchronization flow follows a clear pattern:\n\n1. **Preparation** - Call db.pushEvents() to collect local changes\n2. **Transmission** - Send the query to server via HTTP POST\n3. **Reception** - Parse the server's JSON response\n4. **Integration** - Process the response via db.pullEvents() \n5. **Notification** - Update UI components via notifyListeners()\n\nThe method includes proper error handling, capturing network failures, server errors, and parsing issues. It also uses standard HTTP headers and status codes, making it compatible with any server that implements the protocol.\n\nPerhaps most importantly, this method demonstrates how the complex synchronization protocol is abstracted into a simple interface for application code. From the application's perspective, sync is just a single async method call, with all the complexity hidden inside the client database and this service.",
+      "file": "client-view/lib/sync.dart",
+      "line": 15,
+      "selection": {
+        "start": {
+          "line": 15,
+          "character": 1
+        },
+        "end": {
+          "line": 36,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Server Processing - Authentication",
+      "description": "# Security Verification\n\nBefore processing any client request, the server performs authentication. This section of the interpretQueryAndRespond method shows how the server validates user credentials before allowing access to data.\n\nThe authentication process is straightforward but effective:\n\n1. Extract the userId and token from the incoming query\n2. Call verifyUser to check for a matching record in the auth table\n3. If not found, throw an UnauthorizedException\n4. Otherwise, proceed with processing the request\n\nBy placing authentication at the beginning of the request pipeline, the server ensures that no unauthorized access occurs regardless of which operation is being attempted. This consistent security boundary protects all sync operations equally.\n\nThe use of a specific exception type (UnauthorizedException) allows the HTTP layer to translate this into the appropriate 401 Unauthorized response, following REST API best practices. This helps client applications distinguish between authentication failures and other types of errors.",
+      "file": "backend/lib/src/server_database/database.dart",
+      "line": 73,
+      "selection": {
+        "start": {
+          "line": 73,
+          "character": 1
+        },
+        "end": {
+          "line": 80,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Server Processing - Post Bundles",
+      "description": "# Bidirectional Data Exchange\n\nThe server's handling of PostBundlesQuery requests is where the heart of the synchronization protocol lives. This method processes the client's changes and prepares new data for the client in a single operation.\n\nThe processing sequence is carefully designed:\n\n1. Update the server's HLC with the client's timestamp\n2. Insert the client's bundles into the server database\n3. Extract and process events from these bundles\n4. Find bundles the client hasn't seen yet (based on lastIssuedServerTimestamp)\n5. Return a response with the current server timestamp, confirmation IDs, and new bundles\n\nA particularly elegant aspect is how the server filters the response to exclude bundles it just received from the client. This prevents the unnecessary round-trip of data the client already has.\n\nThe synchronized updating of HLC timestamps is crucial to the distributed nature of the system. It ensures that even if clients have been offline for extended periods, their events will be properly ordered when integrated into the central timeline.",
+      "file": "backend/lib/src/server_database/api.dart",
+      "line": 12,
+      "selection": {
+        "start": {
+          "line": 12,
+          "character": 1
+        },
+        "end": {
+          "line": 41,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Time Synchronization - Client",
+      "description": "# Client Clock Management\n\nTime synchronization is a critical aspect of the protocol, and this line shows the client side of the process. When building a synchronization query, the client includes its current HLC timestamp.\n\nThe call to HLC().sendPacked() performs two important functions:\n\n1. Updates the client's logical clock based on the physical clock\n2. Formats the timestamp as a string for transmission\n\nBy including its current timestamp in each query, the client enables the server to understand the client's notion of time. This is essential for maintaining causality across the distributed system - the server needs to know when the client believes these events occurred.\n\nThe packed timestamp format includes physical time, logical counter, and node ID, providing all the information needed for proper distributed time synchronization. This hybrid approach balances the need for time values that are close to real wall clock time with the logical ordering requirements of a distributed system.",
+      "file": "backend/lib/src/client_database/api.dart",
+      "line": 24,
+      "selection": {
+        "start": {
+          "line": 24,
+          "character": 1
+        },
+        "end": {
+          "line": 24,
+          "character": 35
+        }
+      }
+    },
+    {
+      "title": "Time Synchronization - Server",
+      "description": "# Server Clock Integration\n\nThe server side of time synchronization is equally important. This line shows how the server incorporates the client's timestamp into its own HLC.\n\nThe call to HLC().receivePacked(query.clientTimestamp) performs several key operations:\n\n1. Parses the client's packed timestamp format\n2. Compares it to the server's current physical and logical time\n3. Updates the server's HLC to reflect the information from the client\n4. Ensures the server's clock moves forward appropriately\n\nThis time synchronization mechanism handles several challenging distributed systems issues:\n\n- **Clock Skew** - Different devices may have different notions of time\n- **Causality** - Events that cause other events must be ordered correctly\n- **Time Progression** - Time must always move forward, never backward\n\nBy updating its clock with each client interaction, the server acts as a time synchronization hub, helping all clients establish a coherent timeline even if they never directly communicate with each other.",
+      "file": "backend/lib/src/server_database/api.dart",
+      "line": 20,
+      "selection": {
+        "start": {
+          "line": 20,
+          "character": 1
+        },
+        "end": {
+          "line": 20,
+          "character": 40
+        }
+      }
+    }
+  ]
+}

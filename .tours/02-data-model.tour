@@ -1,0 +1,188 @@
+{
+  "title": "02 - Data Model",
+  "description": "Explore the data model and schema design of the dart-drift-sync-packages system",
+  "steps": [
+    {
+      "title": "Core Data Concepts",
+      "description": "# Foundation of the Data Model\n\nThe system is built around three key data concepts that form the foundation of the event-sourcing architecture:\n\n1. **Events** - Immutable records of changes that have occurred\n   - Represent atomic changes to a single attribute\n   - Form a complete history of all changes\n   - Contain metadata about when, what, and who made the change\n\n2. **Attributes** - Current state derived from events\n   - Materialized view of entity state\n   - Updated when new events arrive\n   - Optimized for querying current values\n\n3. **Bundles** - Groups of events packaged for synchronization\n   - Efficient batching mechanism for network transfer\n   - Track sync status between client and server\n   - Include metadata for sync coordination\n\nThese concepts allow the system to maintain both historical changes (events) and current state (attributes) while efficiently synchronizing data between clients and server.",
+      "file": "docs/architecture/02-data-model.md",
+      "line": 5
+    },
+    {
+      "title": "Shared Schema Definition",
+      "description": "# Shared Bundles Table\n\nThe bundles table is shared between client and server, serving as the primary transfer unit for synchronization:\n\n```sql\nCREATE TABLE bundles (\n    id TEXT NOT NULL PRIMARY KEY,\n    user_id TEXT NOT NULL REFERENCES users (id),\n    timestamp TEXT NOT NULL,\n    payload TEXT\n);\n```\n\n- **id**: Unique identifier for the bundle (UUIDv7)\n- **user_id**: Associates the bundle with a specific user\n- **timestamp**: When the bundle was created (HLC timestamp)\n- **payload**: JSON-serialized event data (may be null on client if persisted to server)\n\nBundles serve as the transaction unit for synchronization - each bundle contains a batch of related events that should be processed together. The foreign key to users ensures that bundles are properly scoped to the correct user, preventing data leakage between users.",
+      "file": "backend/lib/src/shared_definitions/shared_bundles.drift",
+      "line": 1,
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 1
+        },
+        "end": {
+          "line": 6,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Shared Users Schema",
+      "description": "# User Identity Schema\n\nThe users table provides a consistent identity mechanism across client and server:\n\n```sql\nCREATE TABLE users (\n    id TEXT NOT NULL PRIMARY KEY,\n    name TEXT\n);\n```\n\n- **id**: Unique identifier for the user (UUIDv7)\n- **name**: Human-readable user name\n\nThis simple table establishes the foundation for user identity in the system. Both client and server share this schema to ensure consistent user references. The user table is essential as it:\n\n1. Provides the identity anchor for authentication\n2. Associates events and bundles with specific users\n3. Enables multi-user support in the system\n4. Serves as a foreign key target for user-specific data\n\nThe simplicity of this table reflects the focused purpose of the system on synchronization rather than comprehensive user profile management.",
+      "file": "backend/lib/src/shared_definitions/shared_users.drift",
+      "line": 1,
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 1
+        },
+        "end": {
+          "line": 4,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Events Schema",
+      "description": "# Events - The Core of Event Sourcing\n\nThe events table forms the heart of the event sourcing pattern:\n\n```sql\nCREATE TABLE events (\n    id TEXT NOT NULL PRIMARY KEY,\n    client_id TEXT NOT NULL REFERENCES clients(id),\n    entity_id TEXT NOT NULL,\n    attribute TEXT NOT NULL,\n    value TEXT NOT NULL,\n    timestamp TEXT NOT NULL\n);\n```\n\nEach field serves a specific purpose in the event model:\n\n- **id**: Unique identifier ensuring each event is processed exactly once\n- **client_id**: Identifies which device/application created the event\n- **entity_id**: The object being modified (e.g., a task, user profile, document)\n- **attribute**: Specific property of the entity being changed (e.g., \"title\", \"completed\")\n- **value**: New value for the attribute, serialized as text\n- **timestamp**: HLC timestamp providing causal ordering of events\n\nThis fine-grained event structure (one event per attribute change) makes conflict resolution straightforward, as conflicts can be resolved at the attribute level rather than requiring complex merging of entire entities. The events table grows continuously as changes occur, forming an append-only log of all modifications in the system.",
+      "file": "backend/lib/src/client_definitions/events.drift",
+      "line": 1,
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 1
+        },
+        "end": {
+          "line": 8,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Attributes Schema",
+      "description": "# Attributes - Current State View\n\nThe attributes table represents the current state derived from events:\n\n```sql\nCREATE TABLE attributes (\n    entity_id TEXT NOT NULL,\n    attribute TEXT,\n    value TEXT,\n    timestamp TEXT NOT NULL\n);\n\nCREATE UNIQUE INDEX attributes_entity_id_attribute ON attributes(entity_id, attribute);\n```\n\nThis table serves as a materialized view of the current state:\n\n- **entity_id**: Identifies the entity this attribute belongs to\n- **attribute**: Name of the property\n- **value**: Current value of the attribute\n- **timestamp**: When this value was last updated (for conflict resolution)\n\nThe unique index enforces that there's only one value for each entity/attribute pair. This makes querying the current state efficient - applications can query the attributes table directly without having to process the entire event history. \n\nThe timestamp field is critical for the conflict resolution strategy - when conflicting updates occur, the higher timestamp wins (last-write-wins policy). This timestamp-based approach enables deterministic conflict resolution across distributed clients.",
+      "file": "backend/lib/src/client_definitions/attributes.drift",
+      "line": 1,
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 1
+        },
+        "end": {
+          "line": 9,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Client-Specific Schema",
+      "description": "# Client Identity and Configuration\n\nThe client database includes tables specific to client operation:\n\n```sql\nCREATE TABLE clients (\n    id TEXT NOT NULL PRIMARY KEY\n);\n\nCREATE TABLE config (\n    last_server_issued_timestamp TEXT,\n    hlc_absolute_zero TEXT NOT NULL\n);\n```\n\nThese tables serve important functions in the client architecture:\n\n**Clients Table**:\n- Identifies the local device/application instance\n- Each client has a unique UUID to distinguish its events\n- Events are associated with the client that created them\n\n**Config Table**:\n- Stores critical sync state for incremental synchronization\n- **last_server_issued_timestamp**: Tracks the most recent timestamp from the server, allowing the client to request only newer events\n- **hlc_absolute_zero**: A baseline timestamp for HLC initialization, ensuring consistent time representation\n\nThe config table is particularly important as it maintains the synchronization state between client and server, enabling efficient incremental syncs by tracking the high-water mark of server timestamps seen by this client.",
+      "file": "backend/lib/src/client_definitions/users.drift",
+      "line": 1,
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 1
+        },
+        "end": {
+          "line": 8,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Server-Specific Schema",
+      "description": "# Server Authentication Table\n\nThe server includes additional tables for authentication and security:\n\n```sql\nCREATE TABLE auth (\n    user_id TEXT NOT NULL REFERENCES users(id),\n    token TEXT NOT NULL\n);\n```\n\nThe auth table manages authentication tokens for server access:\n\n- **user_id**: Links the token to a specific user account\n- **token**: Secret token for authenticating API requests\n\nThis simple authentication mechanism requires clients to provide both a user ID and matching token with each request. The server verifies these credentials before processing any synchronization operations.\n\nThe foreign key to the users table ensures referential integrity and prevents orphaned authentication records. This design enables multiple tokens per user (e.g., for different devices) while maintaining the security association to user accounts.\n\nIn a production environment, this table would likely include additional fields like token expiration, creation date, and device information.",
+      "file": "backend/lib/src/server_definitions/users.drift",
+      "line": 1,
+      "selection": {
+        "start": {
+          "line": 1,
+          "character": 1
+        },
+        "end": {
+          "line": 4,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Bundle Converter",
+      "description": "# JSON Serialization: Bundles\n\nThe system uses JSON serialization for data transfer between client and server. The BundleConverter class handles serialization of bundles:\n\n```dart\n@j.JsonSerializable(fieldRename: j.FieldRename.snake)\nclass BundleConverter implements j.JsonConverter<Bundle, Map<String, dynamic>> {\n  const BundleConverter();\n\n  @override\n  Bundle fromJson(Map<String, dynamic> json) => Bundle.fromJson(json);\n\n  @override\n  Map<String, dynamic> toJson(Bundle object) => object.toJson();\n}\n```\n\nThis converter:\n\n1. Implements JsonConverter interface from json_serializable package\n2. Converts between Bundle objects and JSON maps\n3. Uses snake_case for JSON field names (matching REST API conventions)\n4. Handles both serialization (toJson) and deserialization (fromJson)\n\nThe use of JSON serialization with strongly-typed converters ensures type safety while enabling seamless communication over HTTP. This pattern is used throughout the system for all data structures that need to be transmitted between client and server.",
+      "file": "backend/lib/src/shared_definitions/bundle_converter.dart",
+      "line": 6,
+      "selection": {
+        "start": {
+          "line": 6,
+          "character": 1
+        },
+        "end": {
+          "line": 16,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Event Converter",
+      "description": "# JSON Serialization: Events\n\nEvents also need serialization for transmission. The EventConverter handles this:\n\n```dart\n@j.JsonSerializable(fieldRename: j.FieldRename.snake)\nclass EventConverter implements j.JsonConverter<Event, Map<String, dynamic>> {\n  const EventConverter();\n\n  @override\n  Event fromJson(Map<String, dynamic> json) => Event.fromJson(json);\n\n  @override\n  Map<String, dynamic> toJson(Event object) => object.toJson();\n}\n```\n\nThis converter follows the same pattern as the BundleConverter, but for Event objects. It enables:\n\n1. Type-safe serialization of events for network transmission\n2. Consistent field naming with snake_case in JSON\n3. Automatic conversion between Dart objects and JSON structures\n\nThe event converter is especially important since events are the fundamental data unit in the system. Proper serialization ensures that all event metadata (IDs, timestamps, etc.) is preserved during transmission, maintaining the integrity of the event sourcing model across the distributed system.",
+      "file": "backend/lib/src/client_definitions/event_converter.dart",
+      "line": 8,
+      "selection": {
+        "start": {
+          "line": 8,
+          "character": 1
+        },
+        "end": {
+          "line": 18,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Event Payload Encoder",
+      "description": "# Event Payload Packaging\n\nWhen sending events to the server, they're packaged into an event payload structure:\n\n```dart\n@j.JsonSerializable(fieldRename: j.FieldRename.snake)\nclass EventPayload {\n  @EventConverter()\n  final List<Event> events;\n\n  EventPayload({required this.events});\n\n  factory EventPayload.fromJson(Map<String, dynamic> json) =>\n      _$EventPayloadFromJson(json);\n\n  Map<String, dynamic> toJson() => _$EventPayloadToJson(this);\n}\n```\n\nThe EventPayload class serves several important purposes:\n\n1. **Batching** - Groups multiple events together for efficient transmission\n2. **Encapsulation** - Provides a container structure for the event collection\n3. **Versioning** - Could be extended to include schema version information\n4. **Metadata** - Could include additional payload-level information\n\nThe @EventConverter annotation ensures that each event in the list is properly serialized using the EventConverter. This layered approach to serialization (bundles contain payload strings, which contain serialized events) provides flexibility in the protocol while maintaining strong typing.",
+      "file": "backend/lib/src/client_definitions/event_payload_encoder.dart",
+      "line": 8,
+      "selection": {
+        "start": {
+          "line": 8,
+          "character": 1
+        },
+        "end": {
+          "line": 18,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Entity State Derivation",
+      "description": "# Conflict Resolution Strategy\n\nThis query handles the core conflict resolution strategy when inserting events into the attributes table:\n\n```sql\ninsertEventIntoAttributes:\nINSERT INTO attributes (entity_id, attribute, value, timestamp)\nVALUES (\n    :entity_id,\n    :attribute,\n    :value,\n    :timestamp\n)\nON CONFLICT (entity_id, attribute) DO UPDATE\nSET value = excluded.value,\n    timestamp = excluded.timestamp\nWHERE excluded.timestamp > attributes.timestamp;\n```\n\nThis SQL implements a sophisticated last-write-wins conflict resolution:\n\n1. Attempts to insert the event data into the attributes table\n2. If a conflict occurs (same entity_id and attribute already exists):\n   - Compares the timestamps of the existing and new values\n   - Only updates if the new timestamp is later than the existing one\n   - Otherwise keeps the existing value (silently ignoring the update)\n\nThis approach ensures that when conflicting updates occur (e.g., the same attribute modified on two different clients), the later change (as determined by HLC timestamps) always wins. This deterministic conflict resolution strategy ensures that all clients will eventually converge to the same state.",
+      "file": "backend/lib/src/client_definitions/attributes.drift",
+      "line": 12,
+      "selection": {
+        "start": {
+          "line": 12,
+          "character": 1
+        },
+        "end": {
+          "line": 22,
+          "character": 1
+        }
+      }
+    },
+    {
+      "title": "Full State Reconstruction",
+      "description": "# Rebuilding State from Events\n\nThis complex query demonstrates how to completely rebuild the attributes table from the event history:\n\n```sql\ninsertAllEventsIntoAttributes:\nINSERT OR REPLACE INTO attributes (entity_id, attribute, value, timestamp)\nSELECT e1.entity_id, e1.attribute, e1.value, e1.timestamp\nFROM events e1\nLEFT OUTER JOIN events e2 ON\n  e1.entity_id = e2.entity_id AND\n  e1.attribute = e2.attribute AND\n  e2.timestamp > e1.timestamp\nWHERE e2.entity_id IS NULL\nAND NOT EXISTS (\n  SELECT 1 FROM attributes a\n  WHERE a.entity_id = e1.entity_id\n  AND a.attribute = e1.attribute\n  AND a.timestamp > e1.timestamp\n);\n```\n\nThis sophisticated SQL query demonstrates a key concept in event sourcing - the ability to reconstruct the current state from the event log:\n\n1. It selects events (e1) from the events table\n2. The LEFT OUTER JOIN looks for any newer events (e2) for the same entity/attribute\n3. The WHERE e2.entity_id IS NULL filter ensures we only get the latest event for each entity/attribute pair\n4. The NOT EXISTS clause ensures we don't overwrite newer attributes with older events\n\nThis query allows the system to rebuild the entire attributes table from scratch if needed, or to add missing attributes from the event history. This capability is essential for recovery scenarios and demonstrates the power of the event sourcing pattern - as long as the event log is intact, the current state can always be reconstructed.",
+      "file": "backend/lib/src/client_definitions/attributes.drift",
+      "line": 24,
+      "selection": {
+        "start": {
+          "line": 24,
+          "character": 1
+        },
+        "end": {
+          "line": 39,
+          "character": 1
+        }
+      }
+    }
+  ]
+}
