@@ -507,6 +507,24 @@ class AttributesDrift extends i2.ModularAccessor {
     );
   }
 
+  i0.Selectable<i1.Attribute> getAttributesForEntity(
+      {required String entityId}) {
+    return customSelect(
+        switch (executor.dialect) {
+          i0.SqlDialect.sqlite =>
+            'SELECT * FROM attributes WHERE entity_id = ?1',
+          i0.SqlDialect.postgres ||
+          _ =>
+            'SELECT * FROM attributes WHERE entity_id = \$1',
+        },
+        variables: [
+          i0.Variable<String>(entityId)
+        ],
+        readsFrom: {
+          attributes,
+        }).asyncMap(attributes.mapFromRow);
+  }
+
   i1.Attributes get attributes => i2.ReadDatabaseContainer(attachedDatabase)
       .resultSet<i1.Attributes>('attributes');
   i3.Events get events =>

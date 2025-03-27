@@ -55,3 +55,7 @@ AND NOT EXISTS (
   AND a.attribute = e1.attribute
   AND a.timestamp > e1.timestamp
 );
+
+getAttributesForEntity:
+SELECT * FROM attributes
+WHERE entity_id = :entity_id;

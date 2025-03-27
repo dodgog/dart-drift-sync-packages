@@ -56,7 +56,7 @@ Future<Response> _putDataHandler(Request request) async {
 
 void main(List<String> args) async {
   // Initialize PostgreSQL database
-  store = ServerDatabase.create(
+  store = ServerDatabase.createInterface(
     initialConfig: ServerDatabaseConfig(),
     executor: PgDatabase(
       endpoint: pg.Endpoint(

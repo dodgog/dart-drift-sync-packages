@@ -10,6 +10,10 @@ import 'package:uuidv7/uuidv7.dart';
 import 'database.dart';
 import 'setup.dart';
 
+// TODO handle missing bundles
+
+// TODO handle bundles which are only present locally
+
 /// Handles formation of queries and interprets responses
 ///
 /// Does not write anything directly, for that relies on the CRUD extension
@@ -66,16 +70,19 @@ extension Api on ClientDatabase {
 
   // AIUSE: helped fill out the signatures
 
-  Future<List<String>> getMissingBundleIds(
+  Future<(List<String>, List<String>)> getDifferenceBundleIds(
       GetBundleIdsResponse response) async {
     final localBundleIds = (await getLocalBundleIds()).toSet();
-
     final serverBundleIds = response.bundleIds.toSet();
-    final missingBundleIds =
-        serverBundleIds.difference(localBundleIds).toList();
 
-    return missingBundleIds;
+    final locallyMissingBundleIds =
+        serverBundleIds.difference(localBundleIds).toList(growable: false);
+    final remotelyMissingBundleIds =
+        localBundleIds.difference(serverBundleIds).toList(growable: false);
+
+    return (locallyMissingBundleIds, remotelyMissingBundleIds);
   }
+
 
   Future<GetBundlesQuery> requestBundles(List<String> bundleIds) async {
     final config = await getVerifiedConfig();
