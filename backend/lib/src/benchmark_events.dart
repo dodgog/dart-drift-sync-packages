@@ -24,7 +24,7 @@ void main() async {
       closeStreamsSynchronously: true,
     ),
   );
-  await db.ensureInitialized();
+  await db.initialize();
 
   final stopwatch = Stopwatch()..start();
 

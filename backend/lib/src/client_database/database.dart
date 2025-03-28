@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:backend/client_database.dart';
+import 'package:backend/messaging.dart';
 import 'package:backend/shared_database.dart';
 import 'package:backend/src/client_database/interface.dart';
+import 'package:backend/src/client_database/node_helper.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
@@ -38,6 +41,13 @@ class ClientDatabase extends $ClientDatabase
   }
 
   final ClientDatabaseConfig? initialConfig;
+
+  late JsonCommunicator? _sendJsonAndGetResponse;
+
+  JsonCommunicator get communicator =>
+      _sendJsonAndGetResponse ??
+      (throw DatabaseInitException("Json communicator not initialized"));
+  late NodeHelper _nodeHelper;
 
   Future<bool> get _didExecutorOpen => executor.ensureOpen(this);
 
@@ -77,16 +87,34 @@ class ClientDatabase extends $ClientDatabase
     );
   }
 
-  /// TODO: perhaps move to HLC not being a singleton but rather a database
-  /// attribute
-  Future<void> ensureInitialized() async {
-    if ((await _didExecutorOpen) != true) {
-      throw DatabaseInitException('Failed to open database executor');
-    }
-  }
-
   @visibleForTesting
   static void cleanSlateForTesting() {
     HLC.reset();
   }
+
+  @override
+  Future<void> initialize({JsonCommunicator? sendJsonAndGetResponse}) async {
+    await _didExecutorOpen;
+
+    _sendJsonAndGetResponse = sendJsonAndGetResponse;
+
+    _nodeHelper = NodeHelper(this);
+  }
+
+  @override
+  Future<void> sync() async {
+    final outgoing = (await pushEvents()).toJson();
+    final response = await communicator(outgoing);
+    return await pullEvents(PostBundlesResponse.fromJson(response));
+  }
+
+  @override
+  Future<int> verifyBundlesAndPullMissing() async {
+    throw UnimplementedError();
+  }
+
+  @override
+  NodeHelper getNodeHelper() => _nodeHelper;
+
+// Private helper methods...
 }
