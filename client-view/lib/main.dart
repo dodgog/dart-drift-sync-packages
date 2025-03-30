@@ -1,10 +1,12 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:backend/client_definitions.dart';
+import 'package:backend/client_interface.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:backend/client_database.dart';
-import 'package:drift/native.dart';
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'sync.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,7 +14,8 @@ void main() async {
   final supportDir = await getApplicationSupportDirectory();
   print('Application Support Directory: ${supportDir.path}');
 
-  final db = ClientDatabase(
+  // Create database instance
+  final db = ClientDatabase.createInterface(
     initialConfig: ClientDatabaseConfig(
       clientId: "client1", // You should generate this uniquely per device
       userId: "user1", // Get this from your auth system
@@ -21,27 +24,46 @@ void main() async {
     executor: driftDatabase(
       name: 'my_database',
       native: const DriftNativeOptions(
-        // By default, `driftDatabase` from `package:drift_flutter` stores the
-        // database files in `getApplicationDocumentsDirectory()`.
         databaseDirectory: getApplicationSupportDirectory,
       ),
     ),
   );
 
-  final syncService = DataSyncService(
-    serverUrl:
-        'https://1078-2601-645-c683-3c60-3de5-6e85-cabb-b55e.ngrok-free.app/data',
-    db: db,
-  );
+  // Define server URL
+  const serverUrl =
+      'https://5c13-2600-1700-1420-6960-adf7-3198-8477-3cdb.ngrok-free.app/data';
+      // 'https://1078-2601-645-c683-3c60-3de5-6e85-cabb-b55e.ngrok-free.app/data';
 
-  runApp(MyApp(db: db, syncService: syncService));
+  // Create JSON communicator function
+  Future<Map<String, dynamic>> jsonCommunicator(
+    Map<String, dynamic> data,
+  ) async {
+    print("Sending request to server: ${jsonEncode(data)}");
+    final response = await http.post(
+      Uri.parse(serverUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(
+        'Failed to communicate with server: ${response.statusCode}',
+      );
+    }
+  }
+
+  // Initialize database with JSON communicator
+  await db.initialize(sendJsonAndGetResponse: jsonCommunicator);
+
+  runApp(MyApp(db: db));
 }
 
 class MyApp extends StatelessWidget {
-  final ClientDatabase db;
-  final DataSyncService syncService;
+  final ClientDatabaseInterface db;
 
-  const MyApp({super.key, required this.db, required this.syncService});
+  const MyApp({super.key, required this.db});
 
   @override
   Widget build(BuildContext context) {
@@ -51,64 +73,176 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: MyHomePage(db: db, syncService: syncService),
+      home: MyHomePage(db: db),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  final ClientDatabase db;
-  final DataSyncService syncService;
+  final ClientDatabaseInterface db;
 
-  const MyHomePage({super.key, required this.db, required this.syncService});
+  const MyHomePage({super.key, required this.db});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-//TODO: instead of loadDocuments, listen to the library updates query stream from the db
-
 class _MyHomePageState extends State<MyHomePage> {
-  List<Node> nodes = [];
+  List<ActionableObject<DocumentNodeObj>> documents = [];
+  bool isLoading = true;
+  StreamSubscription<void>? _nodesSubscription;
+  late NodeHelper nodeHelper;
 
   @override
   void initState() {
     super.initState();
-    _reduce();
-    widget.syncService.addListener(_reduce);
+    nodeHelper = widget.db.getNodeHelper();
+    _loadDocuments();
+    _setupNodeWatcher();
+    // Get node helper from database
+  }
+
+  Future<void> _setupNodeWatcher() async {
+    try {
+      final nodeHelper = widget.db.getNodeHelper();
+      final watchStream = await nodeHelper.watch();
+      _nodesSubscription = watchStream.listen((_) {
+        _loadDocuments();
+      });
+    } catch (e) {
+      print('Error setting up node watcher: $e');
+    }
   }
 
   @override
   void dispose() {
+    _nodesSubscription?.cancel();
     super.dispose();
-    widget.syncService.removeListener(_reduce);
   }
 
+  // Load documents from the database
+  Future<void> _loadDocuments() async {
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // Get all documents
+      documents = await nodeHelper.getAllDocuments();
+
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading documents: $e');
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  // Sync with server
   Future<void> _sync() async {
-    widget.syncService.sync();
+    try {
+      await widget.db.sync();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Sync failed: ${e.toString()}')));
+      }
+    }
   }
 
-  Future<void> _reduce() async {
-    nodes = await widget.db.clientDrift.reduceAllEventsIntoNodes();
-    setState(() => {});
+  // Add a new document
+  Future<void> _addDocument() async {
+    try {
+      final nodeHelper = widget.db.getNodeHelper();
+      await nodeHelper.create(author: "New Author", title: "New Document");
+      await _loadDocuments();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add document: ${e.toString()}')),
+      );
+    }
   }
 
-  Future<void> _addNode(NodeContent content) async {
-    final event = issueRawDocumentCreateEventFromContent(content);
-    widget.db.clientDrift.insertLocalEventWithClientId(event);
-    _reduce();
+  // Delete a document
+  Future<void> _deleteDocument(
+    ActionableObject<DocumentNodeObj> document,
+  ) async {
+    try {
+      await document.delete();
+      await _loadDocuments();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete document: ${e.toString()}')),
+      );
+    }
   }
 
-  Future<void> _deleteNode(Node node) async {
-    final event = node.issueRawDeleteNodeEvent();
-    widget.db.clientDrift.insertLocalEventWithClientId(event);
-    _reduce();
-  }
+  // Edit document title and author
+  Future<void> _editDocument(ActionableObject<DocumentNodeObj> document) async {
+    final TextEditingController titleController = TextEditingController(
+      text: document.nodeObj.title,
+    );
+    final TextEditingController authorController = TextEditingController(
+      text: document.nodeObj.author,
+    );
 
-  Future<void> _mutateNode(Node node, NodeContent newContent) async {
-    final event = node.issueRawEditEventFromMutatedContent(newContent);
-    widget.db.clientDrift.insertLocalEventWithClientId(event);
-    _reduce();
+    return showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Edit Document'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(labelText: 'Title'),
+                ),
+                TextField(
+                  controller: authorController,
+                  decoration: const InputDecoration(labelText: 'Author'),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  try {
+                    Navigator.pop(context);
+                    await document.edit(
+                      title: titleController.text,
+                      author: authorController.text,
+                    );
+                    await _loadDocuments();
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Failed to update document: ${e.toString()}',
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          ),
+    );
   }
 
   @override
@@ -118,45 +252,48 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Documents'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.synagogue),
+            icon: const Icon(Icons.sync),
             onPressed: _sync,
-            tooltip: 'Sync from server',
+            tooltip: 'Sync with server',
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount:
-            nodes
-                .where((e) => e.isDeleted == 0)
-                .where((e) => e.type == NodeTypes.document)
-                .length,
-        itemBuilder: (context, index) {
-          final node =
-              nodes
-                  .where((e) => e.isDeleted == 0)
-                  .where((e) => e.type == NodeTypes.document)
-                  .toList()[index];
-          return ListTile(
-            title: Text(node.content.title! + node.id),
-            subtitle: Text(node.content.author!),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () async {
-                _deleteNode(node);
-              },
-            ),
-          );
-        },
-      ),
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : documents.isEmpty
+              ? const Center(child: Text('No documents found'))
+              : ListView.builder(
+                itemCount: documents.length,
+                itemBuilder: (context, index) {
+                  final doc = documents[index];
+                  // Skip deleted documents
+                  if (doc.nodeObj.isDeleted) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return ListTile(
+                    title: Text(doc.nodeObj.title),
+                    subtitle: Text(doc.nodeObj.author),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () => _editDocument(doc),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _deleteDocument(doc),
+                        ),
+                      ],
+                    ),
+                    onTap: () => _editDocument(doc),
+                  );
+                },
+              ),
       floatingActionButton: FloatingActionButton(
-        onPressed:
-            () => _addNode(
-              NodeContent(NodeTypes.document, "author", "title", [
-                "list",
-                "of",
-                "strings",
-              ]),
-            ),
+        onPressed: _addDocument,
         tooltip: 'Add Document',
         child: const Icon(Icons.add),
       ),
