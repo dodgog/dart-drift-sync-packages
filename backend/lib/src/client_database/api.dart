@@ -32,8 +32,8 @@ extension Api on ClientDatabase {
     );
 
     final query = PostBundlesQuery(
-      config.userToken!,
       config.userId!,
+      config.userToken!,
       HLC().sendPacked(),
       config.lastServerIssuedTimestamp,
       [bundle],

@@ -7,7 +7,7 @@ class NodeHelper {
 
   NodeHelper(this._db);
 
-  ClientDatabase _db;
+  final ClientDatabase _db;
 
 // can create all supported node types: documentnodeobj, SimpleNodeObj
 // creating them creates events and inserts them into the events table and
@@ -50,11 +50,12 @@ class NodeHelper {
       url: url,
     );
 
-    // Insert events into database
-    for (final event in events) {
-      await _db.clientDrift.insertLocalEventWithClientId(event);
-      await _db.clientDrift.insertLocalEventIntoAttributes(event);
-    }
+    await _db.transaction(()async {
+      for (final event in events) {
+        await _db.clientDrift.insertLocalEventWithClientId(event);
+        await _db.clientDrift.insertLocalEventIntoAttributes(event);
+      }
+    });
 
     // Fetch the created node from database
     final entityId = events.first.entityId;
@@ -62,7 +63,6 @@ class NodeHelper {
     final attributes =
         await _db.clientDrift.attributesDrift.getAttrubutesById(entityId);
 
-    // Convert attributes to node object
     final nodeObj = NodeObj.fromAttributes(attributes);
     if (nodeObj == null) {
       throw NodeException('Failed to create document node');
@@ -105,11 +105,12 @@ class ActionableObject<T extends NodeObj> {
       return nodeObj;
     }
 
-    // Insert events into database
-    for (final event in events) {
-      await _db.clientDrift.insertLocalEventWithClientId(event);
-      await _db.clientDrift.insertLocalEventIntoAttributes(event);
-    }
+    await _db.transaction(()async {
+      for (final event in events) {
+        await _db.clientDrift.insertLocalEventWithClientId(event);
+        await _db.clientDrift.insertLocalEventIntoAttributes(event);
+      }
+    });
 
     // Fetch the updated node from database
     List<Attribute> attributes =
@@ -138,9 +139,10 @@ class ActionableObject<T extends NodeObj> {
     // Create deletion event
     final event = deleteNode(nodeId: nodeObj.id);
 
-    // Insert event into database
-    await _db.clientDrift.insertLocalEventWithClientId(event);
-    await _db.clientDrift.insertLocalEventIntoAttributes(event);
+    await _db.transaction(()async {
+        await _db.clientDrift.insertLocalEventWithClientId(event);
+        await _db.clientDrift.insertLocalEventIntoAttributes(event);
+    });
 
     List<Attribute> attributes =
         await _db.clientDrift.attributesDrift.getAttrubutesById(nodeObj.id);
