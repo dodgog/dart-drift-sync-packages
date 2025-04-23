@@ -4,7 +4,6 @@ import 'package:uuidv7/uuidv7.dart';
 
 import 'package:backend/client_definitions.dart';
 
-import '../nodes/types.dart';
 
 /// todo make these executable in the context of client
 
@@ -25,7 +24,7 @@ Event createEventWithMissingClient({
 }
 
 /// Creates a new node with basic attributes
-List<Event> createNode({
+List<Event> _createNode({
   required NodeTypes type,
 }) {
   final entityId = generateUuidV7String();
@@ -45,7 +44,7 @@ List<Event> createDocumentNode({
   required String title,
   String? url,
 }) {
-  final events = createNode(type: NodeTypes.document);
+  final events = _createNode(type: NodeTypes.document);
   final entityId = events.first.entityId;
 
   events.addAll([
@@ -75,7 +74,7 @@ List<Event> createDocumentNode({
 }
 
 /// Modifies an existing node's attribute
-Event modifyNode({
+Event _modifyNode({
   required String nodeId,
   required String attribute,
   required String value,
@@ -97,7 +96,7 @@ List<Event> modifyDocumentNode({
   final events = <Event>[];
 
   if (author != null) {
-    events.add(modifyNode(
+    events.add(_modifyNode(
       nodeId: nodeId,
       attribute: "author",
       value: author,
@@ -105,7 +104,7 @@ List<Event> modifyDocumentNode({
   }
 
   if (title != null) {
-    events.add(modifyNode(
+    events.add(_modifyNode(
       nodeId: nodeId,
       attribute: "title",
       value: title,
@@ -113,7 +112,7 @@ List<Event> modifyDocumentNode({
   }
 
   if (url != null) {
-    events.add(modifyNode(
+    events.add(_modifyNode(
       nodeId: nodeId,
       attribute: "url",
       value: url,

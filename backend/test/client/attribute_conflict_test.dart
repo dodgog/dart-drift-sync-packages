@@ -23,7 +23,7 @@ void main() {
       ),
     );
 
-    await db.ensureInitialized();
+    await db.initialize();
   });
 
   tearDown(() async {

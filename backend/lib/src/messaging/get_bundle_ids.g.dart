@@ -25,6 +25,7 @@ GetBundleIdsResponse _$GetBundleIdsResponseFromJson(
         Map<String, dynamic> json) =>
     GetBundleIdsResponse(
       (json['bundle_ids'] as List<dynamic>).map((e) => e as String).toList(),
+      sinceTimestamp: json['since_timestamp'] as String?,
     )..type = json['type'] as String;
 
 Map<String, dynamic> _$GetBundleIdsResponseToJson(
@@ -32,4 +33,5 @@ Map<String, dynamic> _$GetBundleIdsResponseToJson(
     <String, dynamic>{
       'type': instance.type,
       'bundle_ids': instance.bundleIds,
+      'since_timestamp': instance.sinceTimestamp,
     };

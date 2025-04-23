@@ -9,6 +9,10 @@ extension ClientNodeHelper on AttributesDrift {
     return await insertAllEventsIntoAttributes();
   }
 
+  Future<List<Attribute>> getAttrubutesById(String entityId) async {
+    return await getAttributesForEntity(entityId: entityId).get();
+  }
+
   Future<List<DocumentNodeObj>> getDocuments() async {
     final attributes = await getAttributes().get();
     return DocumentNodeObj.fromAllAttributes(attributes);

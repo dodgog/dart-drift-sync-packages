@@ -29,7 +29,7 @@ class ServerDatabase extends $ServerDatabase
   }) : super(executor ?? _openConnection(file: file));
 
   // TODO: make this constructor the only thing available to the consumer
-  static ServerDatabaseInterface create({
+  static ServerDatabaseInterface createInterface({
     ServerDatabaseConfig? initialConfig,
     QueryExecutor? executor,
     File? file,
@@ -89,15 +89,15 @@ class ServerDatabase extends $ServerDatabase
     switch (baseQuery.type) {
       case "post_bundles_query":
         return (await interpretIncomingAuthedPostBundlesQueryAndRespond(
-                baseQuery as PostBundlesQuery))
+                PostBundlesQuery.fromJson(parsedJsonMap)))
             .toJson();
       case "get_bundle_ids_query":
         return (await interpretIncomingAuthedGetBundleIdsAndRespond(
-                baseQuery as GetBundleIdsQuery))
+                GetBundleIdsQuery.fromJson(parsedJsonMap)))
             .toJson();
       case "get_bundles_query":
         return (await interpretIncomingAuthedGetBundlesAndRespond(
-                baseQuery as GetBundlesQuery))
+                GetBundlesQuery.fromJson(parsedJsonMap)))
             .toJson();
       default:
         throw UnrecognizedQueryException(

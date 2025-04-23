@@ -1,19 +1,24 @@
 import 'dart:io';
 
+import 'package:backend/client_database.dart';
+import 'package:backend/messaging.dart';
 import 'package:backend/shared_database.dart';
+import 'package:backend/src/client_database/interface.dart';
+import 'package:backend/src/client_database/node_helper.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:meta/meta.dart';
 
-import 'config.dart';
 import 'database.drift.dart';
 import 'setup.dart';
 
 @DriftDatabase(
   include: {'package:backend/client.drift'},
 )
-class ClientDatabase extends $ClientDatabase {
+class ClientDatabase extends $ClientDatabase
+    implements ClientDatabaseInterface {
+  @visibleForTesting
   ClientDatabase({
     this.initialConfig,
     QueryExecutor? executor,
@@ -22,7 +27,26 @@ class ClientDatabase extends $ClientDatabase {
     // TODO ideally it should be initialized with the id value from config
   }
 
+  static ClientDatabaseInterface createInterface({
+    ClientDatabaseConfig? initialConfig,
+    QueryExecutor? executor,
+    File? file,
+  }) {
+    return ClientDatabase(
+      initialConfig: initialConfig,
+      executor: executor,
+      file: file,
+    );
+  }
+
   final ClientDatabaseConfig? initialConfig;
+
+  late JsonCommunicator? _sendJsonAndGetResponse;
+
+  JsonCommunicator get communicator =>
+      _sendJsonAndGetResponse ??
+      (throw DatabaseInitException("Json communicator not initialized"));
+  late NodeHelper _nodeHelper;
 
   Future<bool> get _didExecutorOpen => executor.ensureOpen(this);
 
@@ -62,16 +86,34 @@ class ClientDatabase extends $ClientDatabase {
     );
   }
 
-  /// TODO: perhaps move to HLC not being a singleton but rather a database
-  /// attribute
-  Future<void> ensureInitialized() async {
-    if ((await _didExecutorOpen) != true) {
-      throw DatabaseInitException('Failed to open database executor');
-    }
-  }
-
   @visibleForTesting
   static void cleanSlateForTesting() {
     HLC.reset();
   }
+
+  @override
+  Future<void> initialize({JsonCommunicator? sendJsonAndGetResponse}) async {
+    await _didExecutorOpen;
+
+    _sendJsonAndGetResponse = sendJsonAndGetResponse;
+
+    _nodeHelper = NodeHelper(this);
+  }
+
+  @override
+  Future<void> sync() async {
+    final outgoing = (await pushEvents()).toJson();
+    final response = await communicator(outgoing);
+    return await pullEvents(PostBundlesResponse.fromJson(response));
+  }
+
+  @override
+  Future<int> verifyBundlesAndPullMissing() async {
+    throw UnimplementedError();
+  }
+
+  @override
+  NodeHelper getNodeHelper() => _nodeHelper;
+
+// Private helper methods...
 }

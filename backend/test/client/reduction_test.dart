@@ -22,7 +22,7 @@ void main() {
           NativeDatabase.memory(),
           closeStreamsSynchronously: true,
         ));
-    await db.ensureInitialized();
+    await db.initialize();
   });
 
   tearDown(() async {
