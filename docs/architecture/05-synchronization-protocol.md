@@ -1,10 +1,12 @@
 # Synchronization Protocol
 
-This document details the synchronization protocol used between clients and the server in the dart-drift-sync-packages system.
+This document details the synchronization protocol used between clients and the
+server in the dart-drift-sync-packages system.
 
 ## Protocol Overview
 
-The synchronization protocol is based on a RESTful API with JSON-serialized messages. The protocol enables:
+The synchronization protocol is based on a RESTful API with JSON-serialized
+messages. The protocol enables:
 
 - Event-based synchronization between clients and server
 - Incremental updates to minimize bandwidth
@@ -13,7 +15,8 @@ The synchronization protocol is based on a RESTful API with JSON-serialized mess
 
 ## Message Types
 
-The protocol defines several message types for different synchronization operations:
+The protocol defines several message types for different synchronization
+operations:
 
 ### Base Query and Response
 
@@ -44,6 +47,7 @@ class QueryResponse<T> {
 Used to send events from client to server and receive new events:
 
 **Query:**
+
 ```dart
 class PostBundlesQuery extends BaseQuery {
   String clientTimestamp;
@@ -61,6 +65,7 @@ class PostBundlesQuery extends BaseQuery {
 ```
 
 **Response:**
+
 ```dart
 class PostBundlesResponse extends QueryResponse<PostBundlesQuery> {
   String lastIssuedServerTimestamp;
@@ -80,6 +85,7 @@ class PostBundlesResponse extends QueryResponse<PostBundlesQuery> {
 Used to request the IDs of all bundles available for a user:
 
 **Query:**
+
 ```dart
 class GetBundleIdsQuery extends BaseQuery {
   String? sinceTimestamp;
@@ -93,6 +99,7 @@ class GetBundleIdsQuery extends BaseQuery {
 ```
 
 **Response:**
+
 ```dart
 class GetBundleIdsResponse extends QueryResponse<GetBundleIdsQuery> {
   List<String> bundleIds;
@@ -107,6 +114,7 @@ class GetBundleIdsResponse extends QueryResponse<GetBundleIdsQuery> {
 Used to request specific bundles by their IDs:
 
 **Query:**
+
 ```dart
 class GetBundlesQuery extends BaseQuery {
   List<String> bundleIds;
@@ -120,6 +128,7 @@ class GetBundlesQuery extends BaseQuery {
 ```
 
 **Response:**
+
 ```dart
 class GetBundlesResponse extends QueryResponse<GetBundlesQuery> {
   List<Bundle> bundles;
@@ -138,24 +147,24 @@ The protocol supports multiple synchronization flows depending on client needs:
 The most common flow for regular synchronization:
 
 1. **Client** prepares a `PostBundlesQuery` with:
-   - Local events since last sync
-   - Last server timestamp
-   - Current client timestamp
+    - Local events since last sync
+    - Last server timestamp
+    - Current client timestamp
 
 2. **Server** processes the query:
-   - Updates its HLC with client timestamp
-   - Inserts client bundles
-   - Retrieves new bundles for the client
+    - Updates its HLC with client timestamp
+    - Inserts client bundles
+    - Retrieves new bundles for the client
 
 3. **Server** sends `PostBundlesResponse` with:
-   - New server timestamp
-   - IDs of inserted bundles (for confirmation)
-   - New bundles for the client
+    - New server timestamp
+    - IDs of inserted bundles (for confirmation)
+    - New bundles for the client
 
 4. **Client** processes the response:
-   - Updates last server timestamp
-   - Marks local bundles as confirmed
-   - Inserts new events from server bundles
+    - Updates last server timestamp
+    - Marks local bundles as confirmed
+    - Inserts new events from server bundles
 
 ### Full Resync Flow
 
@@ -276,6 +285,7 @@ class ExampleMessage {
 ### Batching
 
 To optimize performance:
+
 - Events are batched into bundles
 - Multiple bundles can be sent in a single request
 - Responses may include multiple bundles
@@ -283,6 +293,7 @@ To optimize performance:
 ### Idempotency
 
 The protocol is designed to be idempotent:
+
 - Duplicate bundle insertions are ignored
 - Bundle IDs provide deduplication
 - Event IDs ensure unique events

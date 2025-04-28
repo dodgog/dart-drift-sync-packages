@@ -1,12 +1,18 @@
 # Server Architecture
 
-This document details the server-side architecture of the dart-drift-sync-packages system, focusing on the central database, API endpoints, and event processing capabilities.
+This document details the server-side architecture of the
+dart-drift-sync-packages system, focusing on the central database, API
+endpoints, and event processing capabilities.
 
 ## Server Database Structure
 
-The server database is the central source of truth for the system. It is defined in the `ServerDatabase` class, which can use either SQLite (for development/testing) or PostgreSQL (for production) as its underlying storage engine. 
+The server database is the central source of truth for the system. It is defined
+in the `ServerDatabase` class, which can use either SQLite (for
+development/testing) or PostgreSQL (for production) as its underlying storage
+engine.
 
 The database is responsible for:
+
 - Storing all events from all clients
 - Authenticating users and clients
 - Processing sync requests
@@ -16,7 +22,8 @@ The database is responsible for:
 
 ### Database Core
 
-The `ServerDatabase` class (`src/server_database/database.dart`) implements the `ServerDatabaseInterface`:
+The `ServerDatabase` class (`src/server_database/database.dart`) implements
+the `ServerDatabaseInterface`:
 
 ```dart
 @DriftDatabase(
@@ -51,13 +58,15 @@ class ServerDatabase extends $ServerDatabase
 ```
 
 The database can be initialized with:
+
 - In-memory storage (for testing)
 - File-based SQLite (for development)
 - PostgreSQL connection (for production, via appropriate executor)
 
 ### Interface Layer
 
-The `ServerDatabaseInterface` (`src/server_database/interface.dart`) defines the public API that server implementations expose:
+The `ServerDatabaseInterface` (`src/server_database/interface.dart`) defines the
+public API that server implementations expose:
 
 ```dart
 abstract class ServerDatabaseInterface {
@@ -74,7 +83,8 @@ abstract class ServerDatabaseInterface {
 }
 ```
 
-This interface ensures a clean separation between the internal database implementation and the external API surface.
+This interface ensures a clean separation between the internal database
+implementation and the external API surface.
 
 ### Authentication
 
@@ -89,7 +99,8 @@ Authentication (`src/server_database/auth.dart`) handles:
 The `Api` extension (`src/server_database/api.dart`) processes client requests:
 
 - `interpretIncomingAuthedPostBundlesQueryAndRespond()` - Handles event posting
-- `interpretIncomingAuthedGetBundleIdsAndRespond()` - Returns available bundle IDs
+- `interpretIncomingAuthedGetBundleIdsAndRespond()` - Returns available bundle
+  IDs
 - `interpretIncomingAuthedGetBundlesAndRespond()` - Returns requested bundles
 
 ## Internal Operations

@@ -1,10 +1,13 @@
 # Drift Database Usage
 
-This document details how the Drift database library is used in the dart-drift-sync-packages system, explaining the schema design, query construction, and database operations.
+This document details how the Drift database library is used in the
+dart-drift-sync-packages system, explaining the schema design, query
+construction, and database operations.
 
 ## Drift Overview
 
-[Drift](https://drift.simonbinder.eu/) (formerly Moor) is a reactive persistence library for Dart/Flutter that wraps SQLite and provides:
+[Drift](https://drift.simonbinder.eu/) (formerly Moor) is a reactive persistence
+library for Dart/Flutter that wraps SQLite and provides:
 
 - Type-safe SQL query generation
 - Database schema definition in SQL
@@ -66,12 +69,13 @@ The system uses Drift's code generation extensively:
    ```
 
 2. **Generated Files** - For each `.drift` file, Drift generates:
-   - Table classes
-   - Data classes
-   - Query methods
-   - Database accessors
+    - Table classes
+    - Data classes
+    - Query methods
+    - Database accessors
 
-3. **Extension Pattern** - The system uses extensions to organize database operations:
+3. **Extension Pattern** - The system uses extensions to organize database
+   operations:
    ```dart
    extension Api on ClientDatabase {
      // API methods...
@@ -290,6 +294,7 @@ final sharedBundles = await clientDrift.sharedDrift.sharedBundlesDrift.insertBun
 ```
 
 This structure allows for:
+
 - Code organization
 - Shared components between client and server
 - Modular development

@@ -1,6 +1,8 @@
 # Event Sourcing Pattern Implementation
 
-This document details how the Event Sourcing pattern is implemented in the dart-drift-sync-packages system, explaining the concepts, benefits, and specific implementation details.
+This document details how the Event Sourcing pattern is implemented in the
+dart-drift-sync-packages system, explaining the concepts, benefits, and specific
+implementation details.
 
 ## Event Sourcing Concept
 
@@ -11,16 +13,20 @@ Event Sourcing is an architectural pattern where:
 3. The current state can be derived by replaying all events
 4. The event log becomes the principal source of truth
 
-This approach differs from traditional CRUD where only the current state is stored.
+This approach differs from traditional CRUD where only the current state is
+stored.
 
 ## Benefits in the Context of This System
 
 The dart-drift-sync-packages implementation leverages these benefits:
 
-1. **Complete History** - Every change is preserved, enabling auditing and time-based analysis
+1. **Complete History** - Every change is preserved, enabling auditing and
+   time-based analysis
 2. **Natural Fit for Sync** - Events are easy to transfer between systems
-3. **Conflict Resolution** - Timestamps provide natural ordering for conflict resolution
-4. **State Reconstruction** - Any point-in-time state can be derived by replaying events
+3. **Conflict Resolution** - Timestamps provide natural ordering for conflict
+   resolution
+4. **State Reconstruction** - Any point-in-time state can be derived by
+   replaying events
 5. **Decoupled Logic** - Event processing is separated from event generation
 
 ## Event Structure
@@ -94,6 +100,7 @@ WHERE excluded.timestamp > attributes.timestamp;
 ```
 
 This SQL:
+
 1. Inserts the event's data into the attributes table
 2. If the attribute already exists, only updates if the new event is newer
 3. Effectively implements a "last-write-wins" conflict resolution
@@ -141,6 +148,7 @@ AND NOT EXISTS (
 ```
 
 This complex query:
+
 1. Selects only the latest event for each entity/attribute pair
 2. Ensures no newer event exists for that entity/attribute
 3. Rebuilds the entire attributes table from the event history
@@ -160,6 +168,7 @@ final bundle = Bundle(
 ```
 
 Bundles provide:
+
 - Batching for efficient network transfer
 - Atomic transaction units
 - Confirmation tracking
@@ -180,6 +189,7 @@ HLC().receivePacked(remoteTimestamp);
 ```
 
 HLC combines physical time with logical counters to:
+
 1. Ensure event causality is preserved
 2. Handle clock skew between distributed devices
 3. Allow for deterministic ordering of concurrent events
@@ -203,13 +213,15 @@ WHERE excluded.timestamp > attributes.timestamp;
 
 ## Snapshots and Performance Optimization
 
-While the system does not yet implement full snapshotting, the attributes table serves as a form of snapshot:
+While the system does not yet implement full snapshotting, the attributes table
+serves as a form of snapshot:
 
 1. It represents the current state derived from all events
 2. It allows for efficient queries without processing all events
 3. It can be rebuilt from the event log if needed
 
 Future optimizations could include:
+
 - Periodic snapshots of the entire state
 - Pruning of old events after snapshotting
 - Selective event replay for specific entities
@@ -247,6 +259,7 @@ The implementation addresses several common challenges:
 ### 1. Schema Evolution
 
 The system handles schema evolution by:
+
 - Using text-based values for flexibility
 - Maintaining schema version numbers
 - Including migration strategies
@@ -254,6 +267,7 @@ The system handles schema evolution by:
 ### 2. Performance
 
 Performance optimizations include:
+
 - The attributes table as a materialized view
 - Indexed queries on common attributes
 - Batched event processing
@@ -262,6 +276,7 @@ Performance optimizations include:
 ### 3. Concurrency
 
 Concurrency is managed through:
+
 - HLC timestamps for ordering
 - Last-write-wins conflict resolution
 - Transaction-based updates
@@ -269,6 +284,7 @@ Concurrency is managed through:
 ### 4. Query Complexity
 
 The system simplifies queries by:
+
 - Providing the attributes table for direct state access
 - Offering helper methods for common queries
 - Abstracting event processing details

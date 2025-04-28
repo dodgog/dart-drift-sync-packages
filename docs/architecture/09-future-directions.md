@@ -1,10 +1,13 @@
 # Future Directions
 
-This document outlines potential future directions and enhancements for the dart-drift-sync-packages system, based on TODOs and comments found in the codebase and logical next steps for this architecture.
+This document outlines potential future directions and enhancements for the
+dart-drift-sync-packages system, based on TODOs and comments found in the
+codebase and logical next steps for this architecture.
 
 ## Current Limitations and TODOs
 
-The existing codebase contains several TODOs and commented areas for future improvement:
+The existing codebase contains several TODOs and commented areas for future
+improvement:
 
 ### Hybrid Logical Clock Persistence
 
@@ -13,7 +16,9 @@ The existing codebase contains several TODOs and commented areas for future impr
 // attribute
 ```
 
-The current implementation initializes HLC on database startup but doesn't persist its state. Future enhancements should store HLC state in the database to handle restarts properly.
+The current implementation initializes HLC on database startup but doesn't
+persist its state. Future enhancements should store HLC state in the database to
+handle restarts properly.
 
 ### Bundle-Event Relationship
 
@@ -22,7 +27,9 @@ The current implementation initializes HLC on database startup but doesn't persi
 // THINK: maybe a table which would relate events to bundles
 ```
 
-Currently, bundles and events have a somewhat loose relationship. A future enhancement could include explicit tracking of which events belong to which bundles.
+Currently, bundles and events have a somewhat loose relationship. A future
+enhancement could include explicit tracking of which events belong to which
+bundles.
 
 ### Server Timestamp Issuance
 
@@ -30,7 +37,9 @@ Currently, bundles and events have a somewhat loose relationship. A future enhan
 // TODO get the last issued timestamp to ensure continuous issuance
 ```
 
-The server currently initializes HLC without considering previously issued timestamps. This could be improved to ensure continuous and monotonic timestamp issuance.
+The server currently initializes HLC without considering previously issued
+timestamps. This could be improved to ensure continuous and monotonic timestamp
+issuance.
 
 ### Bundle ID Assignment
 
@@ -39,13 +48,16 @@ The server currently initializes HLC without considering previously issued times
 // should assign it
 ```
 
-There's an open question about whether bundle IDs should be assigned by clients or the server. This design decision could be revisited.
+There's an open question about whether bundle IDs should be assigned by clients
+or the server. This design decision could be revisited.
 
 ## Architectural Enhancements
 
 ### 1. CRDT Data Structures
 
-The system is designed as a foundation for Conflict-free Replicated Data Types (CRDTs), but doesn't yet implement specific CRDT data structures. Future enhancements could include:
+The system is designed as a foundation for Conflict-free Replicated Data Types (
+CRDTs), but doesn't yet implement specific CRDT data structures. Future
+enhancements could include:
 
 - **List CRDT** - For collaborative lists/arrays
 - **Text CRDT** - For collaborative text editing
@@ -54,7 +66,8 @@ The system is designed as a foundation for Conflict-free Replicated Data Types (
 
 ### 2. Advanced Conflict Resolution
 
-Current conflict resolution is primarily timestamp-based (last-write-wins). More sophisticated strategies could include:
+Current conflict resolution is primarily timestamp-based (last-write-wins). More
+sophisticated strategies could include:
 
 - **Semantic Merging** - Content-aware conflict resolution
 - **Three-Way Merging** - Using common ancestor for better resolution
@@ -72,7 +85,8 @@ As event logs grow, performance could be improved with:
 
 ### 4. Multi-User Collaboration
 
-The system has a foundation for multi-user access, but could be enhanced for real-time collaboration:
+The system has a foundation for multi-user access, but could be enhanced for
+real-time collaboration:
 
 - **Presence Indicators** - Showing which users are currently active
 - **Operational Transformation** - For real-time collaborative editing
@@ -135,7 +149,8 @@ The current API could be enhanced with:
 
 ### 4. Monitoring and Analytics
 
-The system doesn't currently have extensive monitoring capabilities. Future additions could include:
+The system doesn't currently have extensive monitoring capabilities. Future
+additions could include:
 
 - **Event Metrics** - Tracking event volumes and patterns
 - **Sync Performance** - Measuring sync times and volumes
@@ -146,7 +161,8 @@ The system doesn't currently have extensive monitoring capabilities. Future addi
 
 ### 1. Web Support
 
-The system is currently focused on mobile and server, but could be enhanced for web:
+The system is currently focused on mobile and server, but could be enhanced for
+web:
 
 - **IndexedDB Adaptor** - For client-side storage in browsers
 - **PWA Support** - For offline-capable web applications
@@ -192,8 +208,10 @@ Based on the TODOs in the codebase, immediate next steps could include:
 The long-term vision for this system could be:
 
 1. **Full CRDT Library** - A comprehensive library of CRDT data structures
-2. **Framework Integration** - Seamless integration with Flutter and other frameworks
-3. **Enterprise Features** - Security, monitoring, and management for large-scale use
+2. **Framework Integration** - Seamless integration with Flutter and other
+   frameworks
+3. **Enterprise Features** - Security, monitoring, and management for
+   large-scale use
 4. **Cloud Service** - Managed sync service for easy adoption
 5. **Cross-Platform Support** - Web, mobile, desktop clients
 
@@ -202,21 +220,25 @@ The long-term vision for this system could be:
 A potential roadmap could be:
 
 ### Version 1.1
+
 - Complete all current TODOs
 - Add comprehensive test coverage
 - Enhance documentation
 
 ### Version 1.2
+
 - Implement basic CRDT data structures
 - Add snapshots and pruning
 - Improve authentication
 
 ### Version 1.3
+
 - Add monitoring and analytics
 - Enhance synchronization protocol
 - Implement more advanced conflict resolution
 
 ### Version 2.0
+
 - Full collaborative features
 - Web platform support
 - Developer tools and admin interface

@@ -1,10 +1,14 @@
 # Client Architecture
 
-This document details the client-side architecture of the dart-drift-sync-packages system, focusing on the local database, event generation, and synchronization capabilities.
+This document details the client-side architecture of the
+dart-drift-sync-packages system, focusing on the local database, event
+generation, and synchronization capabilities.
 
 ## Client Database Structure
 
-The client database is implemented using Drift (formerly Moor), a reactive persistence library for Dart. The client database is defined in the `ClientDatabase` class, which:
+The client database is implemented using Drift (formerly Moor), a reactive
+persistence library for Dart. The client database is defined in
+the `ClientDatabase` class, which:
 
 - Uses SQLite as the storage engine
 - Maintains local event log
@@ -16,7 +20,8 @@ The client database is implemented using Drift (formerly Moor), a reactive persi
 
 ### Database Core
 
-The `ClientDatabase` class (`src/client_database/database.dart`) is the foundation of the client architecture:
+The `ClientDatabase` class (`src/client_database/database.dart`) is the
+foundation of the client architecture:
 
 ```dart
 @DriftDatabase(
@@ -34,13 +39,15 @@ class ClientDatabase extends $ClientDatabase {
 ```
 
 The database can be initialized with:
+
 - In-memory storage (for testing)
 - File-based storage (for production)
 - Initial configuration parameters
 
 ### Configuration
 
-Client configuration (`src/client_database/config.dart`) stores critical sync information:
+Client configuration (`src/client_database/config.dart`) stores critical sync
+information:
 
 - User ID and authentication token
 - Last server timestamp (for incremental sync)
@@ -49,7 +56,8 @@ Client configuration (`src/client_database/config.dart`) stores critical sync in
 
 ### API Layer
 
-The `Api` extension (`src/client_database/api.dart`) provides methods for interaction with the server:
+The `Api` extension (`src/client_database/api.dart`) provides methods for
+interaction with the server:
 
 - `pushEvents()` - Prepares local events for sending to server
 - `pullEvents()` - Processes events received from server
@@ -60,11 +68,13 @@ The `Api` extension (`src/client_database/api.dart`) provides methods for intera
 
 ### CRUD Operations
 
-The `Crud` extension (`src/client_database/crud.dart`) handles database operations:
+The `Crud` extension (`src/client_database/crud.dart`) handles database
+operations:
 
 - `interpretIssuedServerTimestamp()` - Updates sync timestamp
 - `insertNewEventsFromNewBundles()` - Adds new events from server
-- `registerBundlesPersistedToServerWithoutPayload()` - Records which bundles were confirmed
+- `registerBundlesPersistedToServerWithoutPayload()` - Records which bundles
+  were confirmed
 
 ### Setup and Initialization
 
@@ -80,11 +90,11 @@ The client requires proper initialization (`src/client_database/setup.dart`):
 
 1. Application code creates an event
 2. Event is assigned:
-   - UUID
-   - Client ID
-   - Current timestamp (from HLC)
-   - Entity ID and attribute
-   - Value
+    - UUID
+    - Client ID
+    - Current timestamp (from HLC)
+    - Entity ID and attribute
+    - Value
 
 3. Event is stored in the local events table
 4. Attribute table is updated to reflect new value
@@ -92,13 +102,13 @@ The client requires proper initialization (`src/client_database/setup.dart`):
 ### Event Processing
 
 1. When new events arrive from the server:
-   - Events are stored in the events table
-   - Attributes table is updated based on timestamp ordering
-   - Last server timestamp is updated
+    - Events are stored in the events table
+    - Attributes table is updated based on timestamp ordering
+    - Last server timestamp is updated
 
 2. Conflict resolution is handled automatically:
-   - Last-write-wins based on timestamps
-   - HLC ensures proper causality across devices
+    - Last-write-wins based on timestamps
+    - HLC ensures proper causality across devices
 
 ## Query Access
 
@@ -145,6 +155,7 @@ await db.pullEvents(postResponse);
 ```
 
 This process:
+
 1. Collects all local events since last sync
 2. Packages them into a bundle
 3. Sends them to the server
@@ -176,11 +187,12 @@ In a Flutter application (`client-view`), the client is typically:
 1. Initialized during app startup
 2. Wrapped in a provider for dependency injection
 3. Sync is triggered:
-   - Periodically
-   - On network reconnection
-   - On user action
+    - Periodically
+    - On network reconnection
+    - On user action
 
-The `DataSyncService` class provides a Flutter-friendly wrapper with change notification:
+The `DataSyncService` class provides a Flutter-friendly wrapper with change
+notification:
 
 ```dart
 class DataSyncService extends ChangeNotifier {
