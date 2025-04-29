@@ -198,3 +198,14 @@ CREATE TABLE config_values (
 ## EXPLAIN
 
 - `JsonCommunicator`?
+
+----------------------------
+
+## NODES
+
+- There's no clear separation of sync + knowledge graph (pipes / content)
+- There should be a very clear package demarkation between the two surfaces, since knowledge graph doesn't care about sync at all and vice versa
+- The best way to design the Nodes / CoreData API is to literally build an app with it and see what APIs you'd expect
+- A bunch of efficiency gains can be expected by
+  - memoizing `getRequiredAttribute` calls
+  - computing all the attribute objects at the very start (big switch statement) + creating a map / dict for easy access
