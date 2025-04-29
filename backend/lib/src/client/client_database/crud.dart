@@ -1,9 +1,6 @@
 import 'dart:convert';
 
-import 'package:backend/client_database.dart';
-import 'package:backend/client_definitions.dart';
-
-import 'database.dart';
+import 'package:backend/client.dart';
 
 extension Crud on ClientDatabase {
   Future<int> interpretIssuedServerTimestamp(

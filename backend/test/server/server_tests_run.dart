@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:backend/client.dart';
 
 import 'package:backend/client_definitions.dart';
 import 'package:backend/messaging.dart';

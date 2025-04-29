@@ -1,10 +1,8 @@
 import 'dart:io';
 
-import 'package:backend/client_database.dart';
+import 'package:backend/client.dart';
 import 'package:backend/messaging.dart';
 import 'package:backend/shared_database.dart';
-import 'interface.dart';
-import 'node_helper.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
@@ -92,8 +90,7 @@ class ClientDatabase extends $ClientDatabase
   }
 
   @override
-  Future<void> initialize(
-      {JsonServerMessenger? sendJsonAndGetResponse}) async {
+  Future<void> initialize({JsonServerMessenger? sendJsonAndGetResponse}) async {
     await _didExecutorOpen;
 
     _sendJsonAndGetResponse = sendJsonAndGetResponse;
