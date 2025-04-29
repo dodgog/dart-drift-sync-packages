@@ -1,4 +1,3 @@
-import 'package:backend/client_definitions.dart';
 import 'package:backend/client_xd.dart';
 
 extension ClientEventHelper on ClientDrift {
