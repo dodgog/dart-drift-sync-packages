@@ -1,9 +1,4 @@
 import 'package:backend/client.drift';
---import 'users.drift';
-
-
---import 'event_types.dart';
---import 'event_content.dart';
 
 CREATE TABLE events (
     id TEXT NOT NULL PRIMARY KEY,

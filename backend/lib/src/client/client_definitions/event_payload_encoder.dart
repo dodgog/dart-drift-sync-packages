@@ -1,8 +1,6 @@
-// import 'package:backend/shared_definitions.dart';
 import 'package:backend/client_library.dart';
 import 'package:json_annotation/json_annotation.dart' as j;
 
-//
 part 'event_payload_encoder.g.dart';
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)

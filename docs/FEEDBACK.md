@@ -12,86 +12,17 @@
 - Feels like `server_database` should be part of the `server` package and not
   the `backend` since it's handling server database setup and config which the
   shared `backend` package doesn't reuse.
+- VA: there is no backend package
 
 - Separate out and organize SQL drift files:
   `client_definitions/users.drift` has config info which should be
   in `client/definitions/config.drift`
+- [ ]
 
 - Barrel files: move barrel files to sub folders so the root folder is not
   cluttered
+- [x] VA: agreed, done
 
-```
-    backend/lib/
-    ├── src/
-    │   ├── core/                              # Core shared functionality
-    │   │   ├── database/                      # Common database functionality
-    │   │   │   ├── config.dart                # Database configuration
-    │   │   │   └── interface.dart             # Common interfaces
-    │   │   ├── models/                        # Shared data models
-    │   │   │   ├── bundles.dart
-    │   │   │   └── users.dart
-    │   │   └── utils/                         # Shared utilities
-    │   │       ├── converters/                # Type converters
-    │   │       │   ├── bundle_converter.dart
-    │   │       │   └── event_converter.dart
-    │   │       └── encoders/
-    │   │           └── event_payload_encoder.dart
-    │   │
-    │   ├── client/                            # Client-side functionality
-    │   │   ├── database/                      # Client database implementation
-    │   │   │   ├── api.dart
-    │   │   │   ├── crud.dart
-    │   │   │   ├── database.dart
-    │   │   │   ├── read.dart
-    │   │   │   └── setup.dart
-    │   │   ├── definitions/                   # Client data definitions
-    │   │   │   ├── schema/                    # Database schema
-    │   │   │   │   ├── attributes.drift
-    │   │   │   │   ├── events.drift
-    │   │   │   │   └── users.drift
-    │   │   │   └── nodes/                     # Node-related definitions
-    │   │   │       ├── attributes.dart
-    │   │   │       ├── types.dart
-    │   │   │       └── helpers/
-    │   │   │           ├── apply.dart
-    │   │   │           └── issue.dart
-    │   │   └── index.dart                     # Barrel file for client exports
-    │   │
-    │   ├── server/                            # Server-side functionality
-    │   │   ├── database/                      # Server database implementation
-    │   │   │   ├── api.dart
-    │   │   │   ├── auth.dart
-    │   │   │   ├── crud.dart
-    │   │   │   ├── database.dart
-    │   │   │   └── read.dart
-    │   │   ├── definitions/                   # Server data definitions
-    │   │   │   ├── schema/                    # Database schema
-    │   │   │   │   ├── bundles.drift
-    │   │   │   │   └── users.drift
-    │   │   │   └── models/                    # Server-specific models
-    │   │   └── index.dart                     # Barrel file for server exports
-    │   │
-    │   ├── messaging/                         # Communication between client/server
-    │   │   ├── api/                           # API endpoints
-    │   │   │   ├── bundles/
-    │   │   │   │   ├── get_bundles.dart
-    │   │   │   │   ├── get_bundle_ids.dart
-    │   │   │   │   └── post_bundles.dart
-    │   │   │   └── users/
-    │   │   └── base/                          # Base messaging classes
-    │   │       ├── base_query.dart
-    │   │       └── base_query_response.dart
-    │   │
-    │   └── utils/                             # Utilities
-    │       └── benchmarks/                    # Benchmarking tools
-    │           └── benchmark_events.dart
-    │
-    ├── client_database.dart                   # Public API barrel files
-    ├── client_definitions.dart
-    ├── server_database.dart
-    ├── server_definitions.dart
-    └── messaging.dart
-```
 
 ----------------------------
 
@@ -110,6 +41,7 @@
 - Server + Client Database interfaces: don't think we really need these abstract
   classes since it's just two functions and only one class is implementing each
   of them
+- VA: Sure, TODO for kotlin
 
 - extending `ServerDatabase` and `ClientDatabase`: not really sure about
   extensions on `ServerDatabase` and `ClientDatabase` to
@@ -118,42 +50,6 @@
   middleware, and db layers blending into each other. would suggest something a
   Service pattern to clearly capture / centralize all the middlware and business
   logic related to the bundles:
-
-```dart
-// Define service interfaces
-abstract class BundleService {
-  Future<List<String>> insertBundles(List<Bundle> bundles);
-
-  Future<List<Bundle>> getUserBundlesSince(String userId, String? timestamp);
-// other bundle methods
-}
-
-// Implement with database access
-class BundleServiceImpl implements BundleService {
-  final ServerDatabase _db;
-
-  BundleServiceImpl(this._db);
-
-  @override
-  Future<List<String>> insertBundles(List<Bundle> bundles) async {
-    // Implementation using _db
-  }
-
-// other implementations
-}
-
-// Server uses services instead of direct DB access
-class Server {
-  final BundleService bundleService;
-
-  Server(ServerDatabase db) : bundleService = BundleServiceImpl(db);
-
-  Future<BundlesResponse> handleBundles(BundlesQuery query) async {
-    final insertedIds = await bundleService.insertBundles(query.bundles);
-    // rest of implementation
-  }
-}
-```
 
 - Expose API endpoints using REST principles: i don't think we should use
   custom `interpretQueryAndRespond` type methods to handle requests
@@ -168,6 +64,9 @@ class Server {
       with `get_bundle_ids_query`, `post_bundles_query`
     - gRPC might be a good use case here if we want to use more of a function
       calling approach
+- [ ] VA: agreed, todo in kotlin. easy to develop because provides a channel
+        to communicate and the shared package immediately assures query exists.
+        we don't have to use openapi because it would be more manual labor
 
 ----------------------------
 
@@ -201,6 +100,7 @@ class Server {
     it's for
 
 - `config` table values should be stored as a KV store, it's standard pratice
+- VA: agreed
 
 ```sql
 CREATE TABLE config_values (
@@ -230,10 +130,12 @@ CREATE TABLE config_values (
 
 - `DatabaseConfig`: don't think we need to over-optimize and create this shared
   config, since there's no need to have a shared class in the current uses
+- VA: agreed. TODO for kotlin
 
 - SQL optimization
     - `getBundlesWhereIdInList`: use SQL 'IN' instead of using a for loop
         - `SELECT * FROM bundles WHERE id IN ('id1', 'id2', 'id3', ...);`
+        - VA: no such thing in drift to my knowledge
     - `insertBundles`: use batched insert instead of for loop
 
 - Document and explicitly call out HLC operations:
