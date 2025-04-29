@@ -2,6 +2,8 @@ import 'package:json_annotation/json_annotation.dart' as j;
 
 // import 'package:backend/shared_definitions.dart';
 import 'package:backend/client_definitions.dart';
+
+import 'event_converter.dart';
 //
 part 'event_payload_encoder.g.dart';
 

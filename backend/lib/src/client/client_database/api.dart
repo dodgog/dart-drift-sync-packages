@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:backend/client_definitions.dart';
 import 'package:backend/messaging.dart';
-import 'package:backend/src/client_database/crud.dart';
-import 'package:backend/src/client_database/read.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:uuidv7/uuidv7.dart';
 
+import 'crud.dart';
 import 'database.dart';
+import 'read.dart';
 import 'setup.dart';
 
 // TODO handle missing bundles

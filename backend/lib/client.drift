@@ -1,4 +1,4 @@
-import 'src/client_definitions/events.drift';
-import 'src/client_definitions/users.drift';
-import 'src/client_definitions/attributes.drift';
+import 'src/client/client_definitions/events.drift';
+import 'src/client/client_definitions/users.drift';
+import 'src/client/client_definitions/attributes.drift';
 import 'shared.drift';
