@@ -1,3 +1,3 @@
-import 'src/server_definitions/users.drift';
-import 'src/server_definitions/bundles.drift';
+import 'src/server/server_definitions/users.drift';
+import 'src/server/server_definitions/bundles.drift';
 import 'shared.drift';

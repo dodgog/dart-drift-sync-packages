@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:backend/client.dart';
+import 'package:backend/client_xd.dart';
 import 'package:backend/messaging.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:uuidv7/uuidv7.dart';

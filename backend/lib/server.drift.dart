@@ -2,8 +2,8 @@
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/internal/modular.dart' as i1;
-import 'package:backend/src/server_definitions/users.drift.dart' as i2;
-import 'package:backend/src/server_definitions/bundles.drift.dart' as i3;
+import 'package:backend/src/server/server_definitions/users.drift.dart' as i2;
+import 'package:backend/src/server/server_definitions/bundles.drift.dart' as i3;
 import 'package:backend/shared.drift.dart' as i4;
 
 class ServerDrift extends i1.ModularAccessor {

@@ -1,6 +1,6 @@
 import 'package:backend/client_database.dart';
 import 'package:backend/client_definitions.dart';
-import 'package:backend/client.dart';
+import 'package:backend/client_xd.dart';
 
 extension Read on ClientDatabase {
   Future<List<String>> getLocalBundleIds() async {

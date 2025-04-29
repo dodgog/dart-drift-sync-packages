@@ -1,8 +1,7 @@
 import 'package:backend/messaging.dart';
-import 'package:backend/server_database.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 
-import 'auth.dart';
+import 'database.dart';
 import 'internal/crud.dart';
 import 'internal/read.dart';
 

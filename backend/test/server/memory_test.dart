@@ -1,7 +1,7 @@
-import 'package:backend/client_definitions.dart';
-import 'package:backend/server_database.dart';
+import 'package:backend/server_xd.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+
 import '../server_test_executor.dart';
 import 'server_tests_run.dart';
 

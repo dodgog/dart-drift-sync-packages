@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart' as j;
 
 import 'package:backend/client_definitions.dart';
-import 'package:backend/client.dart';
+import 'package:backend/client_xd.dart';
 
 part 'event_converter.g.dart';
 

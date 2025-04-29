@@ -2,7 +2,7 @@ import 'package:backend/client_database.dart';
 import 'package:backend/client_definitions.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:backend/client.dart';
+import 'package:backend/client_xd.dart';
 
 // AI GENERATED
 

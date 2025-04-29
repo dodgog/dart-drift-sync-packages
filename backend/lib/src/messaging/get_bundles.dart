@@ -1,7 +1,6 @@
-import 'package:backend/messaging.dart';
-import 'package:backend/server_definitions.dart';
-import 'package:backend/shared_definitions.dart';
+import 'package:backend/server_xd.dart';
 import 'package:json_annotation/json_annotation.dart' as j;
+
 part 'get_bundles.g.dart';
 
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)

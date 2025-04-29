@@ -1,4 +1,4 @@
-import 'package:backend/client.dart';
+import 'package:backend/client_xd.dart';
 
 class NodeHelper {
   // think about work with isolates here and whether it should be a singleton

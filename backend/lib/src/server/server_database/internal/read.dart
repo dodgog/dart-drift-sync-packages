@@ -1,5 +1,6 @@
-import 'package:backend/server_database.dart';
-import 'package:backend/server_definitions.dart';
+import 'package:backend/server_xd.dart';
+
+import '../database.dart';
 
 extension Read on ServerDatabase {
   Future<List<Bundle>> getUserBundlesSinceOptionalTimestamp(

@@ -4,7 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:test/test.dart';
-import 'package:backend/client.dart';
+import 'package:backend/client_xd.dart';
 
 void main() {
   late ClientDatabase db;

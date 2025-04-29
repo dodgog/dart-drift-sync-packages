@@ -1,7 +1,7 @@
 import 'package:backend/client_database.dart';
 import 'package:backend/client_definitions.dart';
 import 'package:backend/shared_database.dart';
-import 'package:backend/client.dart';
+import 'package:backend/client_xd.dart';
 
 import 'database.dart';
 
