@@ -1,4 +1,4 @@
-import 'package:backend/client_xd.dart';
+import 'package:backend/client_library.dart';
 
 extension ClientEventHelper on ClientDrift {
   Future<int> insertLocalEventWithClientId(Event event) async {

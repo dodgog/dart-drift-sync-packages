@@ -1,4 +1,4 @@
-import 'package:backend/server_xd.dart';
+import 'package:backend/server_library.dart';
 import 'package:drift_postgres/drift_postgres.dart';
 import 'package:postgres/postgres.dart' as pg;
 

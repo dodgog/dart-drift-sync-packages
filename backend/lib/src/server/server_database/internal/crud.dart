@@ -1,7 +1,4 @@
-import 'package:backend/server_xd.dart';
-import 'package:backend/shared_xd.dart';
-
-import '../database.dart';
+import 'package:backend/server_library.dart';
 
 extension Crud on ServerDatabase {
   Future<List<String>> insertBundles(List<Bundle> bundles) async {

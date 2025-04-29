@@ -1,4 +1,4 @@
-import 'package:backend/client_xd.dart';
+import 'package:backend/client_library.dart';
 import 'package:json_annotation/json_annotation.dart' as j;
 
 part 'event_converter.g.dart';

@@ -1,5 +1,4 @@
-import 'package:backend/client_xd.dart';
-import 'package:backend/shared_xd.dart';
+import 'package:backend/client_library.dart';
 
 extension Setup on ClientDatabase {
   Future<int> initializeClientWithInitialConfig() async {

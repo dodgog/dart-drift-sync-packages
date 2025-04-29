@@ -1,4 +1,4 @@
-import 'package:backend/client_xd.dart';
+import 'package:backend/client_library.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:uuidv7/uuidv7.dart';
 

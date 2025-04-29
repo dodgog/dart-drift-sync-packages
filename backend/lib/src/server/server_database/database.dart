@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:backend/shared_xd.dart';
+import 'package:backend/shared_library.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';

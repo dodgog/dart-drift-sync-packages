@@ -1,4 +1,4 @@
-import 'package:backend/client_xd.dart';
+import 'package:backend/client_library.dart';
 
 /// A client-specific reducer of all events into nodes
 extension ClientNodeHelper on AttributesDrift {

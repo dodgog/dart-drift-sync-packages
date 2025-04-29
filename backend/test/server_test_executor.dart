@@ -1,4 +1,4 @@
-import 'package:backend/server_xd.dart';
+import 'package:backend/server_library.dart';
 
 abstract class ServerTestExecutor {
   ServerDatabase createDatabase({ServerDatabaseConfig? initialConfig});

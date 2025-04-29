@@ -1,4 +1,4 @@
-import 'package:backend/client_xd.dart';
+import 'package:backend/client_library.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 
