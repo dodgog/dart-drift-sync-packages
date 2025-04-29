@@ -4,7 +4,6 @@ import 'package:uuidv7/uuidv7.dart';
 
 import 'package:backend/client_definitions.dart';
 
-
 /// todo make these executable in the context of client
 
 /// Creates a base event with missing client ID that will be populated during insertion

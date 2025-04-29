@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:backend/messaging.dart';
 import 'package:backend/shared_database.dart';
-import 'package:backend/src/server_database/auth.dart';
-import 'package:backend/src/server_database/interface.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:meta/meta.dart';
 
 import 'api.dart';
+import 'auth.dart';
 import 'database.drift.dart';
+import 'interface.dart';
 import 'internal/config.dart';
 
 @DriftDatabase(

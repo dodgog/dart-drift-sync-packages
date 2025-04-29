@@ -1,5 +1,4 @@
 import 'package:backend/client_definitions.dart';
-import 'package:backend/src/client_definitions/nodes/types.dart';
 
 /// A client-specific reducer of all events into nodes
 extension ClientNodeHelper on AttributesDrift {

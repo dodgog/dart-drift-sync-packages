@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:backend/client_definitions.dart';
 import 'package:backend/client_interface.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +34,7 @@ void main() async {
       // 'https://1078-2601-645-c683-3c60-3de5-6e85-cabb-b55e.ngrok-free.app/data';
 
   // Create JSON communicator function
-  Future<Map<String, dynamic>> jsonCommunicator(
+  Future<Map<String, dynamic>> sendJsonAndGetResponse(
     Map<String, dynamic> data,
   ) async {
     print("Sending request to server: ${jsonEncode(data)}");
@@ -54,8 +53,7 @@ void main() async {
     }
   }
 
-  // Initialize database with JSON communicator
-  await db.initialize(sendJsonAndGetResponse: jsonCommunicator);
+  await db.initialize(sendJsonAndGetResponse: sendJsonAndGetResponse);
 
   runApp(MyApp(db: db));
 }

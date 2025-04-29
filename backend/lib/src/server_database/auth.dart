@@ -1,4 +1,4 @@
-import 'package:backend/src/server_database/database.dart';
+import 'database.dart';
 
 class UnauthorizedException implements Exception {
   final String message;

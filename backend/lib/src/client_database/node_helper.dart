@@ -19,11 +19,10 @@ class NodeHelper {
 // table and attributes table, then fetch the mutated nodeobj from the
 // database by fetching the node object of the same type and with the same id.
 
-  Future<Stream<void>>watch() async {
-    final attributesStream = _db.clientDrift.attributesDrift
-        .getAttributes()
-        .watch();
-    final voidStream = attributesStream.map((attributes) =>());
+  Future<Stream<void>> watch() async {
+    final attributesStream =
+        _db.clientDrift.attributesDrift.getAttributes().watch();
+    final voidStream = attributesStream.map((attributes) => ());
     return voidStream;
   }
 
@@ -50,7 +49,7 @@ class NodeHelper {
       url: url,
     );
 
-    await _db.transaction(()async {
+    await _db.transaction(() async {
       for (final event in events) {
         await _db.clientDrift.insertLocalEventWithClientId(event);
         await _db.clientDrift.insertLocalEventIntoAttributes(event);
@@ -105,7 +104,7 @@ class ActionableObject<T extends NodeObj> {
       return nodeObj;
     }
 
-    await _db.transaction(()async {
+    await _db.transaction(() async {
       for (final event in events) {
         await _db.clientDrift.insertLocalEventWithClientId(event);
         await _db.clientDrift.insertLocalEventIntoAttributes(event);
@@ -139,9 +138,9 @@ class ActionableObject<T extends NodeObj> {
     // Create deletion event
     final event = deleteNode(nodeId: nodeObj.id);
 
-    await _db.transaction(()async {
-        await _db.clientDrift.insertLocalEventWithClientId(event);
-        await _db.clientDrift.insertLocalEventIntoAttributes(event);
+    await _db.transaction(() async {
+      await _db.clientDrift.insertLocalEventWithClientId(event);
+      await _db.clientDrift.insertLocalEventIntoAttributes(event);
     });
 
     List<Attribute> attributes =

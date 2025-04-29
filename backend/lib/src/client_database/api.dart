@@ -83,7 +83,6 @@ extension Api on ClientDatabase {
     return (locallyMissingBundleIds, remotelyMissingBundleIds);
   }
 
-
   Future<GetBundlesQuery> requestBundles(List<String> bundleIds) async {
     final config = await getVerifiedConfig();
 

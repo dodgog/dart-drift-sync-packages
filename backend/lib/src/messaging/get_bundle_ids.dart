@@ -21,6 +21,7 @@ class GetBundleIdsQuery extends BaseQuery {
 @j.JsonSerializable(fieldRename: j.FieldRename.snake)
 class GetBundleIdsResponse extends QueryResponse<GetBundleIdsQuery> {
   List<String> bundleIds;
+
   /// When not provided signifies that all bundles are given
   String? sinceTimestamp;
 

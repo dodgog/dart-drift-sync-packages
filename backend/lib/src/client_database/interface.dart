@@ -1,10 +1,10 @@
 import 'node_helper.dart';
 
-typedef JsonCommunicator = Future<Map<String, dynamic>> Function(
+typedef JsonServerMessenger = Future<Map<String, dynamic>> Function(
     Map<String, dynamic> data);
 
 abstract interface class ClientDatabaseInterface {
-  Future<void> initialize({JsonCommunicator sendJsonAndGetResponse});
+  Future<void> initialize({JsonServerMessenger sendJsonAndGetResponse});
 
   // post new events and get updates
   // return the number of new events or null if sync failed

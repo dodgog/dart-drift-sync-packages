@@ -22,8 +22,7 @@ class GetBundlesResponse extends QueryResponse<GetBundlesQuery> {
   @BundleConverter()
   List<Bundle> bundles;
 
-  GetBundlesResponse(this.bundles)
-      : super("get_bundles_response");
+  GetBundlesResponse(this.bundles) : super("get_bundles_response");
 
   factory GetBundlesResponse.fromJson(Map<String, dynamic> json) =>
       _$GetBundlesResponseFromJson(json);

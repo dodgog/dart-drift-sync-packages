@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:backend/client_database.dart';
 import 'package:backend/messaging.dart';
 import 'package:backend/shared_database.dart';
-import 'package:backend/src/client_database/interface.dart';
-import 'package:backend/src/client_database/node_helper.dart';
+import 'interface.dart';
+import 'node_helper.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
@@ -41,9 +41,9 @@ class ClientDatabase extends $ClientDatabase
 
   final ClientDatabaseConfig? initialConfig;
 
-  late JsonCommunicator? _sendJsonAndGetResponse;
+  late JsonServerMessenger? _sendJsonAndGetResponse;
 
-  JsonCommunicator get communicator =>
+  JsonServerMessenger get communicator =>
       _sendJsonAndGetResponse ??
       (throw DatabaseInitException("Json communicator not initialized"));
   late NodeHelper _nodeHelper;
@@ -92,7 +92,8 @@ class ClientDatabase extends $ClientDatabase
   }
 
   @override
-  Future<void> initialize({JsonCommunicator? sendJsonAndGetResponse}) async {
+  Future<void> initialize(
+      {JsonServerMessenger? sendJsonAndGetResponse}) async {
     await _didExecutorOpen;
 
     _sendJsonAndGetResponse = sendJsonAndGetResponse;

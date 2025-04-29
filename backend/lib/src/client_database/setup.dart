@@ -26,7 +26,8 @@ extension Setup on ClientDatabase {
     if (config.userToken == null ||
         config.userId == null ||
         config.clientId == null) {
-      throw InvalidDatabaseConfigException("Config contains uninitialized values");
+      throw InvalidDatabaseConfigException(
+          "Config contains uninitialized values");
     }
 
     return config;

@@ -10,3 +10,4 @@ export 'src/client_definitions/nodes/helper_string.dart';
 export 'src/client_definitions/nodes/items.dart';
 export 'src/client_definitions/nodes/types.dart';
 export 'src/client_definitions/users.drift.dart';
+export 'src/client_definitions/event_payload_encoder.dart';
