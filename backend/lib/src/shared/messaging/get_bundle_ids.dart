@@ -1,4 +1,4 @@
-import 'package:backend/messaging.dart';
+import 'package:backend/shared_xd.dart';
 import 'package:json_annotation/json_annotation.dart' as j;
 
 part 'get_bundle_ids.g.dart';

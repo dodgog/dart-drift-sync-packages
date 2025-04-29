@@ -1,2 +1,2 @@
-import 'src/shared_definitions/shared_users.drift';
-import 'src/shared_definitions/shared_bundles.drift';
+import 'src/shared/shared_definitions/shared_users.drift';
+import 'src/shared/shared_definitions/shared_bundles.drift';

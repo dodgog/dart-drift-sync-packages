@@ -1,4 +1,4 @@
-import 'package:backend/shared_database.dart';
+import 'package:backend/shared_xd.dart';
 
 class ServerDatabaseConfig extends DatabaseConfig {
   ServerDatabaseConfig(//{ClientNode? clientNode}

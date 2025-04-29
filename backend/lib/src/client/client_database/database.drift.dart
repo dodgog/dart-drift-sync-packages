@@ -1,8 +1,10 @@
 // dart format width=80
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
-import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i1;
-import 'package:backend/src/shared_definitions/shared_bundles.drift.dart' as i2;
+import 'package:backend/src/shared/shared_definitions/shared_users.drift.dart'
+    as i1;
+import 'package:backend/src/shared/shared_definitions/shared_bundles.drift.dart'
+    as i2;
 import 'package:backend/src/client/client_definitions/attributes.drift.dart'
     as i3;
 import 'package:backend/src/client/client_definitions/events.drift.dart' as i4;

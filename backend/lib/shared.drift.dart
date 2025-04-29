@@ -2,8 +2,10 @@
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/internal/modular.dart' as i1;
-import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i2;
-import 'package:backend/src/shared_definitions/shared_bundles.drift.dart' as i3;
+import 'package:backend/src/shared/shared_definitions/shared_users.drift.dart'
+    as i2;
+import 'package:backend/src/shared/shared_definitions/shared_bundles.drift.dart'
+    as i3;
 
 class SharedDrift extends i1.ModularAccessor {
   SharedDrift(i0.GeneratedDatabase db) : super(db);

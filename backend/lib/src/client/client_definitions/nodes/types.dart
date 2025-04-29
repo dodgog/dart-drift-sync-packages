@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import '../attributes.drift.dart';
 import 'attributes.dart';
 import 'helper_string.dart';

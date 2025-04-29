@@ -3,7 +3,8 @@
 import 'package:drift/drift.dart' as i0;
 import 'package:backend/src/client/client_definitions/users.drift.dart' as i1;
 import 'package:drift/internal/modular.dart' as i2;
-import 'package:backend/src/shared_definitions/shared_users.drift.dart' as i3;
+import 'package:backend/src/shared/shared_definitions/shared_users.drift.dart'
+    as i3;
 import 'package:backend/client.drift.dart' as i4;
 
 typedef $ConfigCreateCompanionBuilder = i1.ConfigCompanion Function({

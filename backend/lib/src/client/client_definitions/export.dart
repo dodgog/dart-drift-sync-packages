@@ -1,4 +1,5 @@
 export 'attributes.drift.dart';
+export 'event_payload_encoder.dart';
 export 'events.drift.dart';
 export 'helpers/apply.dart';
 export 'helpers/issue.dart';
@@ -8,4 +9,3 @@ export 'nodes/helper_string.dart';
 export 'nodes/items.dart';
 export 'nodes/types.dart';
 export 'users.drift.dart';
-export 'event_payload_encoder.dart';

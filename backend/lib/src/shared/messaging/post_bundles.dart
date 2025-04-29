@@ -1,4 +1,4 @@
-import 'package:backend/server_xd.dart';
+import 'package:backend/shared_xd.dart';
 import 'package:json_annotation/json_annotation.dart' as j;
 
 part 'post_bundles.g.dart';

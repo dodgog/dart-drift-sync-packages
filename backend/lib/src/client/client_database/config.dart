@@ -1,4 +1,4 @@
-import 'package:backend/shared_database.dart';
+import 'package:backend/shared_xd.dart';
 
 class ClientDatabaseConfig extends DatabaseConfig {
   final String clientId;
