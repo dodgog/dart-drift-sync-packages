@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import '../attributes.drift.dart';
 import 'attributes.dart';
-import 'helper_string.dart';
+import 'utils/string_compare.dart';
 import 'items.dart';
+
+part 'node_types/document_type.dart';
+part 'node_types/simple_type.dart';
 
 enum NodeTypes {
   document,
@@ -91,83 +94,5 @@ class NodeObj {
         // THINK more about this
         .where((node) => node.type == targetType)
         .toList();
-  }
-}
-
-class DocumentNodeObj extends NodeObj {
-  final String author;
-  final String title;
-  final String? url;
-
-  DocumentNodeObj({
-    required super.id,
-    required super.type,
-    required super.lastModifiedAtTimestamp,
-    required super.isDeleted,
-    required this.author,
-    required this.title,
-    this.url,
-  });
-
-  static DocumentNodeObj fromAttributes(
-      List<Attribute> attributes, NodeObj baseNode) {
-    if (baseNode.type != NodeTypes.document) {
-      throw NodeException("Creating document from different declared type");
-    }
-
-    return DocumentNodeObj(
-      id: baseNode.id,
-      type: baseNode.type,
-      lastModifiedAtTimestamp: baseNode.lastModifiedAtTimestamp,
-      isDeleted: baseNode.isDeleted,
-      author: getRequiredAttribute(attributes, 'author'),
-      title: getRequiredAttribute(attributes, 'title'),
-      url: getAttributeOrNull(attributes, 'url'),
-    );
-  }
-
-  static List<DocumentNodeObj> fromAllAttributes(
-      List<Attribute> allAttributes) {
-    return NodeObj.fromAllAttributesTyped(allAttributes, NodeTypes.document);
-  }
-}
-
-class SimpleNodeObj extends NodeObj {
-  final List<String> items;
-
-  SimpleNodeObj({
-    required super.id,
-    required super.type,
-    required super.lastModifiedAtTimestamp,
-    required super.isDeleted,
-    required this.items,
-  });
-
-  static SimpleNodeObj? fromAttributes(
-      List<Attribute> attributes, NodeObj baseNode) {
-    if (baseNode.type != NodeTypes.simple) {
-      throw NodeException("Creating simple from different declared type");
-    }
-
-    List<String> items = [];
-    try {
-      final itemsJson = getRequiredAttribute(attributes, 'items');
-      final itemsObj = Items.fromJson(jsonDecode(itemsJson));
-      items = itemsObj.items;
-    } catch (e) {
-      print('Warning: Error parsing items JSON: $e');
-    }
-
-    return SimpleNodeObj(
-      id: baseNode.id,
-      type: baseNode.type,
-      lastModifiedAtTimestamp: baseNode.lastModifiedAtTimestamp,
-      isDeleted: baseNode.isDeleted,
-      items: items,
-    );
-  }
-
-  static List<SimpleNodeObj> fromAllAttributes(List<Attribute> allAttributes) {
-    return NodeObj.fromAllAttributesTyped(allAttributes, NodeTypes.simple);
   }
 }
