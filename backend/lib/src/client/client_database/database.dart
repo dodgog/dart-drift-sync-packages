@@ -13,7 +13,7 @@ import 'setup.dart';
   include: {'package:backend/client.drift'},
 )
 class ClientDatabase extends $ClientDatabase
-    implements ClientDatabaseInterface {
+    implements CoreDataInterface {
   @visibleForTesting
   ClientDatabase({
     this.initialConfig,
@@ -23,7 +23,7 @@ class ClientDatabase extends $ClientDatabase
     // TODO ideally it should be initialized with the id value from config
   }
 
-  static ClientDatabaseInterface createInterface({
+  static CoreDataInterface createInterface({
     ClientDatabaseConfig? initialConfig,
     QueryExecutor? executor,
     File? file,
@@ -88,7 +88,7 @@ class ClientDatabase extends $ClientDatabase
   }
 
   @override
-  Future<void> initialize({JsonServerMessenger? sendJsonAndGetResponse}) async {
+  Future<void> initializeWebMessageChannel({JsonServerMessenger? sendJsonAndGetResponse}) async {
     await _didExecutorOpen;
 
     _sendJsonAndGetResponse = sendJsonAndGetResponse;

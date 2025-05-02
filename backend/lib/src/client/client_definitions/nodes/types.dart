@@ -40,6 +40,19 @@ class NodeObj {
     required this.isDeleted,
   });
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is NodeObj &&
+        other.id == id &&
+        other.type == type &&
+        other.lastModifiedAtTimestamp == lastModifiedAtTimestamp &&
+        other.isDeleted == isDeleted;
+  }
+
+  @override
+  int get hashCode => Object.hash(id, type, lastModifiedAtTimestamp, isDeleted);
+
   static NodeObj? fromAttributes(List<Attribute> attributes) {
     if (attributes.isEmpty) return null;
 

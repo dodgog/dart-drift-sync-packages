@@ -1,24 +1,42 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:backend/client_library.dart';
+import 'package:backend/core_data_library.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
+Future<Map<String, dynamic>> sendJsonAndGetResponse(
+  String url,
+  Map<String, dynamic> data,
+) async {
+  print("Sending request to server: ${jsonEncode(data)}");
+  final response = await http.post(
+    Uri.parse(url),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    throw Exception(
+      'Failed to communicate with server: ${response.statusCode}',
+    );
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final supportDir = await getApplicationSupportDirectory();
-  print('Application Support Directory: ${supportDir.path}');
-
-  // Create database instance
-  final db = ClientDatabase.createInterface(
+  final coreDataInterface = CoreDataInterface.create(
     initialConfig: ClientDatabaseConfig(
-      clientId: "client1", // You should generate this uniquely per device
-      userId: "user1", // Get this from your auth system
-      userToken: "user1token", // Get this from your auth system
+      // unique per device
+      clientId: "client1",
+      // from auth
+      userId: "user1",
+      userToken: "user1token",
     ),
     executor: driftDatabase(
       name: 'my_database',
@@ -28,38 +46,19 @@ void main() async {
     ),
   );
 
-  // Define server URL
   const serverUrl =
       'https://5c13-2600-1700-1420-6960-adf7-3198-8477-3cdb.ngrok-free.app/data';
-      // 'https://1078-2601-645-c683-3c60-3de5-6e85-cabb-b55e.ngrok-free.app/data';
 
-  // Create JSON communicator function
-  Future<Map<String, dynamic>> sendJsonAndGetResponse(
-    Map<String, dynamic> data,
-  ) async {
-    print("Sending request to server: ${jsonEncode(data)}");
-    final response = await http.post(
-      Uri.parse(serverUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data),
-    );
+  await coreDataInterface.initializeWebMessageChannel(
+    sendJsonAndGetResponse:
+        (Map<String, dynamic> json) => sendJsonAndGetResponse(serverUrl, json),
+  );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception(
-        'Failed to communicate with server: ${response.statusCode}',
-      );
-    }
-  }
-
-  await db.initialize(sendJsonAndGetResponse: sendJsonAndGetResponse);
-
-  runApp(MyApp(db: db));
+  runApp(MyApp(db: coreDataInterface));
 }
 
 class MyApp extends StatelessWidget {
-  final ClientDatabaseInterface db;
+  final CoreDataInterface db;
 
   const MyApp({super.key, required this.db});
 
@@ -71,22 +70,22 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: MyHomePage(db: db),
+      home: MyHomePage(coreDataInterface: db),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  final ClientDatabaseInterface db;
+  final CoreDataInterface coreDataInterface;
 
-  const MyHomePage({super.key, required this.db});
+  const MyHomePage({super.key, required this.coreDataInterface});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<ActionableObject<DocumentNodeObj>> documents = [];
+  List<ActionableNodeObject<DocumentNodeObj>> documents = [];
   bool isLoading = true;
   StreamSubscription<void>? _nodesSubscription;
   late NodeHelper nodeHelper;
@@ -94,15 +93,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    nodeHelper = widget.db.getNodeHelper();
+    nodeHelper = widget.coreDataInterface.getNodeHelper();
     _loadDocuments();
     _setupNodeWatcher();
-    // Get node helper from database
   }
 
   Future<void> _setupNodeWatcher() async {
     try {
-      final nodeHelper = widget.db.getNodeHelper();
+      final nodeHelper = widget.coreDataInterface.getNodeHelper();
       final watchStream = await nodeHelper.watch();
       _nodesSubscription = watchStream.listen((_) {
         _loadDocuments();
@@ -118,37 +116,25 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  // Load documents from the database
   Future<void> _loadDocuments() async {
-    if (!mounted) return;
-
-    setState(() {
-      isLoading = true;
-    });
-
     try {
-      // Get all documents
-      documents = await nodeHelper.getAllDocuments();
-
-      if (mounted) {
+      final newDocuments = await nodeHelper.getAllDocuments();
+      // did anything change: get added to the list?
+      if (!doActionableNodeListsContainSameNodeIds(newDocuments, documents)) {
         setState(() {
-          isLoading = false;
+          documents = newDocuments;
         });
       }
+      return;
     } catch (e) {
       print('Error loading documents: $e');
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
     }
   }
 
-  // Sync with server
+  // Command to sync with server
   Future<void> _sync() async {
     try {
-      await widget.db.sync();
+      await widget.coreDataInterface.sync();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -158,12 +144,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // Add a new document
   Future<void> _addDocument() async {
     try {
-      final nodeHelper = widget.db.getNodeHelper();
+      final nodeHelper = widget.coreDataInterface.getNodeHelper();
       await nodeHelper.create(author: "New Author", title: "New Document");
-      await _loadDocuments();
+      // Load documents happens automatically
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to add document: ${e.toString()}')),
@@ -171,13 +156,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // Delete a document
   Future<void> _deleteDocument(
-    ActionableObject<DocumentNodeObj> document,
+    ActionableNodeObject<DocumentNodeObj> document,
   ) async {
     try {
+      // TODO: perhaps each document could have its own animated builder so
+      //  we don't rebuild the whole thing
       await document.delete();
-      await _loadDocuments();
+      setState(() {});
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to delete document: ${e.toString()}')),
@@ -185,8 +171,9 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // Edit document title and author
-  Future<void> _editDocument(ActionableObject<DocumentNodeObj> document) async {
+  Future<void> _editDocument(
+    ActionableNodeObject<DocumentNodeObj> document,
+  ) async {
     final TextEditingController titleController = TextEditingController(
       text: document.nodeObj.title,
     );
@@ -221,11 +208,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () async {
                   try {
                     Navigator.pop(context);
+                    // TODO: perhaps each document could have its own animated builder so
+                    //  we don't rebuild the whole thing
                     await document.edit(
                       title: titleController.text,
                       author: authorController.text,
                     );
-                    await _loadDocuments();
+                    setState(() {});
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

@@ -23,7 +23,7 @@ void main() async {
       closeStreamsSynchronously: true,
     ),
   );
-  await db.initialize();
+  await db.initializeWebMessageChannel();
 
   final stopwatch = Stopwatch()..start();
 

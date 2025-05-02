@@ -15,6 +15,24 @@ class DocumentNodeObj extends NodeObj {
     this.url,
   });
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is DocumentNodeObj &&
+        super == other &&
+        other.author == author &&
+        other.title == title &&
+        other.url == url;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        super.hashCode,
+        author,
+        title,
+        url,
+      );
+
   static DocumentNodeObj fromAttributes(
       List<Attribute> attributes, NodeObj baseNode) {
     if (baseNode.type != NodeTypes.document) {

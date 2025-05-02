@@ -28,7 +28,7 @@ void main() {
       ),
     );
 
-    await db.initialize();
+    await db.initializeWebMessageChannel();
   });
 
   tearDown(() async {

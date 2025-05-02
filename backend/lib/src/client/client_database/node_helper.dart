@@ -24,13 +24,13 @@ class NodeHelper {
     return voidStream;
   }
 
-  Future<List<ActionableObject<DocumentNodeObj>>> getAllDocuments() async {
+  Future<List<ActionableNodeObject<DocumentNodeObj>>> getAllDocuments() async {
     final documents = await _db.clientDrift.attributesDrift.getDocuments();
-    return documents.map((e) => ActionableObject(e, _db)).toList();
+    return documents.map((e) => ActionableNodeObject(e, _db)).toList();
   }
 
   // Creates a document node and returns an ActionableObject
-  Future<ActionableObject<DocumentNodeObj>> create({
+  Future<ActionableNodeObject<DocumentNodeObj>> create({
     required String author,
     required String title,
     String? url,
@@ -69,29 +69,42 @@ class NodeHelper {
       throw NodeException('Created node is not a DocumentNodeObj');
     }
 
-    return ActionableObject<DocumentNodeObj>(nodeObj, _db);
+    return ActionableNodeObject<DocumentNodeObj>(nodeObj, _db);
   }
 }
 
-class ActionableObject<T extends NodeObj> {
-  T nodeObj;
+class ActionableNodeObject<T extends NodeObj> {
+  T _nodeObj;
   final ClientDatabase _db;
 
-  ActionableObject(this.nodeObj, this._db);
+  T get nodeObj {
+    return _nodeObj;
+  }
+
+  ActionableNodeObject(this._nodeObj, this._db);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is ActionableNodeObject<T> && other._nodeObj == _nodeObj;
+  }
+
+  @override
+  int get hashCode => _nodeObj.hashCode;
 
   // Edit a document node
-  Future<T> edit({
+  Future<ActionableNodeObject<T>> edit({
     String? author,
     String? title,
     String? url,
   }) async {
-    if (nodeObj is! DocumentNodeObj) {
+    if (_nodeObj is! DocumentNodeObj) {
       throw UnimplementedError("Only DocumentNodeObj editing is supported");
     }
 
     // Generate document modification events
     final events = modifyDocumentNode(
-      nodeId: nodeObj.id,
+      nodeId: _nodeObj.id,
       author: author,
       title: title,
       url: url,
@@ -99,7 +112,7 @@ class ActionableObject<T extends NodeObj> {
 
     if (events.isEmpty) {
       // No changes to apply
-      return nodeObj;
+      return this;
     }
 
     await _db.transaction(() async {
@@ -111,7 +124,7 @@ class ActionableObject<T extends NodeObj> {
 
     // Fetch the updated node from database
     List<Attribute> attributes =
-        await _db.clientDrift.attributesDrift.getAttrubutesById(nodeObj.id);
+        await _db.clientDrift.attributesDrift.getAttrubutesById(_nodeObj.id);
 
     // Convert attributes to node object
     final updatedNodeObj = NodeObj.fromAttributes(attributes);
@@ -123,18 +136,19 @@ class ActionableObject<T extends NodeObj> {
       throw NodeException('Updated node is not a DocumentNodeObj');
     }
 
-    nodeObj = updatedNodeObj as T;
-    return nodeObj;
+    _nodeObj = updatedNodeObj as T;
+    this._nodeObj = _nodeObj;
+    return this;
   }
 
   // Delete a node
   Future<T> delete() async {
-    if (nodeObj is! DocumentNodeObj) {
+    if (_nodeObj is! DocumentNodeObj) {
       throw UnimplementedError("Only DocumentNodeObj deletion is supported");
     }
 
     // Create deletion event
-    final event = deleteNode(nodeId: nodeObj.id);
+    final event = deleteNode(nodeId: _nodeObj.id);
 
     await _db.transaction(() async {
       await _db.clientDrift.insertLocalEventWithClientId(event);
@@ -142,7 +156,7 @@ class ActionableObject<T extends NodeObj> {
     });
 
     List<Attribute> attributes =
-        await _db.clientDrift.attributesDrift.getAttrubutesById(nodeObj.id);
+        await _db.clientDrift.attributesDrift.getAttrubutesById(_nodeObj.id);
 
     // Convert attributes to node object
     final updatedNodeObj = NodeObj.fromAttributes(attributes);
@@ -150,7 +164,17 @@ class ActionableObject<T extends NodeObj> {
       throw NodeException('Failed to retrieve updated document node');
     }
 
-    nodeObj = updatedNodeObj as T;
+    _nodeObj = updatedNodeObj as T;
     return updatedNodeObj;
   }
+}
+
+// Compare two document lists regardless of order
+bool doActionableNodeListsContainSameNodeIds(
+  List<ActionableNodeObject<NodeObj>> list1,
+  List<ActionableNodeObject<NodeObj>> list2,
+) {
+  if (list1.length != list2.length) return false;
+
+  return list1.toSet().containsAll(list2);
 }
