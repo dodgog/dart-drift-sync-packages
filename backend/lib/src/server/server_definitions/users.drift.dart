@@ -1,11 +1,11 @@
 // dart format width=80
 // ignore_for_file: type=lint
-import 'package:drift/drift.dart' as i0;
+import 'package:backend/server.drift.dart' as i4;
 import 'package:backend/src/server/server_definitions/users.drift.dart' as i1;
-import 'package:drift/internal/modular.dart' as i2;
 import 'package:backend/src/shared/shared_definitions/shared_users.drift.dart'
     as i3;
-import 'package:backend/server.drift.dart' as i4;
+import 'package:drift/drift.dart' as i0;
+import 'package:drift/internal/modular.dart' as i2;
 
 typedef $AuthsCreateCompanionBuilder = i1.AuthsCompanion Function({
   i0.Value<String?> userId,

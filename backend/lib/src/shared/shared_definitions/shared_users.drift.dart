@@ -1,8 +1,8 @@
 // dart format width=80
 // ignore_for_file: type=lint
-import 'package:drift/drift.dart' as i0;
 import 'package:backend/src/shared/shared_definitions/shared_users.drift.dart'
     as i1;
+import 'package:drift/drift.dart' as i0;
 import 'package:drift/internal/modular.dart' as i2;
 
 typedef $UsersCreateCompanionBuilder = i1.UsersCompanion Function({

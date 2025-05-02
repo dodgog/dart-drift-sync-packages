@@ -1,8 +1,7 @@
+import 'package:backend/client_library.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:test/test.dart';
-import 'package:backend/client_library.dart';
-import 'package:backend/client_library.dart';
 
 void main() {
   late ClientDatabase db;

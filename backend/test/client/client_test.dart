@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:backend/client_library.dart';
+import 'package:backend/core_data_library.dart';
 import 'package:backend/messaging.dart';
 import 'package:backend/shared_library.dart';
 import 'package:drift/drift.dart';

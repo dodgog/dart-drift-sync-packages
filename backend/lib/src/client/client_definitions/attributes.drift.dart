@@ -1,11 +1,11 @@
 // dart format width=80
 // ignore_for_file: type=lint
-import 'package:drift/drift.dart' as i0;
+import 'package:backend/client.drift.dart' as i4;
 import 'package:backend/src/client/client_definitions/attributes.drift.dart'
     as i1;
-import 'package:drift/internal/modular.dart' as i2;
 import 'package:backend/src/client/client_definitions/events.drift.dart' as i3;
-import 'package:backend/client.drift.dart' as i4;
+import 'package:drift/drift.dart' as i0;
+import 'package:drift/internal/modular.dart' as i2;
 
 typedef $AttributesCreateCompanionBuilder = i1.AttributesCompanion Function({
   required String entityId,

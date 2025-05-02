@@ -1,9 +1,6 @@
 import 'dart:convert';
 
-import '../attributes.drift.dart';
-import 'attributes.dart';
-import 'utils/string_compare.dart';
-import 'items.dart';
+import 'package:backend/client_library.dart';
 
 part 'node_types/document_type.dart';
 part 'node_types/simple_type.dart';
