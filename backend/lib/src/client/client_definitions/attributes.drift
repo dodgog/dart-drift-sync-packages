@@ -7,6 +7,7 @@ CREATE TABLE attributes (
     value TEXT, -- for now string
     timestamp TEXT NOT NULL
 );
+-- TODO index for entity_id?
 
 -- AIUSE gen ai help used
 -- to have a conflict when inserting an attribute which already exists for an
