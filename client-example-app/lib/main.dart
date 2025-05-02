@@ -149,9 +149,11 @@ class _MyHomePageState extends State<MyHomePage> {
       await nodeHelper.create(author: "New Author", title: "New Document");
       // Load documents happens automatically
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add document: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to add document: ${e.toString()}')),
+        );
+      }
     }
   }
 
@@ -164,9 +166,11 @@ class _MyHomePageState extends State<MyHomePage> {
       await document.delete();
       setState(() {});
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete document: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete document: ${e.toString()}')),
+        );
+      }
     }
   }
 
@@ -179,6 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final TextEditingController authorController = TextEditingController(
       text: document.nodeObj.author,
     );
+    if (!mounted) return;
 
     return showDialog(
       context: context,
@@ -215,13 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                     setState(() {});
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Failed to update document: ${e.toString()}',
-                        ),
-                      ),
-                    );
+                    print("Problem editing document");
                   }
                 },
                 child: const Text('Save'),
