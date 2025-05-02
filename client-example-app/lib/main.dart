@@ -86,7 +86,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<ActionableNodeObject<DocumentNodeObj>> documents = [];
-  bool isLoading = true;
   StreamSubscription<void>? _nodesSubscription;
   late NodeHelper nodeHelper;
 
@@ -246,9 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body:
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : documents.isEmpty
+          documents.isEmpty
               ? const Center(child: Text('No documents found'))
               : ListView.builder(
                 itemCount: documents.length,
