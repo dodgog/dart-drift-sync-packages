@@ -36,7 +36,7 @@ void main() {
 
     for (final event in createEvents) {
       await db.clientDrift.insertLocalEventWithClientId(event);
-      await db.clientDrift.insertLocalEventIntoAttributes(event);
+      await db.clientDrift.insertEventIntoAttributes(event);
     }
 
     // Edit document
@@ -48,13 +48,13 @@ void main() {
 
     for (final event in editEvents) {
       await db.clientDrift.insertLocalEventWithClientId(event);
-      await db.clientDrift.insertLocalEventIntoAttributes(event);
+      await db.clientDrift.insertEventIntoAttributes(event);
     }
 
     // Delete document
     final deleteEvent = deleteNode(nodeId: createEvents.first.entityId);
     await db.clientDrift.insertLocalEventWithClientId(deleteEvent);
-    await db.clientDrift.insertLocalEventIntoAttributes(deleteEvent);
+    await db.clientDrift.insertEventIntoAttributes(deleteEvent);
 
     // Get final state
     final attributes =
@@ -75,7 +75,7 @@ void main() {
 
     for (final event in createEvents) {
       await db.clientDrift.insertLocalEventWithClientId(event);
-      await db.clientDrift.insertLocalEventIntoAttributes(event);
+      await db.clientDrift.insertEventIntoAttributes(event);
     }
 
     // Clean and reduce to ensure consistent state
@@ -98,7 +98,7 @@ void main() {
 
     for (final event in createEvents) {
       await db.clientDrift.insertLocalEventWithClientId(event);
-      await db.clientDrift.insertLocalEventIntoAttributes(event);
+      await db.clientDrift.insertEventIntoAttributes(event);
     }
 
     final attributes =
@@ -120,7 +120,7 @@ void main() {
 
     for (final event in createEvents) {
       await db.clientDrift.insertLocalEventWithClientId(event);
-      await db.clientDrift.insertLocalEventIntoAttributes(event);
+      await db.clientDrift.insertEventIntoAttributes(event);
     }
 
     // Edit document
@@ -132,7 +132,7 @@ void main() {
 
     for (final event in editEvents) {
       await db.clientDrift.insertLocalEventWithClientId(event);
-      await db.clientDrift.insertLocalEventIntoAttributes(event);
+      await db.clientDrift.insertEventIntoAttributes(event);
     }
 
     final attributes =
@@ -145,7 +145,7 @@ void main() {
     // Delete document
     final deleteEvent = deleteNode(nodeId: createEvents.first.entityId);
     await db.clientDrift.insertLocalEventWithClientId(deleteEvent);
-    await db.clientDrift.insertLocalEventIntoAttributes(deleteEvent);
+    await db.clientDrift.insertEventIntoAttributes(deleteEvent);
 
     final attributesAfterDelete =
         await db.clientDrift.attributesDrift.getAttributes().get();

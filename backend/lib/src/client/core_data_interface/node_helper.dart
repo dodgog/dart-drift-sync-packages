@@ -52,7 +52,7 @@ class NodeHelper {
     await _db.transaction(() async {
       for (final event in events) {
         await _db.clientDrift.insertLocalEventWithClientId(event);
-        await _db.clientDrift.insertLocalEventIntoAttributes(event);
+        await _db.clientDrift.insertEventIntoAttributes(event);
       }
     });
 
@@ -120,7 +120,7 @@ class ActionableNodeObject<T extends NodeObj> {
     await _db.transaction(() async {
       for (final event in events) {
         await _db.clientDrift.insertLocalEventWithClientId(event);
-        await _db.clientDrift.insertLocalEventIntoAttributes(event);
+        await _db.clientDrift.insertEventIntoAttributes(event);
       }
     });
 
@@ -154,7 +154,7 @@ class ActionableNodeObject<T extends NodeObj> {
 
     await _db.transaction(() async {
       await _db.clientDrift.insertLocalEventWithClientId(event);
-      await _db.clientDrift.insertLocalEventIntoAttributes(event);
+      await _db.clientDrift.insertEventIntoAttributes(event);
     });
 
     List<Attribute> attributes =

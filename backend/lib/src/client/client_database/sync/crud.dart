@@ -34,7 +34,7 @@ extension Crud on ClientDatabase {
 
     for (final event in newEvents) {
       await clientDrift.insertLocalEventWithClientId(event);
-      await clientDrift.insertLocalEventIntoAttributes(event);
+      await clientDrift.insertEventIntoAttributes(event);
     }
   }
 

@@ -13,7 +13,7 @@ extension ClientEventHelper on ClientDrift {
     );
   }
 
-  Future<int> insertLocalEventIntoAttributes(Event event) async {
+  Future<int> insertEventIntoAttributes(Event event) async {
     return attributesDrift.insertEventIntoAttributes(
       entityId: event.entityId,
       attribute: event.attribute,

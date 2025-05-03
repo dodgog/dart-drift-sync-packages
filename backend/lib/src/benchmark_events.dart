@@ -41,7 +41,7 @@ void main() async {
       // Insert all events
       for (final event in events) {
         await db.clientDrift.insertLocalEventWithClientId(event);
-        await db.clientDrift.insertLocalEventIntoAttributes(event);
+        await db.clientDrift.insertEventIntoAttributes(event);
       }
       final insertTime = stopwatch.elapsedMilliseconds;
 
@@ -72,7 +72,7 @@ void main() async {
       // Just insert without timing
       for (final event in events) {
         await db.clientDrift.insertLocalEventWithClientId(event);
-        await db.clientDrift.insertLocalEventIntoAttributes(event);
+        await db.clientDrift.insertEventIntoAttributes(event);
       }
     }
   }
