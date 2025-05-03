@@ -20,7 +20,8 @@ class ClientDatabase extends $ClientDatabase
     QueryExecutor? executor,
     File? file,
   }) : super(executor ?? _openConnection(file: file)) {
-    // TODO ideally it should be initialized with the id value from config
+    // Initialize SyncService
+    _syncService = SyncService(this);
   }
 
   static CoreDataInterface createInterface({
@@ -36,6 +37,7 @@ class ClientDatabase extends $ClientDatabase
   }
 
   final CoreDataClientConfig? initialConfig;
+  late final SyncService _syncService;
 
   late JsonServerMessenger? _sendJsonAndGetResponse;
 
@@ -100,20 +102,25 @@ class ClientDatabase extends $ClientDatabase
   /// client app
   @override
   Future<void> sync() async {
-    final outgoing = (await pushEvents()).toJson();
-    final response = await communicator(outgoing);
-    return await pullEvents(PostBundlesResponse.fromJson(response));
+    return await _syncService.sync();
   }
 
   /// NOTE: also could be triggerable automatically, but here delegated to the
   /// client app
   @override
   Future<int> verifyBundlesAndPullMissing() async {
-    throw UnimplementedError();
+    return await _syncService.verifyBundlesAndPullMissing();
   }
 
   @override
   NodeHelper getNodeHelper() => _nodeHelper;
 
 // Private helper methods...
+}
+
+// Extension that adds a method to access the SyncService
+extension ClientDatabaseTestExtension on ClientDatabase {
+  SyncService createSyncService() {
+    return SyncService(this);
+  }
 }

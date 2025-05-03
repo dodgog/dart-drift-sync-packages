@@ -10,8 +10,14 @@ import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:test/test.dart';
 import 'package:uuidv7/uuidv7.dart';
 
+// This function creates a SyncService for tests
+SyncService createSyncService(ClientDatabase db) {
+  return SyncService(db);
+}
+
 void main() {
   late ClientDatabase db;
+  late SyncService syncService;
   final databaseConfig = CoreDataClientConfig(
     clientId: "clientId",
     userId: "user1",
@@ -28,6 +34,9 @@ void main() {
         closeStreamsSynchronously: true,
       ),
     );
+
+    // Create a sync service for testing using the extension method
+    syncService = db.createSyncService();
 
     await db.initializeWebMessageChannel();
   });
@@ -48,8 +57,8 @@ void main() {
       await db.clientDrift.insertLocalEventWithClientId(event);
     }
 
-    // Get events to push
-    final postQuery = await db.pushEvents();
+    // Use sync service to push events instead of calling directly on db
+    final postQuery = await syncService.pushEvents();
 
     // Create expected query
     final expectedQuery = PostBundlesQuery(
