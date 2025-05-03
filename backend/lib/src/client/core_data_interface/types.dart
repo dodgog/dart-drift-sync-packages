@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:backend/client_library.dart';
 
+import 'node_types/simple_type/items.dart';
+
 part 'node_types/document_type.dart';
 part 'node_types/simple_type.dart';
 

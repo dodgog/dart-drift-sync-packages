@@ -1,7 +1,7 @@
 part of '../types.dart';
 
 class SimpleNodeObj extends NodeObj {
-  final List<String> items;
+  Items items;
 
   SimpleNodeObj({
     required super.id,
@@ -16,13 +16,13 @@ class SimpleNodeObj extends NodeObj {
     if (identical(this, other)) return true;
     return other is SimpleNodeObj &&
         super == other &&
-        _listEquals(other.items, items);
+        _listEquals(other.items.items, items.items);
   }
 
   @override
   int get hashCode => Object.hash(
         super.hashCode,
-        Object.hashAll(items),
+        Object.hashAll(items.items),
       );
 
   // AIUSE
@@ -43,11 +43,11 @@ class SimpleNodeObj extends NodeObj {
       throw NodeException("Creating simple from different declared type");
     }
 
-    List<String> items = [];
+    Items items2 = Items([]);
     try {
       final itemsJson = getRequiredAttribute(attributes, 'items');
       final itemsObj = Items.fromJson(jsonDecode(itemsJson));
-      items = itemsObj.items;
+      items2 = itemsObj;
     } catch (e) {
       print('Warning: Error parsing items JSON: $e');
     }
@@ -57,7 +57,7 @@ class SimpleNodeObj extends NodeObj {
       type: baseNode.type,
       lastModifiedAtTimestamp: baseNode.lastModifiedAtTimestamp,
       isDeleted: baseNode.isDeleted,
-      items: items,
+      items: items2,
     );
   }
 

@@ -5,6 +5,5 @@ export 'helpers/apply.dart';
 export 'helpers/issue.dart';
 export 'nodes/all.dart';
 export 'nodes/attributes.dart';
-export 'nodes/items.dart';
 export 'nodes/utils/string_compare.dart';
 export 'users.drift.dart';
