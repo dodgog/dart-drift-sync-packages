@@ -1,11 +1,11 @@
 import 'package:backend/shared_library.dart';
 
-class ClientDatabaseConfig extends DatabaseConfig {
+class CoreDataClientConfig extends DatabaseConfig {
   final String clientId;
   final String userId;
   final String userToken;
 
-  ClientDatabaseConfig({
+  CoreDataClientConfig({
     required this.clientId,
     required this.userId,
     required this.userToken,

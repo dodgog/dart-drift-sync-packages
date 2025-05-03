@@ -8,7 +8,7 @@ void main() {
   late ClientDatabase db;
 
   setUp(() async {
-    final databaseConfig = ClientDatabaseConfig(
+    final databaseConfig = CoreDataClientConfig(
       clientId: "client1",
       userId: "user1",
       userToken: "user1token",

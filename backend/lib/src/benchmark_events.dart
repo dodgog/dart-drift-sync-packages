@@ -10,7 +10,7 @@ void main() async {
 
   print('N,InsertTime,ReductionTime,CleanAndInsertTime,ReductionFromClean');
 
-  final databaseConfig = ClientDatabaseConfig(
+  final databaseConfig = CoreDataClientConfig(
     clientId: "client1",
     userId: "user1",
     userToken: "user1token",

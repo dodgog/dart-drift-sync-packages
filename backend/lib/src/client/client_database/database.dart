@@ -24,7 +24,7 @@ class ClientDatabase extends $ClientDatabase
   }
 
   static CoreDataInterface createInterface({
-    ClientDatabaseConfig? initialConfig,
+    CoreDataClientConfig? initialConfig,
     QueryExecutor? executor,
     File? file,
   }) {
@@ -35,7 +35,7 @@ class ClientDatabase extends $ClientDatabase
     );
   }
 
-  final ClientDatabaseConfig? initialConfig;
+  final CoreDataClientConfig? initialConfig;
 
   late JsonServerMessenger? _sendJsonAndGetResponse;
 

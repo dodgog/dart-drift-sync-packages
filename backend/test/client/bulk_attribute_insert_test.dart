@@ -10,7 +10,7 @@ void main() {
   setUp(() async {
     baseTimestamp = DateTime.now().toIso8601String();
 
-    final databaseConfig = ClientDatabaseConfig(
+    final databaseConfig = CoreDataClientConfig(
       clientId: "client1",
       userId: "user1",
       userToken: "user1token",

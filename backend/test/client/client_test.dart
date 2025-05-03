@@ -12,7 +12,7 @@ import 'package:uuidv7/uuidv7.dart';
 
 void main() {
   late ClientDatabase db;
-  final databaseConfig = ClientDatabaseConfig(
+  final databaseConfig = CoreDataClientConfig(
     clientId: "clientId",
     userId: "user1",
     userToken: "user1token",

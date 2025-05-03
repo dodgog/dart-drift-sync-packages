@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   late ClientDatabase db;
 
-  final databaseConfig = ClientDatabaseConfig(
+  final databaseConfig = CoreDataClientConfig(
     clientId: "clientId",
     userId: "userId",
     userToken: "userToken",

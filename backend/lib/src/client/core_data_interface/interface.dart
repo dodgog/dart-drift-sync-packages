@@ -8,7 +8,7 @@ typedef JsonServerMessenger = Future<Map<String, dynamic>> Function(
 
 abstract interface class CoreDataInterface {
   static CoreDataInterface create({
-    ClientDatabaseConfig? initialConfig,
+    CoreDataClientConfig? initialConfig,
     QueryExecutor? executor,
     File? file,
   }) {

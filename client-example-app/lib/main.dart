@@ -31,7 +31,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final coreDataInterface = CoreDataInterface.create(
-    initialConfig: ClientDatabaseConfig(
+    initialConfig: CoreDataClientConfig(
       // unique per device
       clientId: "client1",
       // from auth
