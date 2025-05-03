@@ -25,7 +25,9 @@ class NodeHelper {
   }
 
   Future<List<ActionableNodeObject<DocumentNodeObj>>> getAllDocuments() async {
-    final documents = await _db.clientDrift.attributesDrift.getDocuments();
+    final attributes = await _db.clientDrift.attributesDrift.getAttributes()
+        .get();
+    final documents = DocumentNodeObj.fromAllAttributes(attributes);
     return documents.map((e) => ActionableNodeObject(e, _db)).toList();
   }
 
@@ -58,7 +60,7 @@ class NodeHelper {
     final entityId = events.first.entityId;
 
     final attributes =
-        await _db.clientDrift.attributesDrift.getAttrubutesById(entityId);
+        await _db.clientDrift.attributesDrift.getAttributesById(entityId);
 
     final nodeObj = NodeObj.fromAttributes(attributes);
     if (nodeObj == null) {
@@ -124,7 +126,7 @@ class ActionableNodeObject<T extends NodeObj> {
 
     // Fetch the updated node from database
     List<Attribute> attributes =
-        await _db.clientDrift.attributesDrift.getAttrubutesById(_nodeObj.id);
+        await _db.clientDrift.attributesDrift.getAttributesById(_nodeObj.id);
 
     // Convert attributes to node object
     final updatedNodeObj = NodeObj.fromAttributes(attributes);
@@ -156,7 +158,7 @@ class ActionableNodeObject<T extends NodeObj> {
     });
 
     List<Attribute> attributes =
-        await _db.clientDrift.attributesDrift.getAttrubutesById(_nodeObj.id);
+        await _db.clientDrift.attributesDrift.getAttributesById(_nodeObj.id);
 
     // Convert attributes to node object
     final updatedNodeObj = NodeObj.fromAttributes(attributes);

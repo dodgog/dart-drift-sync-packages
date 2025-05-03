@@ -1,8 +1,8 @@
 export 'attributes.drift.dart';
 export 'event_payload_encoder.dart';
 export 'events.drift.dart';
-export 'helpers/apply.dart';
-export 'helpers/issue.dart';
+export 'event_helpers/event_apply.dart';
+export 'event_helpers/event_issue.dart';
 export 'nodes/all.dart';
 export 'nodes/attributes.dart';
 export 'nodes/utils/string_compare.dart';

@@ -4,8 +4,8 @@ import 'package:backend/client_library.dart';
 import 'package:hybrid_logical_clocks/hybrid_logical_clocks.dart';
 import 'package:uuidv7/uuidv7.dart';
 
-import 'read.dart';
-import 'setup.dart';
+import '../read.dart';
+import '../setup.dart';
 
 // TODO handle missing bundles
 
@@ -17,7 +17,7 @@ import 'setup.dart';
 extension Api on ClientDatabase {
   Future<PostBundlesQuery> pushEvents() async {
     final config = await getVerifiedConfig();
-    final events = await getLocalEventsA();
+    final events = await getLocalEvents();
 
     final bundle = Bundle(
       // THINK: at which point should we create this id? maybe the server

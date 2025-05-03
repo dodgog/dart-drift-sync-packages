@@ -96,6 +96,8 @@ class ClientDatabase extends $ClientDatabase
     _nodeHelper = NodeHelper(this);
   }
 
+  /// NOTE: also could be triggerable automatically, but here delegated to the
+  /// client app
   @override
   Future<void> sync() async {
     final outgoing = (await pushEvents()).toJson();
@@ -103,6 +105,8 @@ class ClientDatabase extends $ClientDatabase
     return await pullEvents(PostBundlesResponse.fromJson(response));
   }
 
+  /// NOTE: also could be triggerable automatically, but here delegated to the
+  /// client app
   @override
   Future<int> verifyBundlesAndPullMissing() async {
     throw UnimplementedError();

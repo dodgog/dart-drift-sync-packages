@@ -1,3 +1,3 @@
-export 'api.dart';
-export 'crud.dart';
+export 'sync/api.dart';
+export 'sync/crud.dart';
 export 'database.dart';

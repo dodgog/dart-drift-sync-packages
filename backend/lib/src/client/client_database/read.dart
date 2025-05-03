@@ -7,7 +7,7 @@ extension Read on ClientDatabase {
         .get();
   }
 
-  Future<List<Event>> getLocalEventsA() async {
+  Future<List<Event>> getLocalEvents() async {
     return await clientDrift.eventsDrift.getLocalEventsToPush().get();
   }
 }
