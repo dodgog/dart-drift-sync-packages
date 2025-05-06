@@ -20,7 +20,7 @@ A collection of Dart libraries and sample apps that together implement a state-b
     - `client/` – verifies client-side behaviour (event emission, conflict resolution, sync)
     - `server/` – drives the in-memory & Postgres server implementations and checks end-to-end semantics
     - To run server tests, spool up the postgres server using the `run-postgres.sh` script
-    - Run all tests with `dart test backend`.
+    - Run all tests with `flutter test`.
 
 
 ## How to read the code
